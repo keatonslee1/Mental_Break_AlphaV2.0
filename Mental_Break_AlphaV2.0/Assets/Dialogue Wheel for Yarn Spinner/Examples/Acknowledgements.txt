@@ -1,0 +1,5 @@
+The environment art for this sample scene is based on assets by Kenney.nl (https://www.kenney.nl/). 
+
+These assets are licensed under a Creative Commons CC-0 license. Please consider supporting their work by buying a copy of it here: https://kenney.itch.io/kenney-game-assets
+
+Huge thanks to Kenney for providing them!

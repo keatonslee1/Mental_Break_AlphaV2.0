@@ -1,0 +1,103 @@
+﻿title: Start
+---
+Capsley: Hello!
+Player: Hi, what's your thing?
+Capsley: Oh, I exist because the Yarn Spinner devs added me to the scene.
+Player: But... why?
+Capsley: To show off some of the features of the Automatic Dialogue Wheel!
+
+-> Huh?
+    Capsley: Yes! The very one you just used to select the option that led here.
+    Player: Uh...
+    Capsley: This is one of two prebuilt layout systems in this addon.
+    Capsley: (The other being the Image Wheel!)
+    Capsley: Each has their own advantages and disadvantages.
+-> Go on...
+
+Capsely: The Automatic Dialogue Wheel will automatically place options around the wheel.
+Capsley: Regardless of how many options you have, each gets a spot on the circle.
+
+-> Automatically?
+    Capsley: Quite so!
+-> Witchcraft!
+    Capsley: Alas, no. Witchcraft would have been easier.
+
+Player: But so far you've only shown off two choices at a time!
+Capsley: How remiss of me! How many options do you want to see?
+
+-> Two
+    Capsley: Can do!
+    -> Option 1
+    -> Option 2
+-> Three
+    Capsley: Your wish is my command!
+    -> Option 1
+    -> Option 2
+    -> Option 3
+-> Four
+    Capsley: Luckily you just saw four of them, but because I like you, I will show it again!
+    -> Option 1
+    -> Option 2
+    -> Option 3
+    -> Option 4
+-> Loads of them
+    Capsley: "Loads of them" it is!
+    -> Option 1
+    -> Option 2
+    -> Option 3
+    -> Option 4
+    -> Option 5
+    -> Option 6
+
+Player: Is that all?
+Capsely: Oh, no! We can also control the direction that we place options around the wheel.
+Capsley: Take a look at these three options:
+
+<<detour optionspin>>
+
+Capsely: Here they are being placed around the wheel, sunwise.
+Player: "Sunwise"?
+Capsley: Yes, exactly. But now we can make them go around widdershins!
+
+// Hello, reader. Did you know that "sunwise" and "widdershins" are alternate
+// words for "clockwise" and "counterclockwise"? You do now! This command,
+// set_layout_direction, lets you specify the direction in a variety of ways.
+// The following all work: "clockwise", "cw", "sunwise", "counterclockwise", and
+// "counter-clockwise", "widdershins", "ccw".
+<<set_layout_direction Wheel widdershins>>
+<<detour optionspin>>
+
+Player: Widder--
+Capsely: I know what you're thinking - "they just changed the ordering!" But if you check the Yarn Spinner script for this conversation, we did it via a detour, not trickery.
+
+// resetting the spin
+<<set_layout_direction Wheel clockwise>>
+
+Capsley: Finally, you can also control the deadzone.
+Capsley: This is the section of the circle where options won't appear.
+Capsley: This is mostly useful so you don't have elements being drawn off the bottom of the screen.
+Capsley: But, depending on your UI you might not mind that - for example, behold!
+
+// setting the wheel to have the entire range of the circle
+<<set_option_zone Wheel 0 360>>
+// because the options get placed in the centre of the region we want to rotate the regions 45 degrees
+// that way the options when placed in the middle of each region will on the cardinal directions 
+<<set_offset_angle Wheel 45>>
+// picked this position arbitrarily, it looks right to me
+<<move_wheel Mover 270>>
+
+-> Option 1
+-> Option 2
+-> Option 3
+-> Option 4
+
+Player: Neat!
+Capsley: Have fun, and check out the Image Wheel sample also!
+
+===
+title: optionspin
+---
+-> Option 1
+-> Option 2
+-> Option 3
+===

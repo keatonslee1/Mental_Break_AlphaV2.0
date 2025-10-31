@@ -1,0 +1,121 @@
+﻿title: Wrexley
+target: Wrexley_Conversation
+---
+<<once>>
+    Wrexley: Mitchell.
+    Mitchell: Wrexley.
+    Wrexley: Mitchell.
+    Mitchell: Wrexley.
+<<else>>
+    Wrexley: Mitchell.
+<<endonce>>
+<<jump Wrexley_Hub>>
+===
+title: Wrexley_Hub
+---
+-> Your species #lt
+    Mitchell: So, you're an alien?
+    Wrexley: Looks that way.
+    Mitchell: I bet you're an archetype of raw power and mindless violence, which will no doubt be tempered by a sobering backstory that contextualises and possibly even justifies your rage?
+    Wrexley: Wow.
+    Wrexley: Pretty rude.
+    Wrexley: Not wrong though.
+-> Your job #lb
+    Mitchell: What do you do here?
+    Wrexley: I stand at the computer, and I glower.
+-> Goodbye #rm
+    Mitchell: I should go.
+    <<stop>>
+
+<<jump Wrexley_Hub>>
+===
+title: Vacapsleyan
+target: Vacapsleyan_Conversation
+---
+Vacapsleyan: Greetings, Mitchell.
+
+<<jump Vacapsleyan_Hub>>
+===
+title: Vacapsleyan_Hub
+---
+-> What are you doing? #lt
+    Vacapsleyan: I'm making sure that this machine's configured to behave in an expected way, given anticipated inputs.
+    Mitchell: So, you're...
+    Vacapsleyan: Calibrating, yes.
+-> Moral alignment #lb
+    Mitchell: Are you a good guy, or a bad guy?
+    Vacapsleyan: I'm a bad guy, but the word 'bad' is meant to be interpreted in a good way.
+-> Goodbye #rm
+    Mitchell: I should go.
+    Vacapsleyan: Farewell. <<once>>
+    <<stop>>
+===
+title: RequisitionsOfficer
+target: RequisitionsOfficer_Conversation
+---
+<<once>>
+RequisitionsOfficer: I'm the Yarn Spinner Requisitions Officer.
+Mitchell: I buy my gear from you?
+RequisitionsOfficer: That's right.
+-> Part of the job #lm
+    Mitchell: But all of my gear is supplied as part of my job.
+    RequisitionsOfficer: Not the gear I can supply. I get that from different channels.
+-> Price #rm
+    Mitchell: What kinds of prices are you offering?
+    RequisitionsOfficer: Two kinds: insulting, and suspicious.
+    Mitchell: Are you actually a member of my crew?
+    RequisitionsOfficer: Oh, yes. You need a guy like me on board.
+    Mitchell: Why?
+
+Mitchell: You're basically an offically endorsed black marketeer?
+RequisitionsOfficer: Sure. Brass looked the other way hard enough, they turned a full circle.
+RequisitionsOfficer: Now they look me in the eye and hand over cash for stuff they should be getting as part of the role.
+RequisitionsOfficer: Think of it like tipping.
+<<else>>
+RequisitionsOfficer: Captain.
+<<endonce>>
+===
+title: Capsley
+target: Capsley_Conversation
+---
+Capsley: Welcome to the Image Dialogue Wheel demo!
+Capsley: This scene shows off how to use the Image Dialogue Wheel, which lets you use sprites to control the appearance of the wheel.
+-> Like this? #lm
+-> Nice! #rm
+Capsley: Yeah!
+Capsley: As you can see, there are six possible locations around the wheel where a choice can be placed. 
+Capsley: For each location, there's a "highlighted" and a "not-highlighted" sprite, and we switch between those as you move the arrow around.
+-> Whoa!
+-> Cool!
+-> So many options!
+-> Like, lots of them!
+-> Everywhere!
+-> Amazing!
+Capsley: Yep! We'll automatically place them around the wheel.
+<<jump CapsleyHub>>
+===
+title: CapsleyHub
+---
+-> Appearance #lt
+    Mitchell: How do I customise its appearance?
+    Capsley: Take a look at the "Six-Segment Dialogue Wheel" - it's in the Dialogue System, under Canvas.
+    Capsley: You can change the sprites that are used for each option, as well as the highlight sprite.
+    Capsley: You can also control whether the text for each option is highlighted, and with what colour.
+-> Position #lm
+    Mitchell: How do I control where options go around the wheel?
+    Capsley: Using hashtags! When you put position hashtags on options, the wheel will place them in the locations you request.
+    Capsley: By default, the hashtags are \#lt, \#lm, \#lb for "left-top", "left-middle", and "left-bottom", and \#rt, \#rm, \#rb for the right side.
+    Capsley: You can customise what hashtags you can use by selecting the wheel object and going to its Inspector.
+    Capsley: We're using that in this conversation to control the positions!
+    Capsley: One thing to note: if you specify the position of one option in a group, you need to specify the position of all of them.
+    Capsley: You also can't show more than one option in the same position, of course.
+-> More than 6? #lb
+    Mitchell: What if I need to show more than six options?
+    Capsley: The wheel only has space for six. If you need to show more than that at a time, consider using the Automatic-Layout Wheel, which is in the example scene.
+-> Bye! #rm
+    Mitchell: Got to go!
+    Capsley: Take care!
+    <<stop>>
+<<jump CapsleyHub>>    
+
+===
