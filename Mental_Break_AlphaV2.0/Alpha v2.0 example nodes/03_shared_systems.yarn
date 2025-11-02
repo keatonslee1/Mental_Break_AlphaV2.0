@@ -1,0 +1,101 @@
+title: FX_CensorBlip
+tags: #scene #fx #ui_glitch
+---
+/*
+PURPOSE: Quick inline censor effect and mild foreshadowing of the psy‑ops twist.  When invoked, this plays a censor beep, displays a redacted name, and returns control to the caller.
+*/
+<<sfx "sfx_censor_beep">>
+[REDACTED]
+
+===
+
+title: FX_CrossTalk
+tags: #scene #fx
+---
+/*
+PURPOSE: Represents a cross‑compartment whisper.  Increments the cross‑talk counter and plays a static overlay.  The whisper content is intentionally vague and can be varied by calling contexts.
+*/
+<<set $cross_talk_heard += 1>>
+<<sfx "sfx_cross_talk">>
+A faint voice bleeds through your channel: "...prep posture advancing—youth tier spiking..."  The static snaps shut.
+
+===
+
+title: FX_WarOpsIncrement
+tags: #scene #fx
+---
+/*
+PURPOSE: Increment the war_ops_awareness counter.  Use this whenever the Player sees evidence of the civil–military fusion psy‑ops program.  The count gates secret content later.
+*/
+<<set $war_ops_awareness += 1>>
+The realization settles deeper.
+
+===
+
+title: SHOP_Visit
+tags: #scene #shop
+---
+/*
+PURPOSE: Simple company store placeholder.  At the end of each day in Runs 1 and 2, award a small amount of rapid‑feedback cash and describe available goodies.  The Player cannot actually purchase items yet; this stub sets expectations and increments cash.  Later runs may expand this into a proper mini‑store.
+INPUT:  expects the caller to set the day index; no parameters.
+OUTPUT:  increments $rapid_feedback_cash; prints a flavour line.
+*/
+<<set $rapid_feedback_cash += 5>>
+You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like “Branded Mug,” “Extra Log Space,” and “Sticker Pack,” then closes for now.  (Store functionality is a stub.)
+
+===
+
+title: ACH_ParadoxLogs
+tags: #achievement
+---
+/*
+PURPOSE: Trigger the paradox logs achievement.  Use when the Player intentionally screenshots or notes a log inconsistency early on.
+*/
+<<set $achv_paradox_logs = true>>
+You notice a timestamp that should not exist.
+
+===
+
+title: ACH_Whistleblower
+tags: #achievement
+---
+/*
+PURPOSE: Trigger the whistleblower achievement when the Player decides to blow the whistle in a Beat 'em ending.
+*/
+<<set $achv_whistleblower = true>>
+Your actions mark you as a whistleblower.
+
+===
+
+title: ACH_JoinThem
+tags: #achievement
+---
+/*
+PURPOSE: Trigger the join‑them achievement when the Player accepts a conscience seat inside Bigger Tech.
+*/
+<<set $achv_join_them = true>>
+You chose to join the system from within.
+
+===
+
+title: ACH_FlawlessTriage
+tags: #achievement
+---
+/*
+PURPOSE: Triggered if the Player resolves all triage tasks perfectly in Run 1.  Use at the end of Run 1 Day 2 if all triage choices favoured stability.
+*/
+<<set $achv_flawless_triage = true>>
+No mistakes were recorded in triage today.
+
+===
+
+title: ACH_GhostRunner
+tags: #achievement
+---
+/*
+PURPOSE: Triggered when the Player escapes with minimal trace in a Get Out ending.  This is awarded in the epilogue of certain Run 4 endings.
+*/
+<<set $achv_ghost_runner = true>>
+You slipped through with minimal traces.
+
+===

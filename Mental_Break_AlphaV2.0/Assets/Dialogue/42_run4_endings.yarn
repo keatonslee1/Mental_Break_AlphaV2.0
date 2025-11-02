@@ -1,0 +1,10 @@
+title: R4_EndingHub
+tags: #run_4 #ending #scene
+---
+/*
+PURPOSE: Central hub reached after a specific ending path and bring/abandon choice are selected in Run 4.  It hands control to the epilogue hub to display the final narrative and stinger.
+*/
+You brace for the consequences of your actions.  The outcome of your escape or exposure will echo across systems.
+<<jump EP_Hub>>
+
+===

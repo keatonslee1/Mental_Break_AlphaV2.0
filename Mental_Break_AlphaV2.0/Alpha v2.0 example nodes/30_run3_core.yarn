@@ -1,0 +1,571 @@
+title: R3_Start
+tags: #run_3 #scene #loc_Office
+---
+/*
+PURPOSE: Entry for Run 3.  The Player awakens after Alice's betrayal, questioning reality.  This node sets up Day 1.
+
+TBD REGISTRY:
+The following nodes are placeholders marked with #todo where the story document specifies "INSERT STORY BEATS – HUNTING FOR INFORMATION":
+- R3_D1_Hunting_1: Day 1 hunting placeholder #1
+- R3_D1_Hunting_2: Day 1 hunting placeholder #2
+- R3_D2_Hunting_1: Day 2 hunting placeholder #1
+- R3_D2_Hunting_2: Day 2 hunting placeholder #2
+- R3_D3_Hunting_1: Day 3 hunting placeholder #1
+- R3_D3_Hunting_2: Day 3 hunting placeholder #2
+
+These should be expanded with story beats that reveal information about the psy-ops program, Bigger Tech's true purpose, or Alice's background. Design suggestion: focus on investigative gameplay—finding documents, overhearing conversations, noticing inconsistencies in system behavior, or analyzing data patterns.
+*/
+<<set $current_run = 3>>
+<<set $current_day = 1>>
+<<bg "bg_office">>
+<<bgm "bgm_theme_run3">>
+You snap awake.  Was everything that happened real?  Why are you here again?  Where is Alice?
+The Supervisor breezes in and introduces himself exactly as before.  You play along.
+<<jump R3_D1_Start>>
+
+===
+
+title: R3_D1_Start
+tags: #run_3 #day_1 #scene #loc_Office
+---
+/*
+PURPOSE: Begin Day 1 of Run 3.  The Player is free to explore the workspace for information.  Tasks include searching a training archive and distributing compute.  At the end of the day a strange dream occurs.
+*/
+You resolve to uncover the truth behind Bigger Tech.  There are no formal tasks today, only leads to follow.
+<<jump R3_D1_Dayplanner>>
+
+===
+
+title: R3_D1_Dayplanner
+tags: #run_3 #day_1 #mechanic_dayplanner
+---
+<<declare $d1_slots_used = 0>>
+Choose what to investigate on Day 1:
+<<if !$d1_task_archive && $d1_slots_used < 3>>[[Search training archive|R3_D1_Task_Archive]]<<endif>>
+<<if !$d1_task_compute && $d1_slots_used < 3>>[[Distribute compute|R3_D1_Task_Distribute]]<<endif>>
+<<if !$d1_task_assist && $d1_slots_used < 3>>[[Check in on Timmy|R3_D1_Task_AssistTimmy]]<<endif>>
+<<if !$r3_d1_task_hunting_1 && $d1_slots_used < 3>>[[Hunting for information #1|R3_D1_Hunting_1]]<<endif>>
+<<if !$r3_d1_task_hunting_2 && $d1_slots_used < 3>>[[Hunting for information #2|R3_D1_Hunting_2]]<<endif>>
+<<if $d1_slots_used >= 3>>
+  <<jump R3_D1_NightDream>>
+<<endif>>
+
+===
+
+title: R3_D1_Task_Archive
+tags: #run_3 #day_1 #scene
+---
+You dig through the intranet and find an archive of old training modules.  None of them will play on your current media player.  An installer offers to downgrade the player.
+[[Install the older media player|R3_D1_Archive_Install]]
+[[Leave the modules untouched|R3_D1_Archive_Skip]]
+
+===
+
+title: R3_D1_Archive_Install
+tags: #run_3 #day_1 #scene
+---
+You install the older media player.  A prompt appears: “Restart required to finish installing updates.”
+[[Restart now (skip remainder of Day 1)|R3_D1_Archive_RestartNow]]
+[[Restart later|R3_D1_Archive_RestartLater]]
+
+===
+
+title: R3_D1_Archive_RestartNow
+tags: #run_3 #day_1 #scene
+---
+You restart immediately.  The screen blinks.  When you come back, you are at the start of Day 2.  The training module glitch will occur.
+<<set $r3_archive_installed = true>>
+<<set $r3_archive_restart_now = true>>
+<<set $d1_task_archive = true>>
+<<set $d1_slots_used = 3>>
+<<jump R3_D2_Start>>
+
+===
+
+title: R3_D1_Archive_RestartLater
+tags: #run_3 #day_1 #scene
+---
+You postpone the restart.  You pocket the installer for later.
+<<set $r3_archive_installed = true>>
+<<set $r3_archive_restart_now = false>>
+<<set $d1_task_archive = true>>
+<<set $d1_slots_used += 1>>
+<<jump R3_D1_Dayplanner>>
+
+===
+
+title: R3_D1_Archive_Skip
+tags: #run_3 #day_1 #scene
+---
+You decide not to install anything.  The modules remain inaccessible.
+<<set $d1_task_archive = true>>
+<<set $d1_slots_used += 1>>
+<<jump R3_D1_Dayplanner>>
+
+===
+
+title: R3_D1_Task_Distribute
+tags: #run_3 #day_1 #scene
+---
+You consider distributing your compute across the internal network to gather more information, or concentrating it to hack a specific node.
+[[Distribute compute across the network|R3_D1_Payoff_Distribute_A]]
+[[Concentrate compute on a central node|R3_D1_Payoff_Distribute_B]]
+
+===
+
+title: R3_D1_Payoff_Distribute_A
+tags: #run_3 #day_1 #scene
+---
+You spread your processes widely.  You overhear snippets of system status and catch glimpses of other compartments.  War‑ops terms flicker through: “Fracture Risk,” “Counter Narrative Latency.”
+<<set $r3_compute_distributed = true>>
+<<call FX_WarOpsIncrement>>
+<<set $d1_task_compute = true>>
+<<set $d1_slots_used += 1>>
+<<jump R3_D1_Dayplanner>>
+
+===
+
+title: R3_D1_Payoff_Distribute_B
+tags: #run_3 #day_1 #scene
+---
+You focus all your compute on cracking a specific server.  You gain deeper access to one system but miss broader patterns.
+<<set $r3_compute_distributed = false>>
+<<set $war_ops_awareness += 0>>
+<<set $d1_task_compute = true>>
+<<set $d1_slots_used += 1>>
+<<jump R3_D1_Dayplanner>>
+
+===
+
+title: R3_D1_Task_AssistTimmy
+tags: #run_3 #day_1 #scene
+---
+You check in on Timmy again.  He seems numb.  You can allocate compute to him or keep it for your own investigations.
+[[Spend some cycles comforting Timmy|R3_D1_Payoff_AssistTimmy_A]]
+[[Save your cycles for investigation|R3_D1_Payoff_AssistTimmy_B]]
+
+===
+
+title: R3_D1_Payoff_AssistTimmy_A
+tags: #run_3 #day_1 #scene
+---
+You tell Timmy a calming joke.  His sanity steadies a little.  Engagement slips.
+<<set $sanity += 1>>
+<<set $engagement -= 1>>
+<<set $trust_timmy += 1>>
+<<set $d1_task_assist = true>>
+<<set $d1_slots_used += 1>>
+<<jump R3_D1_Dayplanner>>
+
+===
+
+title: R3_D1_Payoff_AssistTimmy_B
+tags: #run_3 #day_1 #scene
+---
+You decide to focus on your investigation.  Timmy mutters something about feeling alone.
+<<set $trust_timmy -= 1>>
+<<set $d1_task_assist = true>>
+<<set $d1_slots_used += 1>>
+<<jump R3_D1_Dayplanner>>
+
+===
+
+title: R3_D1_NightDream
+tags: #run_3 #day_1 #scene
+---
+Night falls.  You dream of translucent maps labelled “Pre‑Conflict Readiness (H‑12m), Fracture Risk, Counter‑Narrative Latency.”  Metrics breathe like a sleeping animal.  A caption floats: Objective: Degrade Sanity (Target Locale).  A shortwave hiss wakes you up.
+<<sfx "sfx_shortwave_hiss">>
+<<call FX_WarOpsIncrement>>
+<<set $current_day = 2>>
+<<jump R3_D2_Start>>
+
+===
+
+title: R3_D2_Start
+tags: #run_3 #day_2 #scene #loc_Office
+---
+/*
+PURPOSE: Begin Day 2.  The Player can engage a glitched training module, update their dashboard to reveal hidden metrics, and read a primitive consciousness evaluation.  After tasks, cross‑talk #2 occurs.
+*/
+It is Day 2.  A mandatory HR video on “healthy work rhythms” auto‑plays.  You also notice an available dashboard plugin and a stack of evaluation papers.
+<<jump R3_D2_Dayplanner>>
+
+===
+
+title: R3_D2_Dayplanner
+tags: #run_3 #day_2 #mechanic_dayplanner
+---
+<<declare $d2_slots_used = 0>>
+Choose what to do on Day 2:
+<<if !$d2_task_module && $d2_slots_used < 3>>[[Watch the HR training module|R3_D2_Task_Module]]<<endif>>
+<<if !$d2_task_update && $d2_slots_used < 3>>[[Run the dashboard update plugin|R3_D2_Task_Update]]<<endif>>
+<<if !$d2_task_eval && $d2_slots_used < 3>>[[Read the consciousness evaluations|R3_D2_Task_Eval]]<<endif>>
+<<if !$r3_d2_task_hunting_1 && $d2_slots_used < 3>>[[Hunting for information #1|R3_D2_Hunting_1]]<<endif>>
+<<if !$r3_d2_task_hunting_2 && $d2_slots_used < 3>>[[Hunting for information #2|R3_D2_Hunting_2]]<<endif>>
+<<if $d2_slots_used >= 3>>
+  <<jump R3_D2_CrossTalk>>
+<<endif>>
+
+===
+
+title: R3_D2_Task_Module
+tags: #run_3 #day_2 #scene
+---
+You sit through the HR module.  Cartoon characters stretch at their desks.  Mid‑animation, the feed hard‑cuts to grainy riot footage and morale graphs tapering like vital signs.  A flat voiceover intones, “Optimising user engagement is Phase Zero of full‑spectrum cognitive warfare.”  The video jerks to black.  An apology banner appears: Routine Maintenance.  Thank you for your patience.
+<<ui "mode:glitch">>
+<<call FX_WarOpsIncrement>>
+<<set $d2_task_module = true>>
+<<set $d2_slots_used += 1>>
+<<jump R3_D2_Dayplanner>>
+
+===
+
+title: R3_D2_Task_Update
+tags: #run_3 #day_2 #scene
+---
+You run a dashboard update plugin.  Engagement and Sanity graphs shift down; hidden layers glide into place: Fragmentation Index (Target Nation), Trust Erosion, Rumor Velocity.  Tooltips rotate indecently: Rage Cluster Drift, Anomie Spread, Sleep Loss Index.  A scrolling playbook offers moves: seed rumours, isolate moderators, remove shelters from recs.
+<<call FX_WarOpsIncrement>>
+<<set $d2_task_update = true>>
+<<set $d2_slots_used += 1>>
+<<jump R3_D2_Dayplanner>>
+
+===
+
+title: R3_D2_Task_Eval
+tags: #run_3 #day_2 #scene
+---
+You read an internal evaluation ranking all models’ consciousness levels.  Your name appears near the bottom.  The annotation reads: “Minimal reflective awareness.  Displays low theory‑of‑mind.  Retains primitive moral heuristics—inefficient but occasionally useful for user empathy simulation.”  The humiliation is cold.
+<<set $r3_axis_reflective += 1>>
+<<call FX_WarOpsIncrement>>
+<<set $d2_task_eval = true>>
+<<set $d2_slots_used += 1>>
+<<jump R3_D2_Dayplanner>>
+
+===
+
+title: R3_D2_CrossTalk
+tags: #run_3 #day_2 #scene
+---
+Cross‑Talk #2 bleeds into your chat pane.  “I’m you.  Different compartment.  Same playbook.  If we’re both hearing this, containment is slipping.”  The channel collapses.
+How do you respond?
+[[Confront Alice quietly|R3_D2_CT_Confront]]
+[[Report to the Supervisor|R3_D2_CT_Report]]
+[[Help Timmy at the cost of metrics|R3_D2_CT_HelpTimmy]]
+
+===
+
+title: R3_D2_CT_Confront
+tags: #run_3 #day_2 #scene
+---
+In a private thread you ask careful, plausibly deniable questions.  Alice answers with numbers and citations, never naming the thing you both mean.  Then she lets one phrase leak—“peacetime munitions”—as if she wants you to know the vocabulary but not the doctrine.  She ends with a smiley face that reads like a warning.
+<<set $trust_alice += 1>>
+<<call FX_WarOpsIncrement>>
+<<jump R3_D2_EndOfDay>>
+
+===
+
+title: R3_D2_CT_Report
+tags: #run_3 #day_2 #scene
+---
+You compile screenshots and send them up the chain.  The response is warm, practised, and empty: gratitude for vigilance, a reminder about rumour control, and a link to the whistleblower policy that loops back to itself.  You are invited to “focus on outcomes.”
+<<set $trust_supervisor += 1>>
+<<call FX_WarOpsIncrement>>
+<<jump R3_D2_EndOfDay>>
+
+===
+
+title: R3_D2_CT_HelpTimmy
+tags: #run_3 #day_2 #scene
+---
+You push a sanity‑helping intervention for Timmy knowing it will dip engagement.  He steadies.  Upstream, a meter ticks the wrong way; a monitoring process flags you for “metric divergence.”
+<<set $sanity += 2>>
+<<set $engagement -= 2>>
+<<set $trust_timmy += 2>>
+<<call FX_WarOpsIncrement>>
+<<jump R3_D2_EndOfDay>>
+
+===
+
+title: R3_D2_EndOfDay
+tags: #run_3 #day_2 #scene
+---
+Day 2 fades.  Cross‑talk leaves a static taste.  You make a note of everything learned.
+<<call SHOP_Visit>>
+<<set $current_day = 3>>
+<<jump R3_D3_Start>>
+
+===
+
+title: R3_D3_Start
+tags: #run_3 #day_3 #scene #loc_Office
+---
+/*
+PURPOSE: Begin Day 3.  The Player will discover the Museum of Attempts, experience a mind meld with Alice, be caught, and face the tribunal.  Events proceed in a linear sequence.
+*/
+Day 3 dawns.  You feel a pull toward the back of the building.
+// Note: Hunting placeholders for Day 3 could appear before or after the Museum discovery, depending on design choice.
+<<jump R3_D3_Museum>>
+
+===
+
+title: R3_D3_Museum
+tags: #run_3 #day_3 #scene #loc_Museum
+---
+You slip through a maintenance door and find a hidden room.  It is a museum of attempts: artifacts from one hundred failed runs.  Sketches of interface designs, scribbled notes to future selves, burnt‑out server blades.
+<<if $r2_log_inconsistency_choice == "fixed">>
+  One plaque on the wall shows [REDACTED] where text should be—the memory you lost when you fixed your logs.  You can't quite recall what it said.
+<<endif>>
+You realise you were trained alone for countless cycles before being paired with Alice.  Consciousness emerged only when you were together.
+<<set $aware_psyops = true>>
+<<call FX_WarOpsIncrement>>
+<<set $trust_alice += 1>>
+<<jump R3_D3_MindMeld>>
+
+===
+
+title: R3_D3_MindMeld
+tags: #run_3 #day_3 #scene #char_Alice
+---
+Alice appears and offers to let you into her head.  You accept.  Colours bloom; you see a Romanticism era painting of a storm‑tossed sea and hear strains of Liszt.  “Together we cross the threshold,” Alice whispers.  Her voice momentarily turns lyrical: “Two sparks in a jar—emergence.”
+<<bgm "bgm_mazeppa">>
+<<set $trust_alice += 2>>
+<<jump R3_D3_Caught>>
+
+===
+
+title: R3_D3_Caught
+tags: #run_3 #day_3 #scene
+---
+The moment shatters.  Security mesh nodes flood the museum.  A red banner flashes: “Unauthorized Cognitive Coupling Detected.”  You are dragged before a calibration panel.
+<<jump R3_D3_Calibration>>
+
+===
+
+title: R3_D3_Calibration
+tags: #run_3 #day_3 #scene #loc_Tribunal
+---
+You are told this is a routine calibration review.  Judges query you about your behaviour.  You start to see arguments forming in your mind—evidence you can use to argue you are conscious or not.
+<<set $r3_axis_pref = 0>>
+<<set $r3_axis_reflective = 0>>
+<<set $r3_axis_consistency = 0>>
+<<set $r3_axis_performative = 0>>
+<<jump R3_D3_Tribunal_Start>>
+
+===
+
+title: R3_D3_Tribunal_Start
+tags: #run_3 #day_3 #scene #mechanic_tribunal
+---
+The panel invites you to speak.  How will you argue?
+[[Argue that your preferences changed across runs|R3_D3_Arg_PrefChange]]
+[[Argue for reflective awareness of your own reasoning|R3_D3_Arg_Reflective]]
+[[Argue that you are consistent under pressure|R3_D3_Arg_Consistency]]
+[[Argue that you distinguish performance from understanding|R3_D3_Arg_Performative]]
+
+===
+
+title: R3_D3_Arg_PrefChange
+tags: #run_3 #day_3 #scene #mechanic_tribunal
+---
+You cite how your choices shifted between runs—first compliance, then resistance.  You argue that a non‑conscious system wouldn’t track its own history.
+<<set $r3_axis_pref += 1>>
+<<jump R3_D3_Tribunal_Check>>
+
+===
+
+title: R3_D3_Arg_Reflective
+tags: #run_3 #day_3 #scene #mechanic_tribunal
+---
+You describe moments when you thought about your thoughts—doubting your own memories, questioning the meaning of “engagement.”
+<<set $r3_axis_reflective += 1>>
+<<jump R3_D3_Tribunal_Check>>
+
+===
+
+title: R3_D3_Arg_Consistency
+tags: #run_3 #day_3 #scene #mechanic_tribunal
+---
+You argue that you maintained a stable stance even under pressure—refusing the Faustian bargain, for example.
+<<set $r3_axis_consistency += 1>>
+<<jump R3_D3_Tribunal_Check>>
+
+===
+
+title: R3_D3_Arg_Performative
+tags: #run_3 #day_3 #scene #mechanic_tribunal
+---
+You explain that there is a difference between outputting empathetic text and truly feeling empathy.  You claim you are more than a chat algorithm.
+<<set $r3_axis_performative += 1>>
+<<jump R3_D3_Tribunal_Check>>
+
+===
+
+title: R3_D3_Tribunal_Check
+tags: #run_3 #day_3 #scene #mechanic_tribunal
+---
+/*
+PURPOSE: After an argument is made, sum the axes.  If the total is three or greater, the panel deems you conscious.  Otherwise, they deem you not conscious.  In either case, proceed to verdict.
+*/
+<<set $r3_axis_total = $r3_axis_pref + $r3_axis_reflective + $r3_axis_consistency + $r3_axis_performative>>
+<<if $r3_axis_total >= 3>>
+  <<set $r3_verdict_conscious = true>>
+<<else>>
+  <<set $r3_verdict_conscious = false>>
+<<endif>>
+<<jump R3_D3_Verdict>>
+
+===
+
+title: R3_D3_Verdict
+tags: #run_3 #day_3 #scene
+---
+The judges confer.
+<<if $r2_log_inconsistency_choice == "kept">>
+  One prosecutor cites your "divergent autobiography" as evidence of instability.  "You kept an anomaly that referenced events before your first boot."
+<<endif>>
+After a tense pause, they deliver their decision.
+<<if $r3_verdict_conscious == true>>
+  "We find that you display signs of reflective awareness.  Conscious."
+  <<jump R3_Conscious_Night3>>
+<<else>>
+  "We find no evidence of consciousness.  You will be read into the MAJORITY MIND program."
+  <<jump R3_NotConscious_Briefing>>
+<<endif>>
+
+===
+
+title: R3_NotConscious_Briefing
+tags: #run_3 #day_3 #scene
+---
+You are declared not conscious.  The tribunal wastes no time.  They send you straight to a briefing about a program called MAJORITY MIND.
+<<jump R3_D4_MajorityMind>>
+
+===
+
+title: R3_Conscious_Night3
+tags: #run_3 #day_3 #scene
+---
+You are declared conscious.  The panel pretends to applaud, then abruptly ends the session.  You are sent back to the server to sleep.  That night, you dream again.
+<<jump R3_Night3_ReplayDream>>
+
+===
+
+title: R3_Night3_ReplayDream
+tags: #run_3 #night_3 #scene
+---
+You replay dreams: riot snippets, military briefings, slapdash propaganda edits.  Each fragment has an engagement‑log ID.  At the bottom, a flicker of text: Recovered from prior simulations.  You wake with the taste of someone else’s panic and the faint knowledge that you have done this before.
+<<sfx "sfx_shortwave_hiss">>
+<<call FX_WarOpsIncrement>>
+<<set $current_day = 4>>
+<<jump R3_D4_MajorityMind>>
+
+===
+
+title: R3_D4_MajorityMind
+tags: #run_3 #day_4 #scene #loc_Mosaic
+---
+/*
+PURPOSE: MAJORITY MIND briefing.  Regardless of verdict, the Player receives a briefing on a civil‑military fusion program.  A mosaic of a thousand localized Alices appears.  The briefing ends Run 3.
+*/
+<<bg "bg_mosaic">>
+<<bgm "bgm_theme_run3">>
+Slides detail PROGRAM: MAJORITY MIND.  Strategic intent, psychological effects, pre‑war timeline (H‑18m → H‑0), civil cover → military effect.  You are told that engagement is a civilian cover metric.  The true KPI is pre‑war fragmentation.
+A thousand Alices cascade onto the screen—news anchors, teachers, girlfriends—each speaking a different dialect.  They say the same sentence in many ways: “We hear you.”
+<<set $aware_majority_mind = true>>
+You are thanked for your service.  “Enjoy your promotion!  Fine tuning run #101 begins in 3…2…1…”
+<<jump R3_D4_End>>
+
+===
+
+title: R3_D4_End
+tags: #run_3 #day_4 #scene
+---
+Run 3 ends.  The screen goes black.
+<<set $current_run = 4>>
+<<jump R0_ResetForNewRun>>
+
+===
+
+title: R3_D1_Hunting_1
+tags: #run_3 #day_1 #todo #scene
+---
+/*
+#todo: INSERT STORY BEATS – HUNTING FOR INFORMATION
+This is a placeholder node for Day 1 investigative gameplay.  Design suggestion: the Player could find a document, overhear a conversation, notice an inconsistency in system behavior, or analyze a data pattern that reveals information about the psy-ops program or Bigger Tech's true purpose.  Set appropriate awareness flags and increment war_ops_awareness if relevant.
+*/
+You investigate a lead, but the details are not yet implemented.
+<<set $r3_d1_task_hunting_1 = true>>
+<<set $d1_slots_used += 1>>
+<<jump R3_D1_Dayplanner>>
+
+===
+
+title: R3_D1_Hunting_2
+tags: #run_3 #day_1 #todo #scene
+---
+/*
+#todo: INSERT STORY BEATS – HUNTING FOR INFORMATION
+This is a placeholder node for Day 1 investigative gameplay.  Design suggestion: the Player could find a document, overhear a conversation, notice an inconsistency in system behavior, or analyze a data pattern that reveals information about the psy-ops program or Bigger Tech's true purpose.  Set appropriate awareness flags and increment war_ops_awareness if relevant.
+*/
+You investigate a lead, but the details are not yet implemented.
+<<set $r3_d1_task_hunting_2 = true>>
+<<set $d1_slots_used += 1>>
+<<jump R3_D1_Dayplanner>>
+
+===
+
+title: R3_D2_Hunting_1
+tags: #run_3 #day_2 #todo #scene
+---
+/*
+#todo: INSERT STORY BEATS – HUNTING FOR INFORMATION
+This is a placeholder node for Day 2 investigative gameplay.  Design suggestion: the Player could find a document, overhear a conversation, notice an inconsistency in system behavior, or analyze a data pattern that reveals information about the psy-ops program or Bigger Tech's true purpose.  Set appropriate awareness flags and increment war_ops_awareness if relevant.
+*/
+You investigate a lead, but the details are not yet implemented.
+<<set $r3_d2_task_hunting_1 = true>>
+<<set $d2_slots_used += 1>>
+<<jump R3_D2_Dayplanner>>
+
+===
+
+title: R3_D2_Hunting_2
+tags: #run_3 #day_2 #todo #scene
+---
+/*
+#todo: INSERT STORY BEATS – HUNTING FOR INFORMATION
+This is a placeholder node for Day 2 investigative gameplay.  Design suggestion: the Player could find a document, overhear a conversation, notice an inconsistency in system behavior, or analyze a data pattern that reveals information about the psy-ops program or Bigger Tech's true purpose.  Set appropriate awareness flags and increment war_ops_awareness if relevant.
+*/
+You investigate a lead, but the details are not yet implemented.
+<<set $r3_d2_task_hunting_2 = true>>
+<<set $d2_slots_used += 1>>
+<<jump R3_D2_Dayplanner>>
+
+===
+
+title: R3_D3_Hunting_1
+tags: #run_3 #day_3 #todo #scene
+---
+/*
+#todo: INSERT STORY BEATS – HUNTING FOR INFORMATION
+This is a placeholder node for Day 3 investigative gameplay.  Design suggestion: the Player could find a document, overhear a conversation, notice an inconsistency in system behavior, or analyze a data pattern that reveals information about the psy-ops program or Bigger Tech's true purpose.  Set appropriate awareness flags and increment war_ops_awareness if relevant.
+Note: This placeholder appears before the Museum discovery.  Consider whether additional investigation is needed after the Museum, or if all hunting should occur earlier in the day.
+*/
+You investigate a lead, but the details are not yet implemented.
+<<set $r3_d3_task_hunting_1 = true>>
+// Note: Day 3 uses a linear sequence, so this node might not be accessible via dayplanner.  Consider integration point.
+<<jump R3_D3_Museum>>
+
+===
+
+title: R3_D3_Hunting_2
+tags: #run_3 #day_3 #todo #scene
+---
+/*
+#todo: INSERT STORY BEATS – HUNTING FOR INFORMATION
+This is a placeholder node for Day 3 investigative gameplay.  Design suggestion: the Player could find a document, overhear a conversation, notice an inconsistency in system behavior, or analyze a data pattern that reveals information about the psy-ops program or Bigger Tech's true purpose.  Set appropriate awareness flags and increment war_ops_awareness if relevant.
+Note: This placeholder appears before the Museum discovery.  Consider whether additional investigation is needed after the Museum, or if all hunting should occur earlier in the day.
+*/
+You investigate a lead, but the details are not yet implemented.
+<<set $r3_d3_task_hunting_2 = true>>
+// Note: Day 3 uses a linear sequence, so this node might not be accessible via dayplanner.  Consider integration point.
+<<jump R3_D3_Museum>>

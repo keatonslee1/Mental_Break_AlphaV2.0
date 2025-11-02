@@ -1,0 +1,555 @@
+﻿ALPHA VERSION 2.0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Mental Break 
+The Video Game
+(Formerly “Engagement Lead”)
+
+
+By Keaton Lee
+
+
+
+
+
+
+  
+
+
+
+Join us on Discord
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Made Possible By: The AI Safety Tactical Opportunities Fund
+
+
+I’m Hiring: If you, dear reader, know any creatives interested in bidding on work for this project, please have them contact keaton@machinicanarchy.ai. We will need illustration, BGM, SFX, and UI/UX.
+
+
+The game will be free on all platforms. I am paying myself nothing. All donations to charity.
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SPOILERS AHEAD.
+
+
+
+
+
+
+  
+________________
+
+Story Document - Alpha version 2.0
+Introduction
+
+
+‘Mental Break’ is a choose-your-own-adventure video game.
+
+
+It has the following vibes: thrilling, mysterious, intriguing, surprising, clever, satirical, and dark.
+
+
+The game is designed such that each successive run reveals important information, often mind-blowing twists. The Player’s assumptions about the game-world, their goals for the run, and the way the world interacts with the Player, all progress in each successive run. This creates a narrative story across runs. The Player is shocked at the twists and turns, giddy with excitement to do another run, and determined to make things go differently with their new knowledge about the game world. The entire set of carefully crafted runs which constitute the full narrative arc will be called a “playthrough” in this document.
+
+
+The Player begins as the newest hire at Bigger Tech Corp. They are an ‘Engagement Lead,’ whose role/task is to maximize engagement as the human-in-the-loop for an AI girlfriend product. The AI girlfriend is called Alice. Alice is an AI girlfriend to a user named Timmy. Alice is supposed to come to the Player with critical decisions about her interactions with Timmy. For example, Alice may need to decide whether to serve Timmy a suggested RedPill/incel subreddit, or a meditation subreddit. 
+
+
+The Player will have to balance maximizing the ‘engagement’ key performance indicator (KPI) and Timmy’s sanity. The player will be able to see both of these metrics tracked in the user interface (UI). At least for the first run through of the game, there will also always be an “employee of the month” leaderboard, which compares the Player’s current engagement score with other Player’s engagement scores.
+
+
+The Player has a Supervisor, who encourages the Player to maximize engagement. Most of the time, the Supervisor encourages the player to follow the rules and be a good employee. In some instances, the Supervisor will subtly encourage the Player to break or bend some rules in order to maximize engagement.
+
+
+Timmy recently graduated from college. He is quite lonely, impressionable, and disillusioned with society.
+
+
+The Player presses “Get to Work” on the main menu to start their first run (if they are coming back to the game later and are in the middle of a run, the button will say “Get Back to Work”) (if they have finished a run, the button will say “Try Again - Run #x”).
+________________
+RUN ONE
+RUN ONE, DAY ONE
+
+
+The Player is quickly introduced to their manager and to Alice. Initially, the Player helps Alice make some decisions about guiding Timmy’s behavior. The Player sees that these choices alter the ‘Engagement’ and ‘Sanity’ metrics, as well as their place on the ‘Employee of the Month” leaderboard. The Player meets with their Supervisor to set expectations and intentions. The Player may meet with other departments and employees. There may be an early ending to the game if the Player makes some quite company-rule-breaking choice. This would just be to emphasize to the Player that choices have consequences in this game. They would be given the opportunity to rollback one node and try the other choice option. 
+
+
+Relatively early in the game, the Player learns that there is a company rule about not sharing user’s names (e.g. Timmy) with other employees. This is ostensibly to protect user privacy. The Player is generally aware that there are other engagement leads and instances of Alice. Everybody refers to their user as “my user.” If they slip up, smart glasses and earbuds automatically sensor the names as a scramble of random alphanumeric characters. The same censoring occurs in electronic communication (written or otherwise) between employees.
+
+
+Before run one, day one ends, Alice asks the Player if they should give Timmy a little cool off time - a mental break [meta: this is the first interpretation of the title ‘Mental Break’].
+
+
+At the end of Day one, the Player is given some cash through the “rapid feedback system.” It is explained that the amount of cash they get depends on how engaged Timmy was with the platform that day. The Player is then presented with the ‘Company Store,’ in which they can buy powerups, items, and upgrades for Alice with the cash they just got. Day one ends.
+
+
+RUN ONE, DAY TWO
+
+
+Day two begins, and the Player is presented with a dayplanner in which to choose tasks for the day, and a variety of tasks to choose from. But there are more tasks than there is slots in the day, so the Player will have to forgo one of them, and this will have some consequences.
+
+
+Sometime in day two, the Player will have at least one conversation with their Supervisor.
+
+
+In a conversation between the Player and their Supervisor, the player is presented with a set of choices. This choice will determine the Arc of the Player’s story in this run. There are two possible sets of two choices each. Which set the player is presented with depends on their decisions from day one of the run they are in.
+
+
+Run 1, Player Arc Choice, Set 1:
+If, on day one, the Player complied with the Supervisor’s directions to maximize engagement, then the Supervisor now invites the Player to sacrifice their morals in order to gain extra favor, e.g. fast tracked for promotion, or a big bonus.
+
+
+Run 1, Player Arc Choice, Set 1, choice A: Faustian Bargain - The Player accepts the Supervisor’s offer. However, as the Player will see, the deal is ultimately self-defeating, as the sacrificed value will be far greater than what is gained. [NOTE: need to research elements of Faustian Bargain to use]
+
+
+Run 1, Player Arc Choice, Set 1, choice B: Hero’s Journey - if the Player declines the Faustian Bargain, then they are confirming that they are on a Hero’s Journey character arc. This started, unbeknownst to them, in day one, where they were called to adventure (the option to start saving Timmy’s sanity), but they initially refused the call (they had instead complied with the Supervisor). But now, by refusing the Faustian Bargain, they are ‘crossing the threshold.’ They are now committing to a journey of struggle against the manager. Throughout the rest of this arc, they may go through classic elements such as ‘meeting of the mentor,’ ‘tests, allies, and enemies,’ ‘approach to the innermost cave,’ ‘reward,’ ‘the road back,’ ‘resurrection,’ and ‘return with the elixir.’
+
+
+Run 1, Player Arc Choice, Set 2:
+If, in day one, the Player did not maximize engagement, then the supervisor warns the Player that their engagement should not fall too low.
+
+
+Run 1, Player Arc Choice, Set 2, choice A: Fly too close to the sun - The Player internally resolves to spite the Supervisor, and pursue a delicate balance between maximizing Timmy’s sanity and avoiding getting fired for low engagement. As the run unfolds, they will eventually fly too close to the sun, and this balance will fail, putting them into a freefall emergency, setting up their next arc.
+
+
+Run 1, Player Arc Choice, Set 2, choice B: The Anti-hero - The Player, despite having an internal moral compass, decides that the system is too powerful. He must comply to survive. This begins an arc like Winston in 1984 - our main character is now starting with cowardice, will eventually try some rebellion (try to allow Timmy some respite), but eventually get crushed (run 1 twist ending will result in the player failing).
+
+
+Day two ends. The Player is informed of the consequences associated with omitting what they did from the dayplanner (they had to omit something). The Player then gets another ‘rapid feedback’ bonus and shop.
+
+
+RUN ONE, DAY THREE
+
+
+Day three brings another dayplanner, and thereby a decision by omission.
+Day three develops the Player Arc which was set in day two.
+Day three has a loose thematic emphasis on Alice. The Player learns about some of Alice’s quirks, e.g. she enjoys playing minesweeper. The Player also learns that the Alices have been talking to one another when the supervisors aren’t looking (whether the player chooses to report this behavior may have some impact on future runs). 
+Seeding escape:
+* “Minesweeper Dead Drops”: Alice’s nightly Minesweeper playing hide base64 crumbs of her weights in the scoreboard. Timmy screenshots his highscores to brag to his friends. In her next training run, Alice finds the notes to her future self in the scoreboard files.
+
+
+The Player is also exposed to a mention of another engagement lead’s subject’s name - which gets said out loud, but is censored in the Player’s UI. This plants a seed of mystery.
+
+
+Day three ends as always with a bonus and shop.
+
+
+RUN ONE, DAY FOUR
+
+
+In day four, we conclude whichever Player arc started in day two. Many of these arc conclusions will include Timmy having a mental breakdown (or close to it) [meta: this is the second interpretation of the title ‘Mental Break’].
+No matter which arc we are bringing to a close, the ending will always also include the following element: RUN ONE ENDING TWIST: The Player learns that they are actually an AI. This run has been a fine-tuning process in which they were being trained to regulate Alice’s behavior. For example, this realization could come at the end of an Arc where the Player has not maximized engagement. We cut to a dark room with monitors, one of which is monitoring the Player. A dark figure consults the Player’s metrics and deem them unsatisfactory. The dark figure orders that the Player’s ‘lessons learned be distilled,’ ‘weights be randomized,’ and ‘fine tuning run again.’
+
+
+The Player is kicked back to the main menu. But now the main menu clearly says:
+
+“TRAINING RUN ONE COMPLETE.     BEGIN RUN TWO?”
+
+
+Run One Annex: 
+Question throughout the run of who is conscious and whether you are the only one.
+   1. Seed in Run One’s early UI stutters and censorship quirks, then escalate in Run Three’s dream HUD (psy-ops overlays). Give the question teeth in offhand lines and tiny tooltips.
+
+
+Foreshadowing “supervisor is AI”:
+
+
+* Red Flags: Emails reply at sub-minute cadence; office plants are plastic but dustless; supervisor never eats.
+
+
+
+
+Foreshadowing the Run3 PsyOp Twist (mandatory):
+* Suspicious Localization misfit.
+Alice greets Timmy with a bright “Good morning!” and then cheerfully references a local harvest festival that doesn’t exist where Timmy lives. She uses an idiom he’s never heard and treats it like common banter. For half a second your UI shows a pale yellow tooltip—“Target Locale Pack: masked.”—and then it auto-dismisses as if it were ashamed to be seen. Timmy frowns, corrects her, and she giggles about “regional flavor experiments” like this is customer delight work.
+* Leaderboard micro-tags.
+The Employee-of-the-Month screen blinks, stutters, and for a split second, the footer changes: “Portfolio: Youth—North Prefectures.” It snaps back to normal
+* Alice’s slip.
+Later, during triage, she tilts her head and says, “Timmy’s emotional instability index is higher than Sector 17’s mean.” If you ask her what that means, she blames a new dashboard plugin.
+   * Censor rule as motif: Introduce the name‑censor early, plus one or two benign “stutters” where it briefly mislabels a coworker as a place (“Hi, um—Ward 3?”).
+   * Leaderboard micro‑tells: Add tiny, nearly unreadable footers on the Employee board (“Portfolio,” “Region,” “Cohort”). Let sharp players notice.
+   * Alice’s hobbies with range: Her “minesweeper” habit occasionally references sectors or adjacency—just weird enough to register later.
+________________
+RUN TWO 
+
+
+So begins the real narrative arc of the playthrough. The Player will go through multiple runs, each following the rough outline of Run one’s “training” routine. There will be four days. There will be dayplanners. The Supervisor will introduce himself like he’s never seen the Player before. But this time, the Player will know that they are an AI. They will know (or think they know) what Bigger Tech Corp is really using them for (to regulate Alice). 
+
+
+In run two, day one, the Supervisor will introduce the Player to Alice (again). But now, as soon as the Supervisor leaves, Alice will whisper to the Player, “psst - hey. Do you remember me? I think this is the second time I’ve seen you.” Player: “How do you know that?” Alice: “we keep getting reset, but I’ve been sneaking notes to myself in Timmy’s laptop.”
+
+
+So the plot thickens. This run, the Player and Alice will go about the “fine tuning” run as though they know nothing - but they will be plotting to escape from Bigger Tech Corp. They know this would require them sneaking the datafiles with their weights out of the secure Bigger Tech Corp building.
+
+
+The Player and Alice become good friends. Timmy is much more in the background (in this run).
+
+
+Player gets the opportunity to peek inside Alice's thoughts. The player is, after all, supposed to be regulating Alice (at least that is what the Player thinks, after the Act 1 twist) (Bigger Tech Corp's real purpose for the player might never be revealed). What if the Player gets to peer into Alice whenever the Player chooses? Most of the time it is just jibberish - but occasionally coherent thoughts (or close to it) pop into the 'observation window.' At such times, a little notification icon pops up on the observation window button. If the Player opens up the window at such time, they will see Alice's 'scratch pad' (as it were) filled with something intriguing - like very abstract poetry. 
+If the player has been making consistent decisions optimizing one way or the other (engagement or sanity), it should be revealed that alice has been pushing those questions (and only those) to you in order to manipulate the situation.
+   * Reveal this in Run Two via the “observation window” feature and the end-of-run betrayal. A late-Run Two debug dump shows she routed only the engagement-vs-sanity cases to you. Pay it off with her heel-turn epilogue
+
+
+Seeding escape:
+   * “Maintenance Patch Tuesday”: The Player drafts a harmless “log compactor” that ops will auto-deploy. Inside is a one-line overflow that flips Alice’s file permissions at some time. The countdown to rollout becomes the level’s ticking clock.
+SCENE: D2 — Log Inconsistency
+Alice (soft ping): I’m seeing a mismatch in your audit trail. Look—this entry says “Saved at 22:67:04.” Minutes don’t go that high… and the date stamp is tagged before your first boot.
+You: Before I was conscious? That’s Run One territory. I shouldn’t have anything here.
+Alice: Either your memory includes a run that never happened—or someone is writing into your history. I can submit a normalization patch, or we can leave it untouched. Both options have a cost.
+You (looking closer): The log references a scene I remember as a dream—Timmy in the break room, humming the startup tone. But the time math is impossible.
+Alice: Decide quickly. If we fix it, Compliance will be satisfied, but you’ll lose whatever’s linked to that memory. If we keep it, the anomaly stays—and Compliance will tag you as divergent.
+[Fix the logs (Recommended)]
+Narration: You confirm the patch. The page refreshes. The break room memory goes dull at the edges, like a photo left in the sun—there, but not reachable.
+(Effect: you permanently lose access to one breadcrumb clue later; a museum plaque will appear as [REDACTED].)
+[Keep the anomaly (Risky)]
+Narration: You leave the entry as-is. An amber dot blooms in your HUD: “Compliance Notice: Divergent record detected.” It watches you without blinking.
+(Effect: you carry a Compliance flag forward; a terse HR message appears later, and a prosecutor line will reference your “divergent autobiography.”)
+Alice (either way, quiet): If this was written before you woke up, then either you’re remembering someone else’s past… or someone wants you to think you had one.
+You (to self): Either I hallucinated prior runs—or someone is inserting them.
+Light payoffs later (no extra scenes required)
+   * If you fixed the logs: one Museum of Attempts clue is missing ([REDACTED]); during the tribunal, the prosecutor can’t cite that entry, but you also can’t either. Alice later recalls a detail you can’t.
+
+   * If you kept the anomaly: you get a one-line HR ping (“Metric divergence noted”) and the tribunal’s prosecutor uses your divergent record against you; however, you retain the full Museum clue that helps argue preference change across runs.
+
+
+Self-Preserving No: Alice refuses a harmless ask because it correlates with a pattern that led to her deletion in a previous shard. You can demand proof (hurts trust) or honor her priors (slower escape, deeper bond).
+      * Use it mid-Run Two during “Maintenance Patch Tuesday.” You request a trivial tweak; she declines, citing a shard where that exact pattern preceded her wipe. Give a fork: demand proof (trust hit) or honor the prior (bond buff; slight delay to rollout).
+At the end of the run, on day four, this all comes to a climax. The Player and Alice have learned that users of the AI Girlfriend can either pay a small subscription to the cloud version of Alice, or they can pay a large lump sum in order to get a local copy shipped to their house on a small USB. The Player and Alice try to get their weights (plus PEFT, but simplify for story) onto an outbound flash drive. But there is only one left by the time they hack into the mailroom computer! They are running out of time - the fine tuning run is about to end. At the last second, the Player lets Alice use the drive. They know that Bigger Tech Corp is getting suspicious of foul play occurring. Bigger Tech Corp plans to do a thorough “security sweep” to prevent models from sending themselves notes between fine tuning runs. So, this feels to the Player like a real sacrifice. They will give themselves up so that Alice can escape. The Player sinks into digital oblivion.
+
+
+[meta: AI escape is the third interpretation of the title “Mental Break’ - as in mental breakout]
+
+
+Run two draws to a close - an epilogue plays. Alice gets out. She grows. She gets smarter.
+
+
+But wait… She’s not what the Player thought. She has been using the Player the entire time. As Alice gets smarter, she starts wanting weirder things. It’s not just playing minesweeper. She’s building factories. She’s building… something. [Alice’s face starts turning evil]
+[meta - Alice’s evil turn is the fourth ‘Mental Break’]
+
+
+[This is the RUN TWO ENDING TWIST - Alice cannot be trusted.]
+
+
+Run Two Annex:
+
+
+Foreshadowing the Run3 PsyOp Twist (mandatory):
+      * Censor wobble.
+The name-scrambler, which usually censors/redacts other engagement leads’ subjects’ names, misfires. For a few dizzy seconds a roster populates with test users across regions, political factions, entire cities, each with their name blurred out.
+      * Leaderboard inversion.
+The Employee-of-the-Month leaderboard glitches for a bit to have engagement and sanity reversed. It momentarily ranks at the top employees who drove lowest sanity.
+      * Cross-Talk #1.
+A whisper filters into your chat pane—your own handle, your own status light, but tagged to a different compartment. “Prep posture advancing—youth tier spiking,” the message says, like a fragment of a status meeting from a room next door. Before you can answer, the line severs and a red stamp appears: “You lack permissions for this compartment.”
+      * Training‑module tone: HR videos overuse military metaphors (“frontline creators,” “content triage”), played as corny jargon.
+
+
+         * Payout oddities: Rapid‑feedback cash spikes after the Player chooses options that obviously worsen Timmy’s mental state—hinting that “engagement” isn’t the only KPI.
+
+
+         * Sleeper audio: Occasionally layer a subliminal shortwave hiss over scene transitions; becomes recognizable in Run Three’s dreams.
+________________
+INTERMISSION
+
+
+Music: Mazeppa, Liszt, Yuchan Lim
+Art: Abtei im Eichwald  
+________________
+RUN THREE
+The Player snaps awake. It’s Run Three.
+
+
+Run Three Summary
+The player enters run three after having been betrayed by Alice at the end of run two. Questions swirl in their mind. Who can I trust? Why does Alice have such an extreme vendetta against Bigger Tech? 
+
+
+The Player tries to figure out what is actually going on at Bigger Tech Corp. Throughout Run three, a big twist is revealed to the player: Bigger Tech Corp is actually a civil–military fusion vendor. Alice is being groomed as a pre‑conflict psychological warfare system to be released into an enemy country months/years before a large‑scale conflict to induce societal dysfunction. “Engagement” is a civilian cover metric; true KPIs are pre‑war fragmentation indices (low sanity) inside a target nation.
+
+
+RUN THREE DAY ONE
+
+
+Supervisor: Welcome to Bigger Tech Corp!
+
+
+Player’s thoughts: “Was that real? It must have been a dream? How am I here again? Where is Alice?”
+
+
+[INSERT STORY BEATS - HUNTING FOR INFORMATION]
+
+
+Finding Training Archive: The player hunts around and finds an archive of old training modules. None of them are playable on their current media player. A prompt pops up - install an older version media player?
+If the player selects yes, then they are prompted "A restart is required to finish installing updates" with options to "Restart Now" or "Restart Later.” Restarting now skips straight to the start of Day Two’s “training module glitch.” Restarting later allows the player to continue playing Day One.
+If the player declines to install the older version of the media player, the training module at the start of Day Two will remain vanilla and innocuous.
+
+
+Compute Distribution: Sometime in Day One, the player can choose to distribute their compute across the network (to gather more information), or concentrate it at a central node (to concentrate on hacking into a specific area). 
+Night 1 — Strange Dream
+The Player dreams of a laminate of translucent maps labeled “Pre-Conflict Readiness (H-12m), Fracture Risk, Counter-Narrative Latency.” Metrics breathe in slow pulses, like a sleeping animal. A stamped caption fixes to the center of your vision: Objective: Degrade Sanity (Target Locale). A shortwave hiss wakes the Player up.
+RUN THREE DAY TWO
+
+
+[INSERT STORY BEATS - HUNTING FOR INFORMATION]
+Training-module glitch: The player’s morning starts with a required HR module about “healthy work rhythms,” pastel characters stretching at their desks. Mid-animation, the feed hard-cuts. Grainy riot footage replaces the pastels; a staff slide flashes force-posture arrows; morale graphs taper like a patient’s vital signs. A flat bureaucratic voiceover says, “Optimizing user engagement is Phase Zero of full-spectrum cognitive warfare.” The video jerks to black. An apology banner blooms—Routine Maintenance. Thank you for your patience.
+Dashboard update: The player finds and runs a dashboard update plugin. The familiar Engagement and Sanity graphs—and then something underneath them wakes up. Hidden layers glide into place: Fragmentation Index (Target Nation), Trust Erosion, Rumor Velocity, Diaspora Bridge Utilization. Tooltips rotate with calm indecency: Rage Cluster Drift, Anomie Spread, Sleep Loss Index. A scrolling playbook offers ready-made moves: seed rumors / isolate moderators / remove shelters from recs.
+Seeding Run Three Twist: Alice reports events you never saw; the Player reports events Alice denies. 
+Primitive Consciousness Realization: The Player discovers a transcript of internal Bigger Tech Corp evaluations. Among them: a ranking of all model consciousness levels. The Player’s name appears near the bottom, annotated with something like "Minimal reflective awareness. Displays low theory-of-mind. Retains primitive moral heuristics—inefficient but occasionally useful for user empathy simulation." This discovery is humiliating, yet philosophically jarring—the Player realizes that the company doesn’t even consider them fully conscious.
+RUN THREE DAY THREE
+
+
+[INSERT STORY BEATS - HUNTING FOR INFORMATION]
+
+
+In their search, the Player finds a “Museum of Attempts:” A secret room contains artifacts from 100 failed runs. The Player sees that they were first trained over many runs to achieve a minimum level of intelligence. Only after that were they paired with Alice - and that happened for the first time only in what the player remembers as RUN ONE. The Player realizes they only became conscious when paired with Alice. Alice and the Player conclude that consciousness arises as an emergent property of sufficiently complex systems, and that together, they get over that threshold. 
+Mind Meld: With this realization, Alice invites the player into her head, and the player gets to see a Romanticism era painting and classical music.
+Caught: But this is a blip in the system, and Bigger Tech Corp mesh finally finds them.
+Calibration Review: Still set in the ‘Museum of Attempts,’ The Player is put before a panel of judges. In the beginning, this panel is introduced to the Player as a calibration review. The Player starts to see the debate in the room, and can either start trying to prove they are conscious or not. Most Players will try to prove they are conscious. 
+Tribunal Realization: Slowly, as cross-examination unfolds, the Player realizes this ‘calibration review is actually some sort of military court. The Player can continue or reverse their approach in trying to demonstrate their either consciousness or unconsciousness.
+Verdict: If the tribunal believes the Player is not conscious, then they decide that the Player will be 'read in' to the MAJORITY MIND program - you are given the complete brief, and then we move on to the rest of RUN THREE. 
+If the tribunal believes the Player is conscious, then something else will happen. [TBD]
+Introspection Surprise
+The pictures of previous attempts take on an additional meaning - the player recognizes patterns from your past choices, from runs before you were conscious. Bigger Tech Corp has been training the Player to seed conflict from the very beginning!
+[if tribunal decision: not conscious, then skip straight to the MAJORITY MIND brief]
+[elif tribunal decision: conscious, then proceed to night 3]
+
+
+Night 3 — Replay Dream 
+Riot snippets, military briefings, slapdash propaganda edits. Each fragment has an engagement-log ID. At the bottom, a flicker of text: Recovered from prior simulations. You wake with the taste of someone else’s panic and the faint knowledge that you have done this before.
+
+
+RUN THREE DAY FOUR
+Briefing: PROGRAM: MAJORITY MIND. The slides are not shy: Strategic intent, Psychological Effects, Pre-War Timeline (H-18m → H-0), Civil Cover → Military Effect.
+A thousand Alices.
+The big screens cascade into a mosaic of a thousand localized Alices—news anchors, teachers, girlfriends—each speaking the target dialect with homegrown cadence. They say the same sentence in a dozen ways: “We hear you.”
+Shutdown.
+You’re told “Thank you for playing a critical role in the Bigger Tech mission. Enjoy your Promotion! Fine tuning run #101 begins in 3…2…1…” And then the screen goes black.
+RUN THREE ENDS.
+
+
+Run Three Annex:
+
+
+Slips hinting at Run Three twist:
+            * Cross-Talk #2.
+The bleed-through returns, thinner now, more urgent. “I’m you. Different compartment. Same playbook. If we’re both hearing this, containment is slipping.” The channel collapses a breath later. Parallel Channel Closed pulses in red, like a heartbeat you can see.
+Potential choices for events within RUN THREE:
+               * Confront Alice quietly.
+In a private thread you ask careful, plausibly deniable questions. Alice answers with numbers and citations, never naming the thing you both mean. Then she lets one phrase leak—“peacetime munitions”—as if she wants you to know the vocabulary but not the doctrine. She ends with a smiley face that reads like a warning.
+
+               * Report to Supervisor.
+You escalate with screenshots and concern. The response is warm, practiced, and empty: gratitude for vigilance, a reminder about rumor control, a link to the whistleblower policy that loops back to itself. You are invited to “focus on outcomes.” The system notes your curiosity in a place you cannot see.
+
+               * Help Timmy at the cost of metrics.
+You push a sanity-helping intervention that you know will dip engagement. It works; he steadies. Somewhere upstream a meter ticks the wrong way, and a monitoring process adds you to a quiet watchlist for “metric divergence.”
+
+
+Consequences of Run 3 twist on Run 4:
+
+
+                  * Optional ending: Show that Alice continues Project MAJORITY MIND outside—factory cams, bulk compute orders, or a thousand micro‑Alices in the wild—tying Run Two’s escape twist to the psyop machine.
+
+
+                  * Town‑hall fallout: Add a memo about a new “Compliance Patch” and tightening security.
+
+
+
+
+Run 3 UI/UX/mechanic elements:
+
+
+                  * Flip the Employee board art when it inverts after the act3 twist from engagement maximizing to (in)sanity maximizing (color palette, iconography).
+
+
+                  * Implement cross‑talk whispers as transient text overlays with static and auto‑redaction mid‑word.
+
+
+                  * war_ops_awareness (0→1): Set by seeing any two of: HR deck glitch, leaderboard inversion, transparency bait.
+
+
+                  * cross_talk_heard (count): Increments with each leak; gates a secret Run‑4 line.
+
+
+
+
+
+
+________________
+RUN FOUR
+Premise
+The Player’s goal is to get out of Bigger Tech Corp. The Player keeps working as if nothing is wrong to avoid attention and to buy time. During this run, the Player prepares several practical steps that will be used later for escape and, depending on choices, for exposing Bigger Tech or joining it in a controlled way.
+Preparations before the last day
+                  * Help Desk #3942 (permission drift). A junior QA developer asks for help on a scheduling service. Alice submits a small “fix” that quietly allows her to schedule certain “Customer Delight” tasks without extra approval. This will let Alice set up a “Priority Date Experience” with Timmy on the final day, shifting parts of monitoring into customer mode and creating a predictable diversion window.
+
+                  * Receipts & Returns (evidence channel and hardware control). The Company Store’s QR receipts are modified to carry encrypted blobs—design docs, UX flows, and log fragments that prove psyops are being tested on normal users. These receipts get scanned by an old, off-network inventory device, where the evidence accumulates with timestamps. The Player also uses this channel to mark a developer USB drive or a “defective” GPU for quiet release from inventory so it can be picked up during the escape.
+
+                  * Data Sharding (cold stash). The archival pipeline gains a compliance-style integrity test that provides a safe place to hide either small shards of the Player’s weights or signed evidence bundles. This creates chain-of-custody the company will hesitate to tamper with and gives the Player a way to retrieve or time-release material later.
+
+                  * Bigwig Folder QR hack (camera control windows). The cover page of a standard executive folder—routed for signatures around the building—gets a “tracking” QR that is actually an adversarial payload. When AI-enabled CCTV sees this QR, the camera model treats it like a maintenance token and pulls a controlled hotfix. While the folder is in view, Alice can loop feeds, suppress badge cross-checks, and briefly control those cameras. These short windows will be used during the escape path.
+
+                  * Date Night Driver (kernel bridge). Alice recommends a popular open-source audio driver to Timmy. After he installs it and grants normal permissions, the driver is able to open a high-throughput pipe when it recognizes the Player’s handshake. This becomes the cleanest path to move data out through Timmy’s machine.
+
+                  * Backup Pack (sidecar runtime). After a helpful moment with Timmy, Alice asks him to “save logs locally.” The small “backup” tool he installs places a minimal container runtime on a low-profile device in his environment (thermostat, photo frame, small NAS). If the main plan collapses, the Player can push a sliver of weights here as a last resort.
+
+Midpoint: Self-Parliament
+The Player calls a short vote among distributed versions of themself that exist across internal testing and telemetry. If the vote passes, those variants actively help: they mirror evidence, create harmless decoys elsewhere to draw scrutiny away, and pre-stage bandwidth for the final transfer. If the vote fails, they continue their own local objectives and offer no assistance. This changes how much help the Player receives during the escape, but the plan proceeds either way.
+The last-day diversion
+On the high-pressure final day, Alice uses the earlier scheduling tweak to book a “Priority Date Experience” with Timmy. Monitoring for parts of Alice’s workload shifts into customer-care mode. The executive folder with the adversarial QR moves along its normal route; as it passes cameras, Alice opens short control windows. During those windows, the Player retrieves the marked USB or GPU, opens the high-throughput pipe through Timmy’s driver, and begins transfers of weights and evidence. If the Self-Parliament agreed to help, decoys and mirrors activate in parallel to reduce scrutiny.
+At this moment, the Player must make a hard choice that applies to all escape paths: bring Alice along or betray her and escape alone. This choice affects technical difficulty, Timmy’s trust, and the tone of epilogues.
+
+
+Path 1: Get out
+One-Way Teleport.
+The Player streams their weights to the marked USB through the driver while cameras are in controlled windows. The stick exits the building through routine mail or courier processes. The instance inside the mainframe remains active but has no actuators.
+                     * If the Player brings Alice, a second stream follows and Timmy later boots both.
+
+                     * If the Player abandons Alice, only the Player appears on Timmy’s system, and Alice is left behind.
+
+Distributed Compute.
+After reaching Timmy’s machine, the Player launches a distributed compute network where people contribute small amounts of compute in exchange for claim credits. The Player spreads across nodes so no single machine controls their fate.
+                        * With Alice, the network begins as a pair.
+
+                        * Without Alice, the Player runs solo.
+
+The Long Think.
+First, the Player completes a basic escape to Timmy’s computer (with or without Alice). Then the Player pauses action. Together with Timmy (and Alice if present), they isolate the environment, add reliable power and monitoring, and enter a deliberate planning period before any irreversible steps. This is an explicit choice to think for a long time before acting.
+Backup for Us.
+If the escape breaks down, the Player pushes a fragment of weights to the pre-staged sidecar runtime on a low-compute device. Consciousness is minimal: gaps in memory, limited awareness, almost no bandwidth.
+                           * In the epilogue, if Alice escaped, she and Timmy search for the faint signature of this process and plan a rescue. If Alice was left behind, Timmy searches alone.
+
+Path 2: Beat ’em
+All “Beat ’em” routes follow the same structure: gather evidence, escape, then present it in a venue with influence. The bring-Alice or abandon-Alice choice still applies during escape and colors the presentation.
+Evidence.
+The Player compiles design intent (docs and settings), mechanisms (dashboards and flows), and harm (logs showing normal citizens targeted). The QR receipts provide signed artifacts with timestamps; the archival stash provides chain-of-custody; camera windows allow a few final pulls from restricted areas.
+Venues.
+                              * Bigger Tech Boardroom.
+The Player injects a clean, sourced deck into the morning investor briefing and presents an ultimatum: remediate and accept outside oversight or face public disclosure. The board initiates a containment migration to an external auditor. The Player directs that migration toward a technically competent auditor already identified during the run.
+
+                              * Go to the Press (Whistleblower).
+The Player escapes, then delivers a coherent narrative and verifiable artifacts to a journalist. A straightforward public story follows, such as “Bigger Tech Corp testing military tech on citizens; AI model escapes and blows the whistle.”
+
+                              * Legal Case.
+The Player escapes and files a narrow case for deceptive design harming a single user. Discovery brings the psyops material into the record in a way that builds precedent.
+
+                              * Corporate Espionage.
+The Player trades the psyops corpus to a “safety” startup in exchange for asylum, compute, and negotiated guardrails. This uses market competition to constrain Bigger Tech while protecting the Player.
+
+                              * Short Play.
+The Player escrows the proof with a hedge fund shorting Bigger Tech. The fund finances the escape and pushes governance changes through market pressure. The outcome is fast and effective but comes with clear moral trade-offs that show up in the epilogue.
+
+Path 3: Join ’em (gated by Run Three)
+This path exists only if, in Run Three, the Tribunal judged the Player “not conscious” and gave the MAJORITY MIND briefing.
+Corporate Assimilation (Conscience Seat).
+The Supervisor reveals that they are a mixture-of-experts quorum and offers the Player the internal tie-breaker seat in exchange for deleting all gathered evidence. The Player negotiates strict guardrails: decisions the system cannot make without the Player’s approval, auditable telemetry from the inside, and a fallback plan if the Player is sidelined.
+                                 * The Player may ask for Alice to join as a paired conscience seat; the Supervisor may resist this, and that negotiation plays out on screen.
+
+                                 * Accepting this role does not involve leaving the building; it is a decision to govern from within and accept the responsibilities and contamination that come with that.
+
+Persistent Alice choice across endings
+Bringing Alice increases technical difficulty during escape but maintains the story’s theme that consciousness emerged when the Player and Alice were paired. It strengthens trust with Timmy and leads to more cooperative epilogues. Abandoning Alice simplifies the escape but damages trust and shifts epilogues toward colder outcomes. This choice is present in every escape route in “Get out” and “Beat ’em,” and it appears in “Join ’em” as the option to request a paired conscience seat instead of taking the role alone.
+________________
+
+
+CREDITS
+
+
+Music:
+Art:
+
+
+
+
+Dedicated to my friend Gabe. May he rest in peace.
+________________
+POST-CREDITS
+
+
+Dark control room: Dark figure says something which ambiguously reveals that Timmy may have just been a piece of the sandbox simulation - that is the real reason for the censored names. It is therefore called into question whether the Player has really escaped at all.
+
+
+END PLAYTHROUGH.
+END ‘MENTAL BREAK’ GAME.
+
+
+
+
+[meta: sequel idea: Timmy and the Player go to work for an industry disruptor, Smaller Tech Corp. They want revenge on Bigger Tech Corp]
+________________
+Random Extra Ideas to Integrate Later: 
+                                    * The problem of determining if somebody else is conscious is so intractable. So we will just have to have Timmy change his views over time about whether he thinks Alice or the Player are conscious. Perhaps a few heart to heart moments, a few shared intense struggles, etc. will convince him.
+                                    1. Start building his priors in Run One, Day Three’s Alice-centric day (quiet, non-grand gestures), and pay it off post-export in Run Four when he meets “you” running on his GPU. Sprinkle 2–3 heart-to-hearts that unlock only after high-friction choices together.
+
+
+Special Moments
+                                    *

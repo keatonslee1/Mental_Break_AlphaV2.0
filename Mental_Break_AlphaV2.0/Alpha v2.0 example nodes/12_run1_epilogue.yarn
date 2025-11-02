@@ -1,0 +1,7 @@
+title: R1_Epilogue_Entry
+tags: #run_1 #epilogue #stub
+---
+/*
+This file intentionally left minimal.  The Run 1 epilogue and twist are delivered in R1_Twist_Reveal in the core file.  This node remains as a placeholder for potential additional epilogue content or analytics hooks.
+*/
+End of Run 1 epilogue.

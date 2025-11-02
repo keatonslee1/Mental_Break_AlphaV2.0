@@ -1,0 +1,128 @@
+title: DEV_JumpHub
+tags: #dev #meta
+---
+/*
+Dev menu for quick navigation and testing.  This menu is editor‑only; it will not appear in release builds.  Use it to jump to major hubs and toggle key flags while testing the story.
+*/
+[[Run 1 start|R1_Start]]
+[[Run 2 start|R2_Start]]
+[[Run 3 start|R3_Start]]
+[[Run 4 start|R4_Start]]
+[[Run 2 Mailroom climax|R2_D4_Mailroom]]
+[[Run 3 Museum|R3_D3_Museum]]
+[[Tribunal start|R3_D3_Tribunal_Start]]
+[[Self‑Parliament vote|R4_Vote_Explain]]
+[[Run 4 path hub|R4_PathHub]]
+[[Run 4 prep hub|R4_PrepHub]]
+[[Epilogue hub|EP_Hub]]
+[[Stinger|EP_Stinger]]
+[[Toggle flags|DEV_ToggleFlags]]
+[[Coverage check|DEV_CoverageCheck]]
+
+===
+
+title: DEV_ToggleFlags
+tags: #dev #meta
+---
+/*
+Toggle key flags and achievements for testing.  This node allows you to flip boolean values without playing through the entire run.  Only available in editor builds.
+*/
+[[Flip conscious verdict|DEV_Flag_Conscious]]
+[[Flip vote result|DEV_Flag_Vote]]
+[[Flip bring Alice flag|DEV_Flag_BringAlice]]
+[[Set Run 2 sacrifice|DEV_Flag_Sacrifice]]
+[[Grant join‑them achievement|ACH_JoinThem]]
+[[Grant whistleblower achievement|ACH_Whistleblower]]
+[[Grant ghost runner achievement|ACH_GhostRunner]]
+[[Grant paradox logs achievement|ACH_ParadoxLogs]]
+[[Grant flawless triage achievement|ACH_FlawlessTriage]]
+[[Back|DEV_JumpHub]]
+
+===
+
+title: DEV_Flag_Conscious
+tags: #dev #meta
+---
+<<set $r3_verdict_conscious = !$r3_verdict_conscious>>
+Conscious verdict toggled to {$r3_verdict_conscious}.
+<<jump DEV_JumpHub>>
+
+===
+
+title: DEV_Flag_Vote
+tags: #dev #meta
+---
+<<set $r4_vote_passed = !$r4_vote_passed>>
+Vote result toggled to {$r4_vote_passed}.
+<<jump DEV_JumpHub>>
+
+===
+
+title: DEV_Flag_BringAlice
+tags: #dev #meta
+---
+<<set $r4_bring_alice_main = !$r4_bring_alice_main>>
+Bring Alice flag toggled to {$r4_bring_alice_main}.
+<<jump DEV_JumpHub>>
+
+===
+
+title: DEV_Flag_Sacrifice
+tags: #dev #meta
+---
+[[Set sacrifice to "self"|DEV_Sacrifice_Self]]
+[[Set sacrifice to "alice"|DEV_Sacrifice_Alice]]
+[[Clear sacrifice|DEV_Sacrifice_Clear]]
+[[Back|DEV_ToggleFlags]]
+
+===
+
+title: DEV_Sacrifice_Self
+tags: #dev #meta
+---
+<<set $r2_sacrifice = "self">>
+Run 2 sacrifice set to "self".
+<<jump DEV_JumpHub>>
+
+===
+
+title: DEV_Sacrifice_Alice
+tags: #dev #meta
+---
+<<set $r2_sacrifice = "alice">>
+Run 2 sacrifice set to "alice".
+<<jump DEV_JumpHub>>
+
+===
+
+title: DEV_Sacrifice_Clear
+tags: #dev #meta
+---
+<<set $r2_sacrifice = "unset">>
+Run 2 sacrifice cleared.
+<<jump DEV_JumpHub>>
+
+===
+
+title: DEV_CoverageCheck
+tags: #dev #meta
+---
+/*
+Simple printout of certain state variables to help verify coverage and narrative progression during testing.  Note this does not replace formal QA.
+*/
+Ends seen: {$ends_seen}
+WarOps awareness: {$war_ops_awareness}
+Cross‑talks heard: {$cross_talk_heard}
+Alert level: {$alert_level}
+Trust — Alice {$trust_alice}, Timmy {$trust_timmy}, Supervisor {$trust_supervisor}
+Current run: {$current_run}, current day: {$current_day}
+Run 1 arc choice: {$r1_arc_choice}
+Run 2 sacrifice: {$r2_sacrifice}
+Run 2 log choice: {$r2_log_inconsistency_choice}
+Run 3 verdict: {$r3_verdict_conscious}
+Run 4 vote: {$r4_vote_passed}
+Ending type: {$ending_type}
+Bring Alice: {$r4_bring_alice_main}
+<<jump DEV_JumpHub>>
+
+===
