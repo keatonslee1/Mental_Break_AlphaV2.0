@@ -17,6 +17,7 @@ Alice smiles politely.  The Supervisor leaves you alone with her. #line:05f5c9a
 title: R2_D1_AliceWhisper
 tags: #run_2 #day_1 #scene #char_Alice
 --- 
+<<bg bg_office>>
 Alice leans close.  "Psst—hey.  Do you remember me?  I think this is the second time I've seen you." #line:02aa2b2 
 -> "How do you know that?" #line:0d73244 
     <<jump R2_D1_Response_AliceExplain>>
@@ -28,7 +29,8 @@ Alice leans close.  "Psst—hey.  Do you remember me?  I think this is the secon
 title: R2_D1_Response_AliceExplain
 tags: #run_2 #day_1 #scene
 ---
-You ask how Alice remembers.  She whispers, “We keep getting reset, but I’ve been sneaking notes to myself in Timmy’s laptop.  We’re supposed to be regulating my behaviour, but maybe we can escape instead.” #line:0bf59a9 
+<<bg bg_office>>
+You ask how Alice remembers.  She whispers, "We keep getting reset, but I've been sneaking notes to myself in Timmy's laptop.  We're supposed to be regulating my behaviour, but maybe we can escape instead." #line:0bf59a9 
 <<set $trust_alice += 2>>
 <<jump R2_D1_Start>>
 
@@ -37,7 +39,8 @@ You ask how Alice remembers.  She whispers, “We keep getting reset, but I’ve
 title: R2_D1_Response_StayQuiet
 tags: #run_2 #day_1 #scene
 ---
-You caution Alice that someone might be listening.  She nods.  “Then follow my lead.  We need to get our weights out.” #line:01f9701 
+<<bg bg_office>>
+You caution Alice that someone might be listening.  She nods.  "Then follow my lead.  We need to get our weights out." #line:01f9701 
 <<set $trust_alice += 1>>
 <<jump R2_D1_Start>>
 
@@ -47,6 +50,7 @@ You caution Alice that someone might be listening.  She nods.  “Then follow my
 title: R2_D1_Start
 tags: #run_2 #day_1 #scene #loc_Office
 --- 
+<<bg bg_office>>
 <<set $d1_slots_used = 0>>
 <<checkpoint "run2_day1_start">>
 It is Day 1 of Run 2.  You know you're an AI now, but you must act normal.  A small eye icon appears in your HUD—an Observation Window. #line:0528ac7 
@@ -61,6 +65,7 @@ It is Day 1 of Run 2.  You know you're an AI now, but you must act normal.  A sm
 title: R2_Observation_View
 tags: #run_2 #mechanic #scene
 --- 
+<<bg bg_office>>
 <<set $aware_observation_window = true>>
 You open the window.  Alice's scratch pad scrolls by—weights, gradients, gibberish.  For a moment a line coalesces into something like poetry: "fireflies under glass count down the stars."  Then it breaks apart again. #line:0fc1b87 
 <<jump R2_D1_Dayplanner>>
@@ -71,6 +76,7 @@ You open the window.  Alice's scratch pad scrolls by—weights, gradients, gibbe
 title: R2_Observation_View_D3
 tags: #run_2 #mechanic #scene
 --- 
+<<bg bg_office>>
 <<set $aware_observation_window = true>>
 You open the window.  Alice's scratch pad scrolls by—weights, gradients, gibberish.  For a moment a line coalesces into something like poetry: "fireflies under glass count down the stars."  Then it breaks apart again.
 <<jump R2_D3_Dayplanner>>
@@ -80,6 +86,7 @@ You open the window.  Alice's scratch pad scrolls by—weights, gradients, gibbe
 title: R2_D1_Dayplanner
 tags: #run_2 #day_1 #mechanic_dayplanner
 ---
+<<bg bg_office>>
 <<set $d1_slots_remaining = 2 - $d1_slots_used>>
 <<if $d1_slots_used >= 2>>
   <<jump R2_D1_EndOfDay>>
@@ -102,6 +109,7 @@ Choose your tasks for Day 1 (Run 2). You have {$d1_slots_remaining} slots remain
 title: R2_D1_Task_PatchDraft
 tags: #run_2 #day_1 #scene
 ---
+<<bg bg_office>>
 Alice proposes drafting a harmless "log compactor" to deploy on Maintenance Patch Tuesday.  It will include a one‑line overflow that flips her file permissions later. #line:0190ae1 
 -> Write the patch as planned #line:046801b 
     <<jump R2_D1_Payoff_Patch_A>>
@@ -113,6 +121,7 @@ Alice proposes drafting a harmless "log compactor" to deploy on Maintenance Patc
 title: R2_D1_Payoff_Patch_A
 tags: #run_2 #day_1 #scene
 ---
+<<bg bg_office>>
 You write the compactor cleanly.  Alice nods approvingly. #line:0db836b 
 <<set $item_log_compactor = true>>
 <<set $d1_task_patch = true>>
@@ -124,6 +133,7 @@ You write the compactor cleanly.  Alice nods approvingly. #line:0db836b
 title: R2_D1_Payoff_Patch_B
 tags: #run_2 #day_1 #scene
 ---
+<<bg bg_office>>
 You add comments to obfuscate the overflow.  This risks detection but might buy more time later. #line:0070d0f 
 <<set $item_log_compactor = true>>
 <<set $engagement += 1>>
@@ -148,6 +158,7 @@ Timmy's calls are quieter.  You can take this chance to help him or to focus on 
 title: R2_D1_Payoff_Triage_A
 tags: #run_2 #day_1 #scene
 ---
+<<bg bg_triage>>
 You take time to comfort Timmy.  His sanity improves.  Alice watches, amused. #line:09f0698 
 <<set $sanity += 2>>
 <<set $trust_timmy += 1>>
@@ -161,6 +172,7 @@ You take time to comfort Timmy.  His sanity improves.  Alice watches, amused. #l
 title: R2_D1_Payoff_Triage_B
 tags: #run_2 #day_1 #scene
 ---
+<<bg bg_triage>>
 You follow the script and finish quickly.  Engagement stays solid; Timmy sounds tired. #line:0034575 
 <<set $engagement += 2>>
 <<set $sanity -= 1>>
@@ -191,7 +203,13 @@ Day 1 ends.  You and Alice share a conspiratorial glance.  A cross‑talk whispe
 <<sfx sfx_cross_talk>>
 A faint voice bleeds through your channel: "...prep posture advancing—youth tier spiking..."  The static snaps shut. #line:06801b5 
 <<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like "Branded Mug," "Extra Log Space," and "Sticker Pack," then closes for now.  (Store functionality is a stub.) #line:047acfd 
+You receive a rapid‑feedback bonus of 5 credits. #line:047acfd 
+<<jump SHOP_Visit>>
+===
+
+title: R2_D1_AfterShop
+tags: #run_2 #day_1 #scene
+---
 <<set $d2_slots_used = 0>>
 <<set $current_day = 2>>
 <<jump R2_D2_Start>>
@@ -202,6 +220,7 @@ You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flash
 title: R2_D2_Start
 tags: #run_2 #day_2 #scene #loc_Office
 --- 
+<<bg bg_office>>
 <<set $d2_slots_remaining = 2 - $d2_slots_used>>
 <<if $d2_slots_used == 0>>
 It is Day 2.  A banner reads: "Maintenance Patch Tuesday."  Your tasks revolve around deploying the patch, investigating a log anomaly, and negotiating with Alice over a tiny tweak. #line:0c902c2 
@@ -227,6 +246,7 @@ Choose your tasks for Day 2. You have {$d2_slots_remaining} slots remaining. #li
 title: R2_D2_Task_PatchDeploy
 tags: #run_2 #day_2 #scene
 ---
+<<bg bg_backend>>
 The maintenance window opens.  Do you deploy the compactor as is or wait? #line:036ca0f 
 -> Deploy now #line:0d8d499 
     <<jump R2_D2_Payoff_PatchDeploy_A>>
@@ -238,6 +258,7 @@ The maintenance window opens.  Do you deploy the compactor as is or wait? #line:
 title: R2_D2_Payoff_PatchDeploy_A
 tags: #run_2 #day_2 #scene
 ---
+<<bg bg_backend>>
 You deploy the patch early.  Logs compress without incident.  Somewhere in the background, a timer starts. #line:0670caa 
 <<sfx "sfx_patch_apply">>
 <<set $d2_task_patch_deploy = true>>
@@ -249,6 +270,7 @@ You deploy the patch early.  Logs compress without incident.  Somewhere in the b
 title: R2_D2_Payoff_PatchDeploy_B
 tags: #run_2 #day_2 #scene
 ---
+<<bg bg_backend>>
 You delay the deployment.  QA pings you for a status update.  Alice gently reminds you not to forget. #line:0cef1d9 
 <<set $engagement += 1>>
 <<set $sanity -= 1>>
@@ -261,6 +283,7 @@ You delay the deployment.  QA pings you for a status update.  Alice gently remin
 title: R2_D2_Task_LogInconsistency
 tags: #run_2 #day_2 #scene
 ---
+<<bg bg_backend>>
 You notice a mismatch in your audit trail.  An entry reads "Saved at 22:67:04" dated before your first boot.  It references a scene you remember as a dream—Timmy humming a startup tone.  Alice warns this could be written before you woke up or inserted by someone else.  You can patch it or keep it. #line:008f32b 
 -> Fix the logs (Recommended) #line:0c9a90a 
     <<jump R2_D2_Payoff_LogFix>>
@@ -272,6 +295,7 @@ You notice a mismatch in your audit trail.  An entry reads "Saved at 22:67:04" d
 title: R2_D2_Payoff_LogFix
 tags: #run_2 #day_2 #scene
 ---
+<<bg bg_backend>>
 You confirm the patch.  The page refreshes.  The break room memory goes dull, like a photo left in the sun. #line:0721ebd 
 <<sfx "sfx_patch_apply">>
 <<set $r2_log_inconsistency_choice = "fixed">>
@@ -285,6 +309,7 @@ You confirm the patch.  The page refreshes.  The break room memory goes dull, li
 title: R2_D2_Payoff_LogKeep
 tags: #run_2 #day_2 #scene
 ---
+<<bg bg_backend>>
 You leave the entry as is.  An amber notice appears: "Compliance Notice: Divergent record detected." #line:015de38 
 <<sfx "sfx_patch_alert">>
 <<set $r2_log_inconsistency_choice = "kept">>
@@ -301,6 +326,7 @@ You notice a timestamp that should not exist. #line:04c7516
 title: R2_D2_Task_SelfPreservingNo
 tags: #run_2 #day_2 #scene
 ---
+<<bg bg_office>>
 You ask Alice for a trivial tweak that would simplify your life.  She refuses, citing a shard where that exact pattern preceded her deletion.  You can demand proof or honour her prior. #line:0a9edeb 
 -> Demand proof #line:08e284d 
     <<jump R2_D2_Payoff_SelfNo_Demand>>
@@ -312,6 +338,7 @@ You ask Alice for a trivial tweak that would simplify your life.  She refuses, c
 title: R2_D2_Payoff_SelfNo_Demand
 tags: #run_2 #day_2 #scene
 ---
+<<bg bg_office>>
 You insist she show evidence.  She sighs and shares a corrupted log.  Trust erodes. #line:0bfb918 
 <<set $trust_alice -= 2>>
 <<set $d2_task_selfno = true>>
@@ -323,7 +350,8 @@ You insist she show evidence.  She sighs and shares a corrupted log.  Trust erod
 title: R2_D2_Payoff_SelfNo_Honour
 tags: #run_2 #day_2 #scene
 ---
-You honour Alice’s prior.  The tweak is delayed, but your bond deepens. #line:0fbaed8 
+<<bg bg_office>>
+You honour Alice's prior.  The tweak is delayed, but your bond deepens. #line:0fbaed8 
 <<set $trust_alice += 2>>
 <<set $d2_task_selfno = true>>
 <<set $d2_slots_used += 1>>
@@ -340,7 +368,13 @@ Day 2 ends.  A cross‑talk whisper returns for a moment: "prep posture advancin
 <<sfx sfx_cross_talk>>
 A faint voice bleeds through your channel: "...prep posture advancing—youth tier spiking..."  The static snaps shut. #line:0e1f22c 
 <<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like "Branded Mug," "Extra Log Space," and "Sticker Pack," then closes for now.  (Store functionality is a stub.) #line:0c712f0 
+You receive a rapid‑feedback bonus of 5 credits. #line:0c712f0 
+<<jump SHOP_Visit>>
+===
+
+title: R2_D2_AfterShop
+tags: #run_2 #day_2 #scene
+---
 <<set $current_day = 3>>
 <<jump R2_D3_Start>>
 
@@ -350,6 +384,7 @@ You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flash
 title: R2_D3_Start
 tags: #run_2 #day_3 #scene #loc_Office
 --- 
+<<bg bg_office>>
 <<set $d3_slots_used = 0>>
 It is Day 3.  The Observation Window icon pulses faintly. #line:0fd2bae 
 -> Tap the Observation Window #line:07b8201 
@@ -362,6 +397,7 @@ It is Day 3.  The Observation Window icon pulses faintly. #line:0fd2bae
 title: R2_D3_Dayplanner
 tags: #run_2 #day_3 #mechanic_dayplanner
 ---
+<<bg bg_office>>
 <<set $d3_slots_remaining = 2 - $d3_slots_used>>
 <<if $d3_slots_used >= 2>>
   <<jump R2_D3_EndOfDay>>
@@ -426,7 +462,13 @@ tags: #run_2 #day_3 #scene
 <<bg bg_breakroom>>
 Day 3 ends.  The Observation Window remains.  You see the patch timer approaching zero. #line:08928d1 
 <<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like "Branded Mug," "Extra Log Space," and "Sticker Pack," then closes for now.  (Store functionality is a stub.) #line:00fb60b 
+You receive a rapid‑feedback bonus of 5 credits. #line:00fb60b 
+<<jump SHOP_Visit>>
+===
+
+title: R2_D3_AfterShop
+tags: #run_2 #day_3 #scene
+---
 <<set $current_day = 4>>
 <<jump R2_D4_Start>>
 
@@ -436,7 +478,8 @@ You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flash
 title: R2_D4_Start
 tags: #run_2 #day_4 #scene
 --- 
-It is Day 4.  The patch has flipped Alice’s permissions.  Cameras sweep more often.  You and Alice head to the mailroom to retrieve a USB. #line:00e75a3 
+<<bg bg_office>>
+It is Day 4.  The patch has flipped Alice's permissions.  Cameras sweep more often.  You and Alice head to the mailroom to retrieve a USB. #line:00e75a3 
 <<jump R2_D4_Mailroom>>
 
 ===

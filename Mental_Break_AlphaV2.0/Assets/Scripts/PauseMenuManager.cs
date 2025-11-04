@@ -23,6 +23,9 @@ public class PauseMenuManager : MonoBehaviour
     [Tooltip("Hint text showing 'Press ESC to pause' at top-right")]
     public Component pauseHintText;
 
+    [Tooltip("Warning text above pause menu buttons (optional - will be created if null)")]
+    public Component pauseWarningText;
+
     [Header("Menu Buttons")]
     [Tooltip("Resume button (closes pause menu)")]
     public Button resumeButton;
@@ -65,6 +68,10 @@ public class PauseMenuManager : MonoBehaviour
     private bool isPaused = false;
     private float previousTimeScale = 1f;
 
+    private Image pauseMenuPanelImage;
+    private bool pauseMenuPanelImageInitialEnabled = true;
+    private bool pauseMenuPanelImageInitialRaycastTarget = true;
+
     private void Awake()
     {
         // Singleton pattern
@@ -105,24 +112,55 @@ public class PauseMenuManager : MonoBehaviour
         if (pauseMenuPanel != null)
         {
             pauseMenuPanel.SetActive(false);
+
+            pauseMenuPanelImage = pauseMenuPanel.GetComponent<Image>();
+            if (pauseMenuPanelImage != null)
+            {
+                pauseMenuPanelImageInitialEnabled = pauseMenuPanelImage.enabled;
+                pauseMenuPanelImageInitialRaycastTarget = pauseMenuPanelImage.raycastTarget;
+                Debug.Log($"PauseMenuManager: Cached PauseMenuPanel Image (enabled={pauseMenuPanelImage.enabled}, raycastTarget={pauseMenuPanelImage.raycastTarget})");
+            }
+            else
+            {
+                Debug.LogWarning("PauseMenuManager: pauseMenuPanel does not have an Image component; background toggling will be skipped.");
+            }
+        }
+        else
+        {
+            Debug.LogError("PauseMenuManager: pauseMenuPanel is not assigned. Pause menu UI will not display correctly.");
         }
 
         UpdateHintVisibility();
+
+        // Setup warning text if needed
+        SetupWarningText();
 
         // Setup button listeners
         if (resumeButton != null)
         {
             resumeButton.onClick.AddListener(OnResume);
         }
+        else
+        {
+            Debug.LogError("PauseMenuManager: resumeButton is not assigned.");
+        }
 
         if (saveGameButton != null)
         {
             saveGameButton.onClick.AddListener(OnSaveGame);
         }
+        else
+        {
+            Debug.LogError("PauseMenuManager: saveGameButton is not assigned.");
+        }
 
         if (loadGameButton != null)
         {
             loadGameButton.onClick.AddListener(OnLoadGame);
+        }
+        else
+        {
+            Debug.LogError("PauseMenuManager: loadGameButton is not assigned.");
         }
 
         if (settingsButton != null)
@@ -135,11 +173,21 @@ public class PauseMenuManager : MonoBehaviour
         if (mainMenuButton != null)
         {
             mainMenuButton.onClick.AddListener(OnMainMenu);
+            // Hide main menu button for MVP (too buggy right now, but keep backend code)
+            mainMenuButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("PauseMenuManager: mainMenuButton is not assigned.");
         }
 
         if (exitButton != null)
         {
             exitButton.onClick.AddListener(OnExitToDesktop);
+        }
+        else
+        {
+            Debug.LogError("PauseMenuManager: exitButton is not assigned.");
         }
     }
 
@@ -199,7 +247,15 @@ public class PauseMenuManager : MonoBehaviour
         {
             pauseMenuPanel.SetActive(true);
             ShowPauseMenuButtons(); // Always ensure buttons are visible when showing pause menu
+            ShowWarningText(); // Show warning text
+            VerifyPauseMenuButtons("PauseGame");
         }
+        else
+        {
+            Debug.LogWarning("PauseMenuManager: PauseGame called but pauseMenuPanel is null.");
+        }
+
+        LogPauseMenuState("PauseGame - after ShowPauseMenuButtons");
 
         // Hide hint text when paused
         UpdateHintVisibility();
@@ -234,6 +290,7 @@ public class PauseMenuManager : MonoBehaviour
         if (pauseMenuPanel != null)
         {
             ShowPauseMenuButtons(); // Restore buttons before hiding
+            HideWarningText(); // Hide warning text
             pauseMenuPanel.SetActive(false);
         }
 
@@ -252,19 +309,75 @@ public class PauseMenuManager : MonoBehaviour
         {
             pauseMenuPanel.SetActive(true);
             ShowPauseMenuButtons();
+            ShowWarningText();
+        }
+    }
+
+    /// <summary>
+    /// Show warning text above pause menu
+    /// </summary>
+    private void ShowWarningText()
+    {
+        if (pauseWarningText == null) return;
+
+        GameObject warningObj = null;
+#if USE_TMP
+        if (pauseWarningText is TextMeshProUGUI tmpText)
+        {
+            warningObj = tmpText.gameObject;
+        }
+#endif
+        if (pauseWarningText is Text regularText)
+        {
+            warningObj = regularText.gameObject;
+        }
+
+        if (warningObj != null)
+        {
+            warningObj.SetActive(true);
+        }
+    }
+
+    /// <summary>
+    /// Hide warning text
+    /// </summary>
+    private void HideWarningText()
+    {
+        if (pauseWarningText == null) return;
+
+        GameObject warningObj = null;
+#if USE_TMP
+        if (pauseWarningText is TextMeshProUGUI tmpText)
+        {
+            warningObj = tmpText.gameObject;
+        }
+#endif
+        if (pauseWarningText is Text regularText)
+        {
+            warningObj = regularText.gameObject;
+        }
+
+        if (warningObj != null)
+        {
+            warningObj.SetActive(false);
         }
     }
 
     /// <summary>
     /// Hide individual pause menu buttons (but keep panel active for child UI)
+    /// IMPORTANT: This does NOT affect LoadMenuPanel - only the main pause menu buttons
     /// </summary>
     private void HidePauseMenuButtons()
     {
+        Debug.Log("PauseMenuManager: HidePauseMenuButtons() - before state: " + DescribeButtonStates());
         if (resumeButton != null) resumeButton.gameObject.SetActive(false);
         if (saveGameButton != null) saveGameButton.gameObject.SetActive(false);
         if (loadGameButton != null) loadGameButton.gameObject.SetActive(false);
         if (mainMenuButton != null) mainMenuButton.gameObject.SetActive(false);
         if (exitButton != null) exitButton.gameObject.SetActive(false);
+        HideWarningText(); // Hide warning text when hiding buttons
+        Debug.Log("PauseMenuManager: HidePauseMenuButtons() - after state: " + DescribeButtonStates());
+        // NOTE: LoadMenuPanel is NOT affected by this method - it's a separate child of PauseMenuPanel
     }
 
     /// <summary>
@@ -272,15 +385,269 @@ public class PauseMenuManager : MonoBehaviour
     /// </summary>
     private void ShowPauseMenuButtons()
     {
+        Debug.Log("PauseMenuManager: ShowPauseMenuButtons() - before state: " + DescribeButtonStates());
+        SetPauseMenuBackgroundVisible(true, "ShowPauseMenuButtons");
         if (resumeButton != null) resumeButton.gameObject.SetActive(true);
         if (saveGameButton != null) saveGameButton.gameObject.SetActive(true);
         if (loadGameButton != null) loadGameButton.gameObject.SetActive(true);
-        if (mainMenuButton != null) mainMenuButton.gameObject.SetActive(true);
+        // Main menu button hidden for MVP (too buggy, but backend code kept)
+        // if (mainMenuButton != null) mainMenuButton.gameObject.SetActive(true);
         if (exitButton != null) exitButton.gameObject.SetActive(true);
+        ShowWarningText(); // Show warning text when showing buttons
+        Debug.Log("PauseMenuManager: ShowPauseMenuButtons() - after state: " + DescribeButtonStates());
     }
 
     /// <summary>
-    /// Update hint text visibility based on pause state
+    /// Log and verify button states for diagnostics
+    /// </summary>
+    private void VerifyPauseMenuButtons(string context)
+    {
+        string states = DescribeButtonStates();
+        Debug.Log($"PauseMenuManager[{context}]: Button states -> {states}");
+
+        if (!AreButtonsActive())
+        {
+            Debug.LogWarning($"PauseMenuManager[{context}]: One or more pause menu buttons are inactive. See states above for details.");
+        }
+    }
+
+    private bool AreButtonsActive()
+    {
+        bool resumeActive = resumeButton != null && resumeButton.gameObject.activeInHierarchy;
+        bool saveActive = saveGameButton != null && saveGameButton.gameObject.activeInHierarchy;
+        bool loadActive = loadGameButton != null && loadGameButton.gameObject.activeInHierarchy;
+        // Main menu button hidden for MVP, so don't check it
+        // bool mainActive = mainMenuButton != null && mainMenuButton.gameObject.activeInHierarchy;
+        bool exitActive = exitButton != null && exitButton.gameObject.activeInHierarchy;
+
+        return resumeActive && saveActive && loadActive && exitActive; // Removed mainActive check
+    }
+
+    private string DescribeButtonStates()
+    {
+        return $"Resume={DescribeButton(resumeButton)} | Save={DescribeButton(saveGameButton)} | Load={DescribeButton(loadGameButton)} | Main={DescribeButton(mainMenuButton)} | Exit={DescribeButton(exitButton)}";
+    }
+
+    private string DescribeButton(Button button)
+    {
+        if (button == null)
+        {
+            return "null";
+        }
+
+        GameObject go = button.gameObject;
+        return $"activeSelf={go.activeSelf}, activeInHierarchy={go.activeInHierarchy}";
+    }
+
+    private void SetPauseMenuBackgroundVisible(bool visible, string context)
+    {
+        if (pauseMenuPanel == null)
+        {
+            Debug.LogWarning($"PauseMenuManager[{context}]: Cannot change background visibility because pauseMenuPanel is null.");
+            return;
+        }
+
+        if (pauseMenuPanelImage == null)
+        {
+            pauseMenuPanelImage = pauseMenuPanel.GetComponent<Image>();
+            if (pauseMenuPanelImage == null)
+            {
+                Debug.LogWarning($"PauseMenuManager[{context}]: PauseMenuPanel Image component not found.");
+                return;
+            }
+        }
+
+        bool targetEnabled = visible ? pauseMenuPanelImageInitialEnabled : false;
+        bool targetRaycastTarget = visible ? pauseMenuPanelImageInitialRaycastTarget : false;
+
+        if (pauseMenuPanelImage.enabled != targetEnabled)
+        {
+            pauseMenuPanelImage.enabled = targetEnabled;
+            Debug.Log($"PauseMenuManager[{context}]: Set PauseMenuPanel Image.enabled={targetEnabled}");
+        }
+
+        if (pauseMenuPanelImage.raycastTarget != targetRaycastTarget)
+        {
+            pauseMenuPanelImage.raycastTarget = targetRaycastTarget;
+            Debug.Log($"PauseMenuManager[{context}]: Set PauseMenuPanel Image.raycastTarget={targetRaycastTarget}");
+        }
+    }
+
+    private void LogPauseMenuState(string context)
+    {
+        if (pauseMenuPanel == null)
+        {
+            Debug.LogWarning($"PauseMenuManager[{context}]: pauseMenuPanel is null.");
+            return;
+        }
+
+        Transform parent = pauseMenuPanel.transform.parent;
+        RectTransform rectTransform = pauseMenuPanel.GetComponent<RectTransform>();
+        Image image = pauseMenuPanel.GetComponent<Image>();
+        Canvas canvas = pauseMenuPanel.GetComponentInParent<Canvas>();
+
+        Debug.Log($"PauseMenuManager[{context}]: PauseMenuPanel activeSelf={pauseMenuPanel.activeSelf}, activeInHierarchy={pauseMenuPanel.activeInHierarchy}, siblingIndex={pauseMenuPanel.transform.GetSiblingIndex()}, childCount={pauseMenuPanel.transform.childCount}, parent={(parent != null ? parent.name : "<none>")}");
+
+        if (rectTransform != null)
+        {
+            Debug.Log($"PauseMenuManager[{context}]: PauseMenuPanel Rect -> anchorMin={rectTransform.anchorMin}, anchorMax={rectTransform.anchorMax}, sizeDelta={rectTransform.sizeDelta}, anchoredPosition={rectTransform.anchoredPosition}");
+        }
+
+        if (image != null)
+        {
+            Debug.Log($"PauseMenuManager[{context}]: PauseMenuPanel Image -> enabled={image.enabled}, color={image.color}, raycastTarget={image.raycastTarget}");
+        }
+
+        if (canvas != null)
+        {
+            Debug.Log($"PauseMenuManager[{context}]: Parent Canvas -> name={canvas.name}, renderMode={canvas.renderMode}, sortingOrder={canvas.sortingOrder}, sortingLayerID={canvas.sortingLayerID}");
+        }
+    }
+
+    private void LogLoadMenuPanelState(string context)
+    {
+        if (saveSlotSelectionUI == null)
+        {
+            Debug.LogWarning($"PauseMenuManager[{context}]: saveSlotSelectionUI is null, cannot log LoadMenuPanel state.");
+            return;
+        }
+
+        if (saveSlotSelectionUI.selectionPanel == null)
+        {
+            Debug.LogWarning($"PauseMenuManager[{context}]: SaveSlotSelectionUI.selectionPanel is null.");
+            return;
+        }
+
+        GameObject loadPanel = saveSlotSelectionUI.selectionPanel;
+        Transform parent = loadPanel.transform.parent;
+        RectTransform rectTransform = loadPanel.GetComponent<RectTransform>();
+        Image image = loadPanel.GetComponent<Image>();
+        Canvas canvas = loadPanel.GetComponentInParent<Canvas>();
+
+        Debug.Log($"PauseMenuManager[{context}]: LoadMenuPanel activeSelf={loadPanel.activeSelf}, activeInHierarchy={loadPanel.activeInHierarchy}, siblingIndex={loadPanel.transform.GetSiblingIndex()}, childCount={loadPanel.transform.childCount}, parent={(parent != null ? parent.name : "<none>")}");
+
+        if (rectTransform != null)
+        {
+            Debug.Log($"PauseMenuManager[{context}]: LoadMenuPanel Rect -> anchorMin={rectTransform.anchorMin}, anchorMax={rectTransform.anchorMax}, sizeDelta={rectTransform.sizeDelta}, anchoredPosition={rectTransform.anchoredPosition}");
+        }
+
+        if (image != null)
+        {
+            Debug.Log($"PauseMenuManager[{context}]: LoadMenuPanel Image -> enabled={image.enabled}, color={image.color}, raycastTarget={image.raycastTarget}");
+        }
+
+        if (canvas != null)
+        {
+            Debug.Log($"PauseMenuManager[{context}]: Parent Canvas -> name={canvas.name}, renderMode={canvas.renderMode}, sortingOrder={canvas.sortingOrder}, sortingLayerID={canvas.sortingLayerID}");
+        }
+    }
+
+    /// <summary>
+    /// Build the formatted keybind tips string
+    /// </summary>
+    private string GetKeybindTipsText()
+    {
+        return "esc = pause\n" +
+               "space/enter = forward";
+    }
+
+    /// <summary>
+    /// Setup warning text above pause menu buttons
+    /// </summary>
+    private void SetupWarningText()
+    {
+        if (pauseMenuPanel == null) return;
+
+        // If warning text is not assigned, create it programmatically
+        if (pauseWarningText == null)
+        {
+            GameObject warningObj = new GameObject("PauseWarningText");
+            warningObj.transform.SetParent(pauseMenuPanel.transform, false);
+
+            RectTransform rect = warningObj.AddComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 1f);
+            rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.pivot = new Vector2(0.5f, 1f);
+            rect.anchoredPosition = new Vector2(0f, -30f); // Position above buttons
+            rect.sizeDelta = new Vector2(600f, 40f);
+
+#if USE_TMP
+            TextMeshProUGUI tmpText = warningObj.AddComponent<TextMeshProUGUI>();
+            if (TMPro.TMP_Settings.instance != null && TMPro.TMP_Settings.instance.defaultFontAsset != null)
+            {
+                tmpText.font = TMPro.TMP_Settings.instance.defaultFontAsset;
+            }
+            tmpText.text = "Save/load buttons don't work first time, idk lol";
+            tmpText.fontSize = 20;
+            tmpText.fontStyle = TMPro.FontStyles.Bold;
+            tmpText.alignment = TextAlignmentOptions.Center;
+            tmpText.color = new Color(1f, 0.8f, 0f, 1f); // Bright orange/yellow
+            pauseWarningText = tmpText;
+#else
+            Text text = warningObj.AddComponent<Text>();
+            text.text = "Save/load buttons don't work first time, idk lol";
+            text.fontSize = 20;
+            text.fontStyle = FontStyle.Bold;
+            text.alignment = TextAnchor.UpperCenter;
+            text.color = new Color(1f, 0.8f, 0f, 1f); // Bright orange/yellow
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            pauseWarningText = text;
+#endif
+        }
+        else
+        {
+            // Update existing warning text
+            UpdateWarningText();
+        }
+
+        // Initially hide the warning (will show when pause menu opens)
+        GameObject warningGameObj = null;
+#if USE_TMP
+        if (pauseWarningText is TextMeshProUGUI tmpText)
+        {
+            warningGameObj = tmpText.gameObject;
+        }
+#endif
+        if (pauseWarningText is Text regularText)
+        {
+            warningGameObj = regularText.gameObject;
+        }
+        if (warningGameObj != null)
+        {
+            warningGameObj.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Update warning text content and style
+    /// </summary>
+    private void UpdateWarningText()
+    {
+        if (pauseWarningText == null) return;
+
+        string warningMessage = "Save/load buttons don't work first time, idk lol";
+        Color warningColor = new Color(1f, 0.8f, 0f, 1f); // Bright orange/yellow
+
+#if USE_TMP
+        if (pauseWarningText is TextMeshProUGUI tmpText)
+        {
+            tmpText.text = warningMessage;
+            tmpText.color = warningColor;
+            tmpText.fontStyle = TMPro.FontStyles.Bold;
+            tmpText.fontSize = 20;
+        }
+#endif
+        if (pauseWarningText is Text regularText)
+        {
+            regularText.text = warningMessage;
+            regularText.color = warningColor;
+            regularText.fontStyle = FontStyle.Bold;
+            regularText.fontSize = 20;
+        }
+    }
+
+    /// <summary>
+    /// Update hint text visibility and content based on pause state
     /// </summary>
     private void UpdateHintVisibility()
     {
@@ -293,15 +660,34 @@ public class PauseMenuManager : MonoBehaviour
         if (pauseHintText is TMPro.TextMeshProUGUI tmpText)
         {
             hintGameObject = tmpText.gameObject;
+            // Set text content
+            tmpText.text = GetKeybindTipsText();
+            // Set alignment to right-center for middle positioning
+            tmpText.alignment = TMPro.TextAlignmentOptions.MidlineRight;
         }
 #endif
         if (pauseHintText is UnityEngine.UI.Text regularText)
         {
             hintGameObject = regularText.gameObject;
+            // Set text content
+            regularText.text = GetKeybindTipsText();
+            // Set alignment to right-center for middle positioning
+            regularText.alignment = TextAnchor.MiddleRight;
         }
 
         if (hintGameObject != null)
         {
+            // Position hint text at middle-right (equator) of the screen
+            RectTransform rectTransform = hintGameObject.GetComponent<RectTransform>();
+            if (rectTransform != null)
+            {
+                // Anchor to right-middle (1, 0.5) and pivot at right-center (1, 0.5)
+                rectTransform.anchorMin = new Vector2(1f, 0.5f);
+                rectTransform.anchorMax = new Vector2(1f, 0.5f);
+                rectTransform.pivot = new Vector2(1f, 0.5f);
+                rectTransform.anchoredPosition = new Vector2(-20f, 0f);
+            }
+            
             hintGameObject.SetActive(shouldShow);
         }
     }
@@ -319,13 +705,30 @@ public class PauseMenuManager : MonoBehaviour
     /// </summary>
     public void OnSaveGame()
     {
+        LogPauseMenuState("OnSaveGame - before");
+        LogLoadMenuPanelState("OnSaveGame - before");
+        VerifyPauseMenuButtons("OnSaveGame - before");
+
         if (saveSlotSelectionUI != null)
         {
-            // Show save slot selection UI first (this will activate LoadMenuPanel)
+            // CRITICAL: Hide pause menu buttons FIRST, then show selection UI
+            // This ensures LoadMenuPanel can be activated without interference
+            HidePauseMenuButtons();
+            SetPauseMenuBackgroundVisible(false, "OnSaveGame - before ShowSelectionUI");
+            
+            // DIAGNOSTIC: Log LoadMenuPanel state BEFORE ShowSelectionUI
+            LogLoadMenuPanelState("OnSaveGame - before ShowSelectionUIForSave");
+            
+            // Show save slot selection UI (this will activate LoadMenuPanel)
             saveSlotSelectionUI.ShowSelectionUIForSave();
             
-            // Hide pause menu buttons but keep panel active (so LoadMenuPanel stays active)
-            HidePauseMenuButtons();
+            // DIAGNOSTIC: Log LoadMenuPanel state AFTER ShowSelectionUI
+            LogLoadMenuPanelState("OnSaveGame - after ShowSelectionUIForSave");
+            
+            // Verify final state
+            VerifyPauseMenuButtons("OnSaveGame - after ShowSelectionUI");
+            LogPauseMenuState("OnSaveGame - after ShowSelectionUI");
+            LogLoadMenuPanelState("OnSaveGame - final");
         }
         else
         {
@@ -353,14 +756,30 @@ public class PauseMenuManager : MonoBehaviour
     /// </summary>
     public void OnLoadGame()
     {
+        LogPauseMenuState("OnLoadGame - before");
+        LogLoadMenuPanelState("OnLoadGame - before");
+        VerifyPauseMenuButtons("OnLoadGame - before");
+
         if (saveSlotSelectionUI != null)
         {
-            // Show save slot selection UI first (this will activate LoadMenuPanel)
-            saveSlotSelectionUI.ShowSelectionUI();
-            
-            // Hide pause menu buttons but keep panel active (so LoadMenuPanel stays active)
-            // We'll hide individual buttons instead of the whole panel
+            // CRITICAL: Hide pause menu buttons FIRST, then show selection UI
+            // This ensures LoadMenuPanel can be activated without interference
             HidePauseMenuButtons();
+            SetPauseMenuBackgroundVisible(false, "OnLoadGame - before ShowSelectionUI");
+            
+            // DIAGNOSTIC: Log LoadMenuPanel state BEFORE ShowSelectionUI
+            LogLoadMenuPanelState("OnLoadGame - before ShowSelectionUIForLoad");
+            
+            // Show save slot selection UI in load mode (this will activate LoadMenuPanel)
+            saveSlotSelectionUI.ShowSelectionUIForLoad();
+            
+            // DIAGNOSTIC: Log LoadMenuPanel state AFTER ShowSelectionUI
+            LogLoadMenuPanelState("OnLoadGame - after ShowSelectionUIForLoad");
+            
+            // Verify final state
+            VerifyPauseMenuButtons("OnLoadGame - after ShowSelectionUI");
+            LogPauseMenuState("OnLoadGame - after ShowSelectionUI");
+            LogLoadMenuPanelState("OnLoadGame - final");
         }
         else
         {

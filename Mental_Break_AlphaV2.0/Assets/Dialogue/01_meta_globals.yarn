@@ -1,6 +1,7 @@
 ﻿title: R0_Init
 tags: #meta #init
 ---
+<<bg bg_office>>
 /* #line:087bb7e 
 PURPOSE: First entry point for the entire game.  This node declares all global variables used across runs, sets their initial values, and documents the rewind policy.  It then immediately jumps into the first day of Run 1. #line:014f700 
 INPUT:  (none) #line:09a3051 
@@ -129,6 +130,7 @@ A/V:    none #line:0e4485f
 title: R0_ResetForNewRun
 tags: #meta #reset
 ---
+<<bg bg_office>>
 /* #line:0251bec 
 PURPOSE: Reset short‑lived state between runs while preserving core stats and achievements.  This node clears day‑planner omission flags, resets alert level and UI mode, and returns to Day 1 of the next run.  It should be invoked at the conclusion of each run. #line:0ad3602 
 INPUT:  expects $current_run set to the next run prior to call. #line:01ef4a0 

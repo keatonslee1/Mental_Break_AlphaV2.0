@@ -2,6 +2,7 @@
 title: R4_EndingHub
 tags: #run_4 #ending #scene
 --- 
+<<bg bg_office>>
 You brace for the consequences of your actions.  The outcome of your escape or exposure will echo across systems. #line:0e8f28f 
 <<jump EP_Hub>>
 

@@ -678,6 +678,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 134924832}
   m_CullTransparentMesh: 1
+--- !u!1 &184450389
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 184450391}
+  - component: {fileID: 184450390}
+  m_Layer: 0
+  m_Name: MetricsPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &184450390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184450389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 537c67a071fd7b346b5ee07c5b35b46f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MetricsPanelUI
+  dialogueRunner: {fileID: 0}
+  updateInterval: 0.1
+  fontSize: 24
+  metricSpacing: 40
+  rightMargin: 20
+  topMargin: 20
+--- !u!4 &184450391
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184450389}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &337278267
 GameObject:
   m_ObjectHideFlags: 0
@@ -999,6 +1049,7 @@ MonoBehaviour:
     sprite: {fileID: -7496671888308936122, guid: 8933d70721750894c81d5bbc194213a2, type: 3}
   - key: bg_mind_meld_0
     sprite: {fileID: -3925129753518467036, guid: 5ed34d1a76d470448abb00c1d9218d61, type: 3}
+  backgroundFolderPath: Graphics/Backgrounds
 --- !u!114 &587921809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1279,6 +1330,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 729632892}
   m_CullTransparentMesh: 1
+--- !u!1 &768025898
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 768025900}
+  - component: {fileID: 768025899}
+  m_Layer: 0
+  m_Name: Leaderboard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &768025899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 768025898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43f2030d6a3a89a4c93af09450675141, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeaderboardUI
+  dialogueRunner: {fileID: 0}
+  updateInterval: 0.1
+  fontSize: 18
+  entrySpacing: 30
+--- !u!4 &768025900
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 768025898}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 784.6598, y: 422.28943, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &793329288
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1968,6 +2067,61 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 983883295}
   m_CullTransparentMesh: 1
+--- !u!1 &1077220362
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1077220364}
+  - component: {fileID: 1077220363}
+  m_Layer: 0
+  m_Name: MetricsDisplay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1077220363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077220362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc9e9a5ca9e38524686639c66743c1e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MetricsDisplay
+  dialogueRunner: {fileID: 0}
+  engagementContainer: {fileID: 0}
+  engagementValueText: {fileID: 0}
+  engagementBar: {fileID: 0}
+  engagementMaxValue: 100
+  sanityContainer: {fileID: 0}
+  sanityValueText: {fileID: 0}
+  sanityBar: {fileID: 0}
+  sanityMaxValue: 100
+  rankContainer: {fileID: 0}
+  rankValueText: {fileID: 0}
+--- !u!4 &1077220364
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077220362}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 784.6598, y: 422.28943, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1079283243 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9078442560890639579, guid: 52571f68872914e24837210513edea1d, type: 3}
@@ -2720,6 +2874,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenuManager
   pauseMenuPanel: {fileID: 39099169}
   pauseHintText: {fileID: 124478335}
+  pauseWarningText: {fileID: 0}
   resumeButton: {fileID: 1598782643}
   saveGameButton: {fileID: 1687919220}
   loadGameButton: {fileID: 69391682}
@@ -4183,3 +4338,6 @@ SceneRoots:
   - {fileID: 945872760}
   - {fileID: 793329288}
   - {fileID: 1897889584}
+  - {fileID: 1077220364}
+  - {fileID: 184450391}
+  - {fileID: 768025900}

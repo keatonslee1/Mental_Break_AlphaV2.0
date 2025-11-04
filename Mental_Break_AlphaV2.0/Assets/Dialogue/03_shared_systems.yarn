@@ -36,13 +36,26 @@ title: SHOP_Visit
 tags: #scene #shop
 ---
 <<bg bg_companystore>>
-/* #line:03e83f0 
-PURPOSE: Simple company store placeholder.  At the end of each day in Runs 1 and 2, award a small amount of rapid‑feedback cash and describe available goodies.  The Player cannot actually purchase items yet; this stub sets expectations and increments cash.  Later runs may expand this into a proper mini‑store. #line:0472dc9 
-INPUT:  expects the caller to set the day index; no parameters. #line:01dcc9a 
-OUTPUT:  increments $rapid_feedback_cash; prints a flavour line. #line:0f1fe83 
-*/ #line:0284099 
-<<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like “Branded Mug,” “Extra Log Space,” and “Sticker Pack,” then closes for now.  (Store functionality is a stub.) #line:009594d 
+Upgrade Store Coming Soon
+-> Continue
+    <<if $current_run == 1 and $current_day == 1>>
+        <<jump R1_D1_AfterShop>>
+    <<elseif $current_run == 1 and $current_day == 2>>
+        <<jump R1_D2_AfterShop>>
+    <<elseif $current_run == 1 and $current_day == 3>>
+        <<jump R1_D3_AfterShop>>
+    <<elseif $current_run == 2 and $current_day == 1>>
+        <<jump R2_D1_AfterShop>>
+    <<elseif $current_run == 2 and $current_day == 2>>
+        <<jump R2_D2_AfterShop>>
+    <<elseif $current_run == 2 and $current_day == 3>>
+        <<jump R2_D3_AfterShop>>
+    <<elseif $current_run == 3 and $current_day == 2>>
+        <<jump R3_D2_AfterShop>>
+    <<else>>
+        // Fallback - should not happen
+        <<jump R1_D2_Start>>
+    <<endif>> 
 
 ===
 

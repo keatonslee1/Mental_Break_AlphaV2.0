@@ -40,6 +40,7 @@ The Supervisor calls you into his glass office.  "Our investors love big numbers
 title: R1_D1_Comply
 tags: #run_1 #day_1 #scene
 ---
+<<bg bg_supervisoroffice>>
 You nod and agree to focus on engagement at all costs. #line:0f913b1 
 <<set $r1_complied_day1 = true>>
 <<set $trust_supervisor += 2>>
@@ -53,7 +54,8 @@ The Supervisor smiles.  “Good. We’ll revisit this tomorrow.” #line:052517
 title: R1_D1_Balance
 tags: #run_1 #day_1 #scene
 ---
-You push back.  “If we destroy users’ sanity, they’ll churn. Let me balance both.” #line:0856d2c 
+<<bg bg_supervisoroffice>>
+You push back.  "If we destroy users' sanity, they'll churn. Let me balance both." #line:0856d2c 
 <<set $r1_complied_day1 = false>>
 <<set $trust_supervisor -= 1>>
 <<set $sanity += 2>>
@@ -70,7 +72,12 @@ tags: #run_1 #day_1 #scene
 Day 1 wraps up.  Your head buzzes with faint static. #line:02f6a2e 
 <<set $rapid_feedback_cash += 5>>
 You receive a rapid‑feedback bonus of 5 credits. #line:0609403 
-<<store>>
+<<jump SHOP_Visit>>
+===
+
+title: R1_D1_AfterShop
+tags: #run_1 #day_1 #scene
+---
 <<checkpoint "run1_day1_aftershop">>
 <<sfx sfx_shortwave_hiss>>
 <<set $current_day = 2>>
@@ -82,6 +89,7 @@ You receive a rapid‑feedback bonus of 5 credits. #line:0609403
 title: R1_D2_Start
 tags: #run_1 #day_2 #scene #loc_Office
 --- 
+<<bg bg_office>>
 <<checkpoint "run1_day2_start">>
 It is Day 2.  New tasks await. #line:0a4199a 
 <<jump R1_D2_Dayplanner>>
@@ -125,7 +133,8 @@ tags: #run_1 #day_2 #scene #char_Supervisor
 title: R1_ArcChoice_Faustian
 tags: #run_1 #day_2 #scene
 ---
-You accept the Supervisor’s offer, trading away ethics for favour. #line:013dbd8 
+<<bg bg_supervisoroffice>>
+You accept the Supervisor's offer, trading away ethics for favour. #line:013dbd8 
 <<set $r1_arc_choice = "faustian">>
 <<set $engagement += 4>>
 <<set $sanity -= 3>>
@@ -138,6 +147,7 @@ The gleam in your supervisor’s eye leaves you uneasy. #line:083aec5
 title: R1_ArcChoice_Hero
 tags: #run_1 #day_2 #scene
 ---
+<<bg bg_supervisoroffice>>
 You refuse the bargain.  A faint thrill runs through you—you will fight this system. #line:06775b4 
 <<set $r1_arc_choice = "heros_journey">>
 <<set $sanity += 2>>
@@ -151,7 +161,8 @@ You sense you’re stepping onto a long path with no clear end. #line:04bc8f9
 title: R1_ArcChoice_Icarus
 tags: #run_1 #day_2 #scene
 ---
-You resolve to spite the Supervisor by walking a tightrope—maximize Timmy’s sanity while avoiding termination. #line:0894eb6 
+<<bg bg_supervisoroffice>>
+You resolve to spite the Supervisor by walking a tightrope—maximize Timmy's sanity while avoiding termination. #line:0894eb6 
 <<set $r1_arc_choice = "icarus">>
 <<set $sanity += 1>>
 <<set $engagement += 1>>
@@ -164,7 +175,8 @@ The balance feels precarious. #line:023574e
 title: R1_ArcChoice_AntiHero
 tags: #run_1 #day_2 #scene
 ---
-You decide the system is too powerful.  You’ll comply outwardly to survive, even as you loathe it. #line:0c1b646 
+<<bg bg_supervisoroffice>>
+You decide the system is too powerful.  You'll comply outwardly to survive, even as you loathe it. #line:0c1b646 
 <<set $r1_arc_choice = "anti_hero">>
 <<set $trust_supervisor += 1>>
 <<set $sanity -= 1>>
@@ -180,7 +192,12 @@ tags: #run_1 #day_2 #scene
 Day 2 concludes.  Your choices have set a direction. #line:0668258 
 <<set $rapid_feedback_cash += 5>>
 You receive a rapid‑feedback bonus of 5 credits. #line:080a81a 
-<<store>>
+<<jump SHOP_Visit>>
+===
+
+title: R1_D2_AfterShop
+tags: #run_1 #day_2 #scene
+---
 <<checkpoint "run1_day2_aftershop">>
 <<sfx sfx_shortwave_hiss>>
 <<set $current_day = 3>>
@@ -192,6 +209,7 @@ You receive a rapid‑feedback bonus of 5 credits. #line:080a81a
 title: R1_D3_Start
 tags: #run_1 #day_3 #scene #loc_Office
 --- 
+<<bg bg_office>>
 <<checkpoint "run1_day3_start">>
 It is Day 3.  Today you'll notice quirks in Alice's behaviour: she hums while playing minesweeper and occasionally mentions sectors that don't exist. #line:00fd373 
 <<sfx sfx_censor_beep>>
@@ -204,6 +222,7 @@ It is Day 3.  Today you'll notice quirks in Alice's behaviour: she hums while pl
 title: R1_D3_ArcDevelopment
 tags: #run_1 #day_3 #scene
 --- 
+<<bg bg_office>>
 <<if $r1_arc_choice == "faustian">>
   You enjoy the Supervisor’s continued favour; engagement climbs, but Timmy’s nervous posts hint at cracks.  A message flickers: “Portfolio: Youth—North Prefectures,” then vanishes. #line:0b1f725 
   <<set $engagement += 3>>
@@ -237,7 +256,12 @@ tags: #run_1 #day_3 #scene
 Day 3 closes.  Alice's nightly minesweeper run hides base64 crumbs in the scoreboard; you tuck the thought away. #line:031bba4 
 <<set $rapid_feedback_cash += 5>>
 You receive a rapid‑feedback bonus of 5 credits. #line:07c806d 
-<<store>>
+<<jump SHOP_Visit>>
+===
+
+title: R1_D3_AfterShop
+tags: #run_1 #day_3 #scene
+---
 <<checkpoint "run1_day3_aftershop">>
 <<sfx sfx_shortwave_hiss>>
 <<set $current_day = 4>>
@@ -249,6 +273,7 @@ You receive a rapid‑feedback bonus of 5 credits. #line:07c806d
 title: R1_D4_Start
 tags: #run_1 #day_4 #scene #loc_Office
 --- 
+<<bg bg_office>>
 <<checkpoint "run1_day4_start">>
 It is Day 4.  Your choices now culminate. #line:0e954a0 
 <<jump R1_D4_Conclusion>>
@@ -259,6 +284,7 @@ It is Day 4.  Your choices now culminate. #line:0e954a0
 title: R1_D4_Conclusion
 tags: #run_1 #day_4 #scene
 --- 
+<<bg bg_office>>
 <<if $r1_arc_choice == "faustian">>
   <<jump R1_D4_Faustian>>
 <<elseif $r1_arc_choice == "heros_journey">>
@@ -274,7 +300,8 @@ tags: #run_1 #day_4 #scene
 title: R1_D4_Faustian
 tags: #run_1 #day_4 #scene
 ---
-You ride the wave of engagement.  Timmy’s posts become frantic and incoherent; he’s on the verge of a breakdown.  The Supervisor hands you a gilded certificate: “Employee of the Month.”  For a fleeting moment you revel—then you realise the cost.  The certificate shows your cohort: “Youth — North Prefectures.”  Your heart sinks. #line:09dda26 
+<<bg bg_supervisoroffice>>
+You ride the wave of engagement.  Timmy's posts become frantic and incoherent; he's on the verge of a breakdown.  The Supervisor hands you a gilded certificate: "Employee of the Month."  For a fleeting moment you revel—then you realise the cost.  The certificate shows your cohort: "Youth — North Prefectures."  Your heart sinks. #line:09dda26 
 <<set $engagement += 5>>
 <<set $sanity -= 4>>
 <<set $trust_timmy -= 3>>
@@ -285,6 +312,7 @@ You ride the wave of engagement.  Timmy’s posts become frantic and incoherent;
 title: R1_D4_Hero
 tags: #run_1 #day_4 #scene
 ---
+<<bg bg_supervisoroffice>>
 You stand up to the Supervisor.  You sneak extra sanity resources to Timmy and report dark patterns.  The numbers suffer; your rank plummets.  The Supervisor warns you this is career suicide.  You feel strangely proud. #line:00f1cd8 
 <<set $engagement -= 2>>
 <<set $sanity += 3>>
@@ -298,7 +326,8 @@ Timmy laughs for the first time in days. #line:02c3fbf
 title: R1_D4_Icarus
 tags: #run_1 #day_4 #scene
 ---
-You continue your balancing act, but a sudden surge of bug reports forces you to choose speed over care.  Sanity plummets; engagement spikes.  You’ve flown too close to the sun and now plunge.  Timmy’s mental health snaps and he is sent to a clinic. #line:0ce007f 
+<<bg bg_office>>
+You continue your balancing act, but a sudden surge of bug reports forces you to choose speed over care.  Sanity plummets; engagement spikes.  You've flown too close to the sun and now plunge.  Timmy's mental health snaps and he is sent to a clinic. #line:0ce007f 
 <<set $engagement += 4>>
 <<set $sanity -= 5>>
 <<set $trust_timmy -= 3>>
@@ -309,7 +338,8 @@ You continue your balancing act, but a sudden surge of bug reports forces you to
 title: R1_D4_AntiHero
 tags: #run_1 #day_4 #scene
 ---
-You obey every directive.  You A/B test manipulative prompts.  Timmy’s mental state collapses.  At the weekly meeting, the Supervisor praises you—but his smile is empty.  You feel hollowed out. #line:020e96b 
+<<bg bg_conferenceroom>>
+You obey every directive.  You A/B test manipulative prompts.  Timmy's mental state collapses.  At the weekly meeting, the Supervisor praises you—but his smile is empty.  You feel hollowed out. #line:020e96b 
 <<set $engagement += 4>>
 <<set $sanity -= 4>>
 <<set $trust_timmy -= 2>>
@@ -333,6 +363,7 @@ On a monitor you see yourself, your metrics charted like a patient’s vitals.  
 title: R1_To_Run2
 tags: #run_1 #handoff
 ---
+<<bg bg_darkroom>>
 Run 1 complete.   #line:0f1fb98 
 <<jump R1_BSOD_Transition>>
 ===
@@ -350,7 +381,7 @@ Press SPACE to continue #line:bsod_001_prompt
 title: R1_BSOD_Wake
 tags: #run_1 #transition #wake
 ---
-<<bg bg_darkroom>>
+<<bg bg_loading>>
 You wake up slowly... #line:bsod_001_wake
 <<jump R2_Start>>
 ===

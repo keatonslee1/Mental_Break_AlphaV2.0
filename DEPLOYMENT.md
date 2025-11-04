@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Unity Editor 2022.3+ with WebGL Build Support module installed
+- Unity Editor 6.2 (Web Unity 6.2) with WebGL Build Support module installed
 - Vercel account (free tier works)
 - Domain: mentalbreak.io (or use Vercel's default domain for testing)
 
@@ -78,36 +78,43 @@ Install "Live Server" extension in VS Code, right-click `index.html` → "Open w
 
 ### Method 1: Vercel CLI (Recommended)
 
+**Quick Deploy Script:**
+```powershell
+# Use the provided deployment script
+.\deploy-to-vercel.ps1 -Prod
+```
+
+**Manual Steps:**
+
 1. Install Vercel CLI:
-   ```bash
+   ```powershell
    npm install -g vercel
    ```
 
 2. Login to Vercel:
-   ```bash
+   ```powershell
    vercel login
    ```
 
 3. Deploy from project root:
-   ```bash
+   ```powershell
    vercel --prod
    ```
    
    When prompted:
    - "Set up and deploy?": Yes
-   - "Which scope?": Select your account
+   - "Which scope?": Select your account or team (`team_w3aTDuy3oozvmAKuhIdJCGq3`)
    - "Link to existing project?": No (first time) or Yes (if updating)
-   - "Project name?": `mental-break` or similar
+   - "Project name?": `mental-break`
    - "Directory?": `webgl-build`
    - "Override settings?": No (unless you want to customize)
 
 4. The deployment will provide a URL. Test it!
 
 5. To link your domain:
-   ```bash
-   vercel domains add mentalbreak.io
-   ```
-   Then follow DNS configuration instructions from Vercel dashboard.
+   - Go to Vercel Dashboard → Project → Settings → Domains
+   - Add domain: `mentalbreak.io`
+   - Follow DNS configuration instructions
 
 ### Method 2: Vercel Dashboard (GitHub Integration)
 

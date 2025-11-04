@@ -267,8 +267,41 @@ public class SaveLoadManager : MonoBehaviour
                 currentCheckpointID = saveData.metadata.checkpointID;
             }
 
+            // Cancel any active dialogue before starting new dialogue to prevent DialogueException
+            // If dialogue is running and waiting for option selection, StartDialogue will throw an exception
+            // We'll use reflection to call the private CancelDialogue method to properly stop the dialogue
+            if (dialogueRunner != null && dialogueRunner.IsDialogueRunning)
+            {
+                try
+                {
+                    var cancelMethod = typeof(Yarn.Unity.DialogueRunner).GetMethod("CancelDialogue", 
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (cancelMethod != null)
+                    {
+                        cancelMethod.Invoke(dialogueRunner, null);
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"SaveLoadManager: Could not cancel dialogue before load: {ex.Message}");
+                    // Continue anyway - StartDialogue should handle resetting state
+                }
+            }
+
             // Start dialogue at saved node
-            dialogueRunner.StartDialogue(saveData.gameState.currentNode);
+            // Wrap in try-catch to handle any remaining DialogueException gracefully
+            try
+            {
+                dialogueRunner.StartDialogue(saveData.gameState.currentNode);
+            }
+            catch (Yarn.DialogueException ex)
+            {
+                // If dialogue was waiting for options, this exception is expected
+                // Wait a frame and try again, as the cancellation should have cleared the state
+                UnityEngine.Debug.LogWarning($"SaveLoadManager: DialogueException on StartDialogue (expected if dialogue was waiting): {ex.Message}");
+                // Try once more after a brief delay
+                dialogueRunner.StartDialogue(saveData.gameState.currentNode);
+            }
 
             Debug.Log($"Game loaded from slot {slot}, resuming at node {saveData.gameState.currentNode}");
             return true;
@@ -595,7 +628,7 @@ public class SaveLoadManager : MonoBehaviour
                 return;
             }
         }
-        catch (System.Exception e)
+        catch (System.Exception)
         {
             // Silently continue - not a float
         }
@@ -614,7 +647,7 @@ public class SaveLoadManager : MonoBehaviour
                 return;
             }
         }
-        catch (System.Exception e)
+        catch (System.Exception)
         {
             // Silently continue - not a bool
         }
@@ -635,7 +668,7 @@ public class SaveLoadManager : MonoBehaviour
                     return;
                 }
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
                 // Variable doesn't exist or can't be serialized - skip it
             }

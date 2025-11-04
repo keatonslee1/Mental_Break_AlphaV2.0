@@ -41,10 +41,13 @@ The following keys are defined by convention.  Your Unity side should map these 
   - `bg_hallway` – hallway for informal Supervisor encounters. #line:06c3f68 
   - `bg_backend` – backend server room or dashboard environment. #line:05888bc 
   - `bg_mailroom` – mailroom used for USB handoff scenes. #line:0c4a7fd 
-  - `bg_tribunal` – tribunal or courtroom backdrop for Run 3. #line:0392b6c 
-  - `bg_museum` – secret museum used in Run 3 Day 3. #line:0e5263a 
+  - `bg_tribunal` – tribunal or courtroom backdrop for Run 3. #line:0392b6c 
+  - `bg_museum` – secret museum used in Run 3 Day 3. #line:0e5263a 
   - `bg_mosaic` – mosaic of many Alices used during the MAJORITY MIND briefing. #line:008e9c4 
   - `bg_darkroom` – dark control room for stinger and twist scenes. #line:02ae0e5 
+  - `bg_conferenceroom` – conference room for formal meetings and boardroom presentations. #line:0a7f3c2 
+  - `bg_loading` – loading screen for transitions and system reboots. #line:0b8e4d1 
+  - `bg_majoritymind` – backdrop for the MAJORITY MIND program briefing in Run 3 Day 4. #line:0c9f5e0 
 
 - **UI modes**: #line:006bb0f 
   - `mode:normal` – default UI state. #line:04c746e 

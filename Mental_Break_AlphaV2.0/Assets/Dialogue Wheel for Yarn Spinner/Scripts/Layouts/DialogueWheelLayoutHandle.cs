@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 namespace Yarn.Unity.Addons.DialogueWheel
 {
     using UnityEngine;
@@ -92,3 +93,4 @@ namespace Yarn.Unity.Addons.DialogueWheel
         }
     }
 }
+#endif
