@@ -35,6 +35,17 @@ html, body {
   color: #9ba7db;
   text-decoration: underline;
 }
+#game-controls {
+  text-align: center;
+  padding: 15px 10px;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #cccccc;
+  font-family: arial, sans-serif;
+}
+#game-controls p {
+  margin: 0;
+}
 #page-footer {
   text-align: center;
   padding: 15px 10px;
