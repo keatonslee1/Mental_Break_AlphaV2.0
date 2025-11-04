@@ -4,6 +4,54 @@
   "outputDirectory": "webgl-build",
   "routes": [
     {
+      "src": "/Build/webgl-build.framework.js.gz",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/Build/webgl-build.wasm.gz",
+      "headers": {
+        "Content-Type": "application/wasm",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/Build/webgl-build.data.gz",
+      "headers": {
+        "Content-Type": "application/gzip",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/Build/(.*\\.js\\.gz)",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/Build/(.*\\.wasm\\.gz)",
+      "headers": {
+        "Content-Type": "application/wasm",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/Build/(.*\\.data\\.gz)",
+      "headers": {
+        "Content-Type": "application/gzip",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
       "src": "/Build/(.*)",
       "dest": "/Build/$1",
       "headers": {
@@ -18,10 +66,34 @@
       }
     },
     {
+      "src": "/(.*\\.js\\.gz)",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.wasm\\.gz)",
+      "headers": {
+        "Content-Type": "application/wasm",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.data\\.gz)",
+      "headers": {
+        "Content-Type": "application/gzip",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
       "src": "/(.*\\.unityweb)",
       "headers": {
         "Content-Type": "application/octet-stream",
-        "Content-Encoding": "br",
+        "Content-Encoding": "gzip",
         "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
@@ -29,22 +101,6 @@
       "src": "/(.*\\.wasm)",
       "headers": {
         "Content-Type": "application/wasm",
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/(.*\\.data)",
-      "headers": {
-        "Content-Type": "application/octet-stream",
-        "Content-Encoding": "br",
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/(.*\\.br)",
-      "headers": {
-        "Content-Type": "application/octet-stream",
-        "Content-Encoding": "br",
         "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
@@ -77,4 +133,3 @@
     }
   ]
 }
-
