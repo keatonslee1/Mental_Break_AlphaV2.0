@@ -3,16 +3,17 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | Mental Break</title>
+    <title>Mental Break - Alpha v2.0</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css?v=2.0">
-    <script src="https://cdn.jsdelivr.net/npm/brotli@1.3.2/brotli.js"></script>
+    <link rel="stylesheet" href="TemplateData/style.css?v=2.1">
   </head>
   <body>
+    <!-- Page Header -->
     <div id="page-header">
       <h1 id="game-title">Mental Break - Alpha v2.0</h1>
-      <p id="game-subtitle">Report Bugs on Discord: <a href="https://discord.gg/peHA2uHW" target="_blank" rel="noopener noreferrer">https://discord.gg/peHA2uHW</a></p>
+      <p id="game-subtitle">Report Bugs on Discord: <a href="https://discord.gg/peHA2uHW" target="_blank" id="discord-link">https://discord.gg/peHA2uHW</a></p>
     </div>
+
     <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
@@ -28,209 +29,26 @@
         <div id="unity-build-title">Mental Break</div>
       </div>
     </div>
+
+    <!-- Game Controls -->
     <div id="game-controls">
       <p>Controls: Spacebar, Enter, Up, Down, ESC</p>
     </div>
+
+    <!-- Page Footer -->
     <div id="page-footer">
       <p>Keaton@MachinicAnarchy.ai</p>
-      <p><a href="https://linktr.ee/keatonlee" target="_blank" rel="noopener noreferrer" id="linktree-link">Linktree</a></p>
+      <p><a href="https://linktr.ee/keatonlee" target="_blank" id="linktree-link">Linktree</a></p>
       <p>Copyright Keaton Media LLC 2025 All Rights Reserved</p>
     </div>
-    <script>
-      // Check if browser supports Brotli natively
-      var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-      var needsBrotliFallback = isIOS || (isSafari && !window.chrome);
-      
-      // Brotli decompression fallback for iOS/Safari
-      var brotliReady = false;
-      
-      if (needsBrotliFallback) {
-        console.log('iOS/Safari detected - setting up Brotli decompression fallback');
-        
-        // Wait for Brotli library to load
-        function initBrotli() {
-          if (typeof Brotli !== 'undefined') {
-            brotliReady = true;
-            console.log('Brotli decompression fallback ready');
-          } else {
-            setTimeout(initBrotli, 100);
-          }
-        }
-        initBrotli();
-        
-        // Decompress Brotli data
-        function decompressBrotli(compressedData) {
-          if (typeof Brotli === 'undefined') {
-            console.error('Brotli library not loaded');
-            return null;
-          }
-          try {
-            var input = new Uint8Array(compressedData);
-            var output = Brotli.decompress(input);
-            if (!output || output.length === 0) {
-              console.error('Brotli decompression returned empty result');
-              return null;
-            }
-            return output;
-          } catch (err) {
-            console.error('Brotli decompression error:', err);
-            return null;
-          }
-        }
-        
-        // Intercept fetch requests for .br files
-        var originalFetch = window.fetch;
-        window.fetch = function(url, options) {
-          var urlString = typeof url === 'string' ? url : (url.url || url.toString());
-          
-          if (urlString && urlString.endsWith('.br')) {
-            console.log('Intercepting .br file request:', urlString);
-            
-            return originalFetch(url, options).then(function(response) {
-              var contentEncoding = response.headers.get('Content-Encoding');
-              
-              if (contentEncoding === 'br') {
-                console.log('Decompressing Brotli file:', urlString);
-                
-                return response.clone().arrayBuffer().then(function(buffer) {
-                  // Wait for Brotli to be ready (up to 2 seconds)
-                  return new Promise(function(resolve) {
-                    var waitCount = 0;
-                    var checkReady = setInterval(function() {
-                      if (typeof Brotli !== 'undefined') {
-                        clearInterval(checkReady);
-                        brotliReady = true;
-                        
-                        var decompressed = decompressBrotli(buffer);
-                        if (!decompressed) {
-                          console.error('Failed to decompress, returning original response');
-                          resolve(response);
-                          return;
-                        }
-                        
-                        console.log('Decompression successful:', urlString, 'Size:', buffer.byteLength, '->', decompressed.length);
-                        
-                        // Create new response with decompressed data
-                        var blob = new Blob([decompressed]);
-                        var newHeaders = new Headers();
-                        
-                        // Copy headers except Content-Encoding and Content-Length
-                        response.headers.forEach(function(value, key) {
-                          var lowerKey = key.toLowerCase();
-                          if (lowerKey !== 'content-encoding' && lowerKey !== 'content-length') {
-                            newHeaders.set(key, value);
-                          }
-                        });
-                        
-                        // Set new Content-Length
-                        newHeaders.set('Content-Length', decompressed.length.toString());
-                        
-                        var newResponse = new Response(blob, {
-                          status: response.status,
-                          statusText: response.statusText,
-                          headers: newHeaders
-                        });
-                        
-                        resolve(newResponse);
-                      } else if (waitCount++ > 40) {
-                        // Timeout after 2 seconds (40 * 50ms)
-                        clearInterval(checkReady);
-                        console.error('Timeout waiting for Brotli library');
-                        resolve(response);
-                      }
-                    }, 50);
-                  });
-                });
-              }
-              
-              return response;
-            });
-          }
-          
-          return originalFetch(url, options);
-        };
-        
-        // Also intercept XMLHttpRequest in case Unity uses it
-        var originalXHROpen = XMLHttpRequest.prototype.open;
-        var originalXHRSend = XMLHttpRequest.prototype.send;
-        
-        XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-          this._url = url;
-          return originalXHROpen.call(this, method, url, async !== false, user, password);
-        };
-        
-        XMLHttpRequest.prototype.send = function(data) {
-          if (this._url && this._url.endsWith('.br')) {
-            var xhr = this;
-            var originalOnReadyStateChange = this.onreadystatechange;
-            
-            // Use fetch instead for .br files
-            fetch(this._url).then(function(response) {
-              if (response.headers.get('Content-Encoding') === 'br') {
-                return response.arrayBuffer().then(function(buffer) {
-                  // Wait for Brotli to be ready
-                  return new Promise(function(resolve) {
-                    var waitCount = 0;
-                    var checkReady = setInterval(function() {
-                      if (typeof Brotli !== 'undefined') {
-                        clearInterval(checkReady);
-                        brotliReady = true;
-                        
-                        var decompressed = decompressBrotli(buffer);
-                        if (decompressed) {
-                          // Create ArrayBuffer from decompressed data
-                          var arrayBuffer = decompressed.buffer || new Uint8Array(decompressed).buffer;
-                          
-                          // Set XHR properties
-                          Object.defineProperty(xhr, 'status', { value: 200, writable: false });
-                          Object.defineProperty(xhr, 'statusText', { value: 'OK', writable: false });
-                          Object.defineProperty(xhr, 'response', { value: arrayBuffer, writable: false });
-                          Object.defineProperty(xhr, 'responseText', { value: '', writable: false });
-                          Object.defineProperty(xhr, 'readyState', { value: 4, writable: false });
-                          
-                          // Trigger callbacks
-                          if (originalOnReadyStateChange) {
-                            originalOnReadyStateChange.call(xhr);
-                          }
-                          if (xhr.onload) {
-                            xhr.onload();
-                          }
-                          resolve();
-                        } else {
-                          console.error('Failed to decompress for XHR');
-                          resolve();
-                        }
-                      } else if (waitCount++ > 40) {
-                        clearInterval(checkReady);
-                        console.error('Timeout waiting for Brotli library in XHR');
-                        resolve();
-                      }
-                    }, 50);
-                  });
-                });
-              } else {
-                return originalXHRSend.call(xhr, data);
-              }
-            }).catch(function(err) {
-              console.error('XHR fetch error:', err);
-              return originalXHRSend.call(xhr, data);
-            });
-            return;
-          }
-          
-          return originalXHRSend.call(this, data);
-        };
-      }
 
+    <script>
       var canvas = document.querySelector("#unity-canvas");
 
       // Shows a temporary message banner/ribbon for a few seconds, or
       // a permanent error message on top of the canvas if type=='error'.
       // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
+      // Modified for dark theme compatibility
       function unityShowBanner(msg, type) {
         var warningBanner = document.querySelector("#unity-warning");
         function updateBannerVisibility() {
@@ -239,9 +57,9 @@
         var div = document.createElement('div');
         div.innerHTML = msg;
         warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: #d32f2f; color: white; padding: 10px; border-radius: 4px;';
+        if (type == 'error') div.style = 'background: #ff4444; color: #ffffff; padding: 10px; border-radius: 4px;';
         else {
-          if (type == 'warning') div.style = 'background: #f57c00; color: white; padding: 10px; border-radius: 4px;';
+          if (type == 'warning') div.style = 'background: #ffaa00; color: #000000; padding: 10px; border-radius: 4px;';
           setTimeout(function() {
             warningBanner.removeChild(div);
             updateBannerVisibility();
@@ -254,65 +72,35 @@
       var loaderUrl = buildUrl + "/webgl-build.loader.js";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/webgl-build.data.br",
-        frameworkUrl: buildUrl + "/webgl-build.framework.js.br",
-        codeUrl: buildUrl + "/webgl-build.wasm.br",
+        dataUrl: buildUrl + "/webgl-build.data.gz",
+        frameworkUrl: buildUrl + "/webgl-build.framework.js.gz",
+        codeUrl: buildUrl + "/webgl-build.wasm.gz",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Keaton Media",
         productName: "Mental Break",
-        productVersion: "1.0",
+        productVersion: "2.0",
         showBanner: unityShowBanner,
-        // errorHandler: function(err, url, line) {
-        //    alert("error " + err + " occurred at line " + line);
-        //    // Return 'true' if you handled this error and don't want Unity
-        //    // to process it further, 'false' otherwise.
-        //    return true;
-        // },
       };
 
-      // By default, Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      // If you would like all file writes inside Unity Application.persistentDataPath
-      // directory to automatically persist so that the contents are remembered when
-      // the user revisits the site the next time, uncomment the following line:
-      // config.autoSyncPersistentDataPath = true;
-      // This autosyncing is currently not the default behavior to avoid regressing
-      // existing user projects that might rely on the earlier manual
-      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
-      // expected to change.
-
+      // Mobile device detection and configuration
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
-
         var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
         document.getElementsByTagName('head')[0].appendChild(meta);
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
-        // Hide keyboard controls on mobile
-        var controlsElement = document.querySelector("#game-controls");
-        if (controlsElement) {
-          controlsElement.style.display = "none";
-        }
-
-        // Check WebGL support on mobile
-        var canvasTest = document.createElement('canvas');
-        var gl = canvasTest.getContext('webgl2') || canvasTest.getContext('webgl');
-        if (!gl) {
-          console.warn("WebGL not supported on this mobile device");
-          unityShowBanner("WebGL is not supported on this device. Please use a modern browser or try on desktop.", 'warning');
-        }
-
+        
         // Lower canvas resolution on mobile devices for better performance
         config.devicePixelRatio = 1;
 
-
+        // Check WebGL support
+        var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) {
+          unityShowBanner('WebGL is not supported on this device. Please use a device with WebGL support.', 'error');
+          document.querySelector("#unity-loading-bar").style.display = "none";
+        }
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
         canvas.style.width = "960px";
@@ -326,26 +114,18 @@
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
-
-              }).catch((message) => {
-                console.error("Unity WebGL load error:", message);
-                var errorMsg = "Failed to load game. ";
-                if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-                  errorMsg += "Mobile devices may have limited WebGL support. Please try:\n";
-                  errorMsg += "1. Use a modern browser (Chrome, Safari latest version)\n";
-                  errorMsg += "2. Ensure you're on a high-end device\n";
-                  errorMsg += "3. Try on desktop for best experience\n\n";
-                }
-                errorMsg += "Error: " + message;
-                unityShowBanner(errorMsg, 'error');
-                document.querySelector("#unity-loading-bar").style.display = "none";
-              });
-            };
+        }).then((unityInstance) => {
+          document.querySelector("#unity-loading-bar").style.display = "none";
+          document.querySelector("#unity-fullscreen-button").onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+        }).catch((message) => {
+          unityShowBanner('Failed to load game: ' + message, 'error');
+        });
+      };
+      script.onerror = () => {
+        unityShowBanner('Failed to load Unity loader script. Please check your connection and try again.', 'error');
+      };
 
       document.body.appendChild(script);
 
