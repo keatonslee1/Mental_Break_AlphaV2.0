@@ -1,16 +1,32 @@
+# Unity build artifacts
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
-[Mm]emoryCaptures/
-UserSettings/
+[Uu]ser[Ss]ettings/
+
+# Visual Studio cache
+.vs/
+
+# Unity WebGL Build
+webgl-build/
+
+# Visual Studio Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+__MACOSX/
+._*
+
+# Unity auto-generated
 *.csproj
 *.unityproj
 *.sln
 *.suo
-*.tmp
 *.user
 *.userprefs
 *.pidb
@@ -20,5 +36,6 @@ UserSettings/
 *.mdb
 *.opendb
 *.VC.db
-*.DS_Store
-.vscode/
+
+# Unity asset metadata (kept in git but can ignore if desired)
+# *.meta

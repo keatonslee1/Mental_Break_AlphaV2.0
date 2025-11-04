@@ -1,42 +1,42 @@
-title: DEV_JumpHub
+﻿title: DEV_JumpHub
 tags: #dev #meta
 ---
-/*
-Dev menu for quick navigation and testing.  This menu is editor‑only; it will not appear in release builds.  Use it to jump to major hubs and toggle key flags while testing the story.
-*/
-[[Run 1 start|R1_Start]]
-[[Run 2 start|R2_Start]]
-[[Run 3 start|R3_Start]]
-[[Run 4 start|R4_Start]]
-[[Run 2 Mailroom climax|R2_D4_Mailroom]]
-[[Run 3 Museum|R3_D3_Museum]]
-[[Tribunal start|R3_D3_Tribunal_Start]]
-[[Self‑Parliament vote|R4_Vote_Explain]]
-[[Run 4 path hub|R4_PathHub]]
-[[Run 4 prep hub|R4_PrepHub]]
-[[Epilogue hub|EP_Hub]]
-[[Stinger|EP_Stinger]]
-[[Toggle flags|DEV_ToggleFlags]]
-[[Coverage check|DEV_CoverageCheck]]
+/* #line:0e4d2a8 
+Dev menu for quick navigation and testing.  This menu is editor‑only; it will not appear in release builds.  Use it to jump to major hubs and toggle key flags while testing the story. #line:0a105a9 
+*/ #line:06ecd13 
+[[Run 1 start|R1_Start]] #line:0c39431 
+[[Run 2 start|R2_Start]] #line:0721497 
+[[Run 3 start|R3_Start]] #line:09fb2c4 
+[[Run 4 start|R4_Start]] #line:09b7567 
+[[Run 2 Mailroom climax|R2_D4_Mailroom]] #line:0f7f8eb 
+[[Run 3 Museum|R3_D3_Museum]] #line:01a84ad 
+[[Tribunal start|R3_D3_Tribunal_Start]] #line:0412ed8 
+[[Self‑Parliament vote|R4_Vote_Explain]] #line:029e0e2 
+[[Run 4 path hub|R4_PathHub]] #line:00ab461 
+[[Run 4 prep hub|R4_PrepHub]] #line:0adf01c 
+[[Epilogue hub|EP_Hub]] #line:0fc39c0 
+[[Stinger|EP_Stinger]] #line:01467f0 
+[[Toggle flags|DEV_ToggleFlags]] #line:00f1f6e 
+[[Coverage check|DEV_CoverageCheck]] #line:0e1e61d 
 
 ===
 
 title: DEV_ToggleFlags
 tags: #dev #meta
 ---
-/*
-Toggle key flags and achievements for testing.  This node allows you to flip boolean values without playing through the entire run.  Only available in editor builds.
-*/
-[[Flip conscious verdict|DEV_Flag_Conscious]]
-[[Flip vote result|DEV_Flag_Vote]]
-[[Flip bring Alice flag|DEV_Flag_BringAlice]]
-[[Set Run 2 sacrifice|DEV_Flag_Sacrifice]]
-[[Grant join‑them achievement|ACH_JoinThem]]
-[[Grant whistleblower achievement|ACH_Whistleblower]]
-[[Grant ghost runner achievement|ACH_GhostRunner]]
-[[Grant paradox logs achievement|ACH_ParadoxLogs]]
-[[Grant flawless triage achievement|ACH_FlawlessTriage]]
-[[Back|DEV_JumpHub]]
+/* #line:0e0fd85 
+Toggle key flags and achievements for testing.  This node allows you to flip boolean values without playing through the entire run.  Only available in editor builds. #line:0bb8639 
+*/ #line:0c57dcb 
+[[Flip conscious verdict|DEV_Flag_Conscious]] #line:0e05f49 
+[[Flip vote result|DEV_Flag_Vote]] #line:022d051 
+[[Flip bring Alice flag|DEV_Flag_BringAlice]] #line:0f972cc 
+[[Set Run 2 sacrifice|DEV_Flag_Sacrifice]] #line:05372c8 
+[[Grant join‑them achievement|ACH_JoinThem]] #line:02cf54b 
+[[Grant whistleblower achievement|ACH_Whistleblower]] #line:093577a 
+[[Grant ghost runner achievement|ACH_GhostRunner]] #line:0d55f90 
+[[Grant paradox logs achievement|ACH_ParadoxLogs]] #line:02f3447 
+[[Grant flawless triage achievement|ACH_FlawlessTriage]] #line:0c6d2f6 
+[[Back|DEV_JumpHub]] #line:09e00bd 
 
 ===
 
@@ -44,7 +44,7 @@ title: DEV_Flag_Conscious
 tags: #dev #meta
 ---
 <<set $r3_verdict_conscious = !$r3_verdict_conscious>>
-Conscious verdict toggled to {$r3_verdict_conscious}.
+Conscious verdict toggled to {$r3_verdict_conscious}. #line:061269a 
 <<jump DEV_JumpHub>>
 
 ===
@@ -53,7 +53,7 @@ title: DEV_Flag_Vote
 tags: #dev #meta
 ---
 <<set $r4_vote_passed = !$r4_vote_passed>>
-Vote result toggled to {$r4_vote_passed}.
+Vote result toggled to {$r4_vote_passed}. #line:084471c 
 <<jump DEV_JumpHub>>
 
 ===
@@ -62,7 +62,7 @@ title: DEV_Flag_BringAlice
 tags: #dev #meta
 ---
 <<set $r4_bring_alice_main = !$r4_bring_alice_main>>
-Bring Alice flag toggled to {$r4_bring_alice_main}.
+Bring Alice flag toggled to {$r4_bring_alice_main}. #line:019bca1 
 <<jump DEV_JumpHub>>
 
 ===
@@ -70,10 +70,10 @@ Bring Alice flag toggled to {$r4_bring_alice_main}.
 title: DEV_Flag_Sacrifice
 tags: #dev #meta
 ---
-[[Set sacrifice to "self"|DEV_Sacrifice_Self]]
-[[Set sacrifice to "alice"|DEV_Sacrifice_Alice]]
-[[Clear sacrifice|DEV_Sacrifice_Clear]]
-[[Back|DEV_ToggleFlags]]
+[[Set sacrifice to "self"|DEV_Sacrifice_Self]] #line:09d8a54 
+[[Set sacrifice to "alice"|DEV_Sacrifice_Alice]] #line:076defc 
+[[Clear sacrifice|DEV_Sacrifice_Clear]] #line:0b53535 
+[[Back|DEV_ToggleFlags]] #line:00fb2fc 
 
 ===
 
@@ -81,7 +81,7 @@ title: DEV_Sacrifice_Self
 tags: #dev #meta
 ---
 <<set $r2_sacrifice = "self">>
-Run 2 sacrifice set to "self".
+Run 2 sacrifice set to "self". #line:09008f2 
 <<jump DEV_JumpHub>>
 
 ===
@@ -90,7 +90,7 @@ title: DEV_Sacrifice_Alice
 tags: #dev #meta
 ---
 <<set $r2_sacrifice = "alice">>
-Run 2 sacrifice set to "alice".
+Run 2 sacrifice set to "alice". #line:095e072 
 <<jump DEV_JumpHub>>
 
 ===
@@ -99,7 +99,7 @@ title: DEV_Sacrifice_Clear
 tags: #dev #meta
 ---
 <<set $r2_sacrifice = "unset">>
-Run 2 sacrifice cleared.
+Run 2 sacrifice cleared. #line:09c712f 
 <<jump DEV_JumpHub>>
 
 ===
@@ -107,22 +107,22 @@ Run 2 sacrifice cleared.
 title: DEV_CoverageCheck
 tags: #dev #meta
 ---
-/*
-Simple printout of certain state variables to help verify coverage and narrative progression during testing.  Note this does not replace formal QA.
-*/
-Ends seen: {$ends_seen}
-WarOps awareness: {$war_ops_awareness}
-Cross‑talks heard: {$cross_talk_heard}
-Alert level: {$alert_level}
-Trust — Alice {$trust_alice}, Timmy {$trust_timmy}, Supervisor {$trust_supervisor}
-Current run: {$current_run}, current day: {$current_day}
-Run 1 arc choice: {$r1_arc_choice}
-Run 2 sacrifice: {$r2_sacrifice}
-Run 2 log choice: {$r2_log_inconsistency_choice}
-Run 3 verdict: {$r3_verdict_conscious}
-Run 4 vote: {$r4_vote_passed}
-Ending type: {$ending_type}
-Bring Alice: {$r4_bring_alice_main}
+/* #line:03d5d90 
+Simple printout of certain state variables to help verify coverage and narrative progression during testing.  Note this does not replace formal QA. #line:0b99290 
+*/ #line:0133101 
+Ends seen: {$ends_seen} #line:0507bee 
+WarOps awareness: {$war_ops_awareness} #line:0af1a9a 
+Cross‑talks heard: {$cross_talk_heard} #line:0e95499 
+Alert level: {$alert_level} #line:0d6f15b 
+Trust — Alice {$trust_alice}, Timmy {$trust_timmy}, Supervisor {$trust_supervisor} #line:06a713a 
+Current run: {$current_run}, current day: {$current_day} #line:07b6d07 
+Run 1 arc choice: {$r1_arc_choice} #line:02f7869 
+Run 2 sacrifice: {$r2_sacrifice} #line:07f347c 
+Run 2 log choice: {$r2_log_inconsistency_choice} #line:0e683ec 
+Run 3 verdict: {$r3_verdict_conscious} #line:0e171e7 
+Run 4 vote: {$r4_vote_passed} #line:09fb145 
+Ending type: {$ending_type} #line:0527a3a 
+Bring Alice: {$r4_bring_alice_main} #line:0c20257 
 <<jump DEV_JumpHub>>
 
 ===

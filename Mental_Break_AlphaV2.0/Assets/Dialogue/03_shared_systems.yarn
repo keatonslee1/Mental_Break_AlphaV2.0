@@ -1,101 +1,102 @@
-title: FX_CensorBlip
+﻿title: FX_CensorBlip
 tags: #scene #fx #ui_glitch
 ---
-/*
-PURPOSE: Quick inline censor effect and mild foreshadowing of the psy‑ops twist.  When invoked, this plays a censor beep, displays a redacted name, and returns control to the caller.
-*/
+/* #line:0bddc88 
+PURPOSE: Quick inline censor effect and mild foreshadowing of the psy‑ops twist.  When invoked, this plays a censor beep, displays a redacted name, and returns control to the caller. #line:0be37cf 
+*/ #line:09b605e 
 <<sfx sfx_censor_beep>>
-[REDACTED]
+[REDACTED] #line:0ee88cb 
 
 ===
 
 title: FX_CrossTalk
 tags: #scene #fx
 ---
-/*
-PURPOSE: Represents a cross‑compartment whisper.  Increments the cross‑talk counter and plays a static overlay.  The whisper content is intentionally vague and can be varied by calling contexts.
-*/
+/* #line:0a484c2 
+PURPOSE: Represents a cross‑compartment whisper.  Increments the cross‑talk counter and plays a static overlay.  The whisper content is intentionally vague and can be varied by calling contexts. #line:09236af 
+*/ #line:03d33d9 
 <<set $cross_talk_heard += 1>>
 <<sfx sfx_cross_talk>>
-A faint voice bleeds through your channel: "...prep posture advancing—youth tier spiking..."  The static snaps shut.
+A faint voice bleeds through your channel: "...prep posture advancing—youth tier spiking..."  The static snaps shut. #line:07b4e82 
 
 ===
 
 title: FX_WarOpsIncrement
 tags: #scene #fx
 ---
-/*
-PURPOSE: Increment the war_ops_awareness counter.  Use this whenever the Player sees evidence of the civil–military fusion psy‑ops program.  The count gates secret content later.
-*/
+/* #line:0a33451 
+PURPOSE: Increment the war_ops_awareness counter.  Use this whenever the Player sees evidence of the civil–military fusion psy‑ops program.  The count gates secret content later. #line:07b40b8 
+*/ #line:097a4ed 
 <<set $war_ops_awareness += 1>>
-The realization settles deeper.
+The realization settles deeper. #line:0f719bd 
 
 ===
 
 title: SHOP_Visit
 tags: #scene #shop
 ---
-/*
-PURPOSE: Simple company store placeholder.  At the end of each day in Runs 1 and 2, award a small amount of rapid‑feedback cash and describe available goodies.  The Player cannot actually purchase items yet; this stub sets expectations and increments cash.  Later runs may expand this into a proper mini‑store.
-INPUT:  expects the caller to set the day index; no parameters.
-OUTPUT:  increments $rapid_feedback_cash; prints a flavour line.
-*/
+<<bg bg_companystore>>
+/* #line:03e83f0 
+PURPOSE: Simple company store placeholder.  At the end of each day in Runs 1 and 2, award a small amount of rapid‑feedback cash and describe available goodies.  The Player cannot actually purchase items yet; this stub sets expectations and increments cash.  Later runs may expand this into a proper mini‑store. #line:0472dc9 
+INPUT:  expects the caller to set the day index; no parameters. #line:01dcc9a 
+OUTPUT:  increments $rapid_feedback_cash; prints a flavour line. #line:0f1fe83 
+*/ #line:0284099 
 <<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like “Branded Mug,” “Extra Log Space,” and “Sticker Pack,” then closes for now.  (Store functionality is a stub.)
+You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like “Branded Mug,” “Extra Log Space,” and “Sticker Pack,” then closes for now.  (Store functionality is a stub.) #line:009594d 
 
 ===
 
 title: ACH_ParadoxLogs
 tags: #achievement
 ---
-/*
-PURPOSE: Trigger the paradox logs achievement.  Use when the Player intentionally screenshots or notes a log inconsistency early on.
-*/
+/* #line:0b2a2b0 
+PURPOSE: Trigger the paradox logs achievement.  Use when the Player intentionally screenshots or notes a log inconsistency early on. #line:0c0e6e6 
+*/ #line:0ffb5dd 
 <<set $achv_paradox_logs = true>>
-You notice a timestamp that should not exist.
+You notice a timestamp that should not exist. #line:0945ff4 
 
 ===
 
 title: ACH_Whistleblower
 tags: #achievement
 ---
-/*
-PURPOSE: Trigger the whistleblower achievement when the Player decides to blow the whistle in a Beat 'em ending.
-*/
+/* #line:0222d74 
+PURPOSE: Trigger the whistleblower achievement when the Player decides to blow the whistle in a Beat 'em ending. #line:00d5739 
+*/ #line:0531eca 
 <<set $achv_whistleblower = true>>
-Your actions mark you as a whistleblower.
+Your actions mark you as a whistleblower. #line:0e75f52 
 
 ===
 
 title: ACH_JoinThem
 tags: #achievement
 ---
-/*
-PURPOSE: Trigger the join‑them achievement when the Player accepts a conscience seat inside Bigger Tech.
-*/
+/* #line:018e643 
+PURPOSE: Trigger the join‑them achievement when the Player accepts a conscience seat inside Bigger Tech. #line:0d4f6ad 
+*/ #line:0a0e3a4 
 <<set $achv_join_them = true>>
-You chose to join the system from within.
+You chose to join the system from within. #line:0df20cb 
 
 ===
 
 title: ACH_FlawlessTriage
 tags: #achievement
 ---
-/*
-PURPOSE: Triggered if the Player resolves all triage tasks perfectly in Run 1.  Use at the end of Run 1 Day 2 if all triage choices favoured stability.
-*/
+/* #line:09cf8d8 
+PURPOSE: Triggered if the Player resolves all triage tasks perfectly in Run 1.  Use at the end of Run 1 Day 2 if all triage choices favoured stability. #line:00aeaf3 
+*/ #line:0778716 
 <<set $achv_flawless_triage = true>>
-No mistakes were recorded in triage today.
+No mistakes were recorded in triage today. #line:05cf814 
 
 ===
 
 title: ACH_GhostRunner
 tags: #achievement
 ---
-/*
-PURPOSE: Triggered when the Player escapes with minimal trace in a Get Out ending.  This is awarded in the epilogue of certain Run 4 endings.
-*/
+/* #line:0849a54 
+PURPOSE: Triggered when the Player escapes with minimal trace in a Get Out ending.  This is awarded in the epilogue of certain Run 4 endings. #line:0b706fd 
+*/ #line:0fb5c79 
 <<set $achv_ghost_runner = true>>
-You slipped through with minimal traces.
+You slipped through with minimal traces. #line:05029a5 
 
 ===

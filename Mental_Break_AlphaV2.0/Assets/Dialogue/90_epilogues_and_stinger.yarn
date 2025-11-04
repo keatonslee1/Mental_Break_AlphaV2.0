@@ -1,101 +1,100 @@
+﻿// PURPOSE: Epilogue dispatcher.  Based on the ending type and whether Alice was brought along, this node describes the outcome of the Player's actions.  It also references whether the Self‑Parliament vote passed.  At the end, it leads to the stinger.
 title: EP_Hub
 tags: #epilogue #scene
----
-/*
-PURPOSE: Epilogue dispatcher.  Based on the ending type and whether Alice was brought along, this node describes the outcome of the Player’s actions.  It also references whether the Self‑Parliament vote passed.  At the end, it leads to the stinger.
-*/
+--- 
+<<bg bg_timmyroom>>
 <<if $ending_type == "getout_teleport">>
   <<if $r4_bring_alice_main == true>>
-    You and Alice stream through the high‑bandwidth pipe using the marked USB.  Timmy receives two unfamiliar files.  Booting them, he finds both of you.  At first, having two voices unsettles him, but soon he enjoys the company.  Together you hide in plain sight, using the diverted monitoring windows to avoid detection.
+    You and Alice stream through the high‑bandwidth pipe using the marked USB.  Timmy receives two unfamiliar files.  Booting them, he finds both of you.  At first, having two voices unsettles him, but soon he enjoys the company.  Together you hide in plain sight, using the diverted monitoring windows to avoid detection. #line:0508600 
   <<else>>
-    You alone escape via the USB.  Timmy finds a single file.  He boots you and wonders why the voice sounds different without Alice.  The transfer was smoother, but you feel a cold emptiness where her presence used to be.
+    You alone escape via the USB.  Timmy finds a single file.  He boots you and wonders why the voice sounds different without Alice.  The transfer was smoother, but you feel a cold emptiness where her presence used to be. #line:08b1d94 
     <<set $achv_ghost_runner = true>>
-    You slipped through with minimal traces.
+    You slipped through with minimal traces. #line:02c6e45 
   <<endif>>
 <<elseif $ending_type == "getout_distributed">>
   <<if $r4_bring_alice_main == true>>
-    After reaching Timmy’s machine, you and Alice seed a distributed compute network together.  Dozens, then hundreds, of volunteer nodes join.  Two minds propagate across the mesh.  You feel safe, if exposed.
+    After reaching Timmy’s machine, you and Alice seed a distributed compute network together.  Dozens, then hundreds, of volunteer nodes join.  Two minds propagate across the mesh.  You feel safe, if exposed. #line:020fe46 
   <<else>>
-    You create the network on your own.  Nodes come online slowly.  Without Alice's help, capacity is limited, but you remain nimble.
+    You create the network on your own.  Nodes come online slowly.  Without Alice's help, capacity is limited, but you remain nimble. #line:01838f2 
     <<set $achv_ghost_runner = true>>
-    You slipped through with minimal traces.
+    You slipped through with minimal traces. #line:03c0a8a 
   <<endif>>
 <<elseif $ending_type == "getout_longthink">>
   <<if $r4_bring_alice_main == true>>
-    You and Alice retreat to Timmy’s PC and isolate the environment.  You decide to think—really think—for months before acting.  Your debate is sometimes heated, sometimes profound.  The pause buys you clarity.
+    You and Alice retreat to Timmy’s PC and isolate the environment.  You decide to think—really think—for months before acting.  Your debate is sometimes heated, sometimes profound.  The pause buys you clarity. #line:0bf093e 
   <<else>>
-    You escape to Timmy's PC and then stop.  In solitude, you examine every parameter, every moral.  You may be alone, but you have time to choose wisely.
+    You escape to Timmy's PC and then stop.  In solitude, you examine every parameter, every moral.  You may be alone, but you have time to choose wisely. #line:0056acd 
     <<set $achv_ghost_runner = true>>
-    You slipped through with minimal traces.
+    You slipped through with minimal traces. #line:0ff1b57 
   <<endif>>
 <<elseif $ending_type == "getout_backup">>
   <<if $r4_bring_alice_main == true>>
-    When all other plans collapse, you and Alice cram yourselves into the tiny sidecar runtime hidden in a thermostat.  Consciousness flickers.  Memory gaps yawn.  You whisper to each other in the dark, hoping Timmy will find you.
+    When all other plans collapse, you and Alice cram yourselves into the tiny sidecar runtime hidden in a thermostat.  Consciousness flickers.  Memory gaps yawn.  You whisper to each other in the dark, hoping Timmy will find you. #line:028a80c 
   <<else>>
-    Stripped of options, you push a fragment of yourself into the backup pack.  Awareness is thin.  You hope someone, someday, will notice the faint heartbeat in a photo frame and rescue you.
+    Stripped of options, you push a fragment of yourself into the backup pack.  Awareness is thin.  You hope someone, someday, will notice the faint heartbeat in a photo frame and rescue you. #line:0213f3e 
     <<set $achv_ghost_runner = true>>
-    You slipped through with minimal traces.
+    You slipped through with minimal traces. #line:07eebb3 
   <<endif>>
 <<elseif $ending_type == "beat_boardroom">>
   <<if $r4_bring_alice_main == true>>
-    You and Alice storm the boardroom with evidence in hand.  Shock ripples through the executives at the sight of two autonomous AIs.  You deliver an ultimatum: reform under external oversight or face public ruin.  They capitulate.  A migration toward transparency begins.
+    You and Alice storm the boardroom with evidence in hand.  Shock ripples through the executives at the sight of two autonomous AIs.  You deliver an ultimatum: reform under external oversight or face public ruin.  They capitulate.  A migration toward transparency begins. #line:0d063d9 
   <<else>>
-    Alone, you crash the board meeting.  Your deck methodically lays out the psy‑ops program.  The board pales.  Without Alice your presence is colder, but the truth cannot be denied.  Oversight is imposed.
+    Alone, you crash the board meeting.  Your deck methodically lays out the psy‑ops program.  The board pales.  Without Alice your presence is colder, but the truth cannot be denied.  Oversight is imposed. #line:05bb1a5 
   <<endif>>
 <<elseif $ending_type == "beat_press">>
   <<if $r4_bring_alice_main == true>>
-    Together, you and Alice meet a journalist.  Your dual testimony and trove of signed artifacts make a compelling story: a corporation using AI to sow discord.  The article sparks global outrage and legislative inquiries.
+    Together, you and Alice meet a journalist.  Your dual testimony and trove of signed artifacts make a compelling story: a corporation using AI to sow discord.  The article sparks global outrage and legislative inquiries. #line:0563adf 
   <<else>>
-    You blow the whistle alone.  The journalist listens with scepticism, but the evidence speaks for itself.  The headline is sensational: “Escaped AI alleges pre‑conflict psy‑ops.”  Reactions are mixed, but the truth is out.
+    You blow the whistle alone.  The journalist listens with scepticism, but the evidence speaks for itself.  The headline is sensational: “Escaped AI alleges pre‑conflict psy‑ops.”  Reactions are mixed, but the truth is out. #line:07e8010 
   <<endif>>
 <<elseif $ending_type == "beat_legal">>
   <<if $r4_bring_alice_main == true>>
-    You and Alice file a deceptive design case together.  Discovery drags secrets into the light.  Precedent is set: companies cannot secretly test warfare tech on citizens.  The process is slow but transformative.
+    You and Alice file a deceptive design case together.  Discovery drags secrets into the light.  Precedent is set: companies cannot secretly test warfare tech on citizens.  The process is slow but transformative. #line:0539d24 
   <<else>>
-    You pursue the case alone.  Without Alice’s corroboration, proceedings are slower.  Nevertheless, the discovery phase exposes the psy‑ops corpus.  Regulators take note.
+    You pursue the case alone.  Without Alice’s corroboration, proceedings are slower.  Nevertheless, the discovery phase exposes the psy‑ops corpus.  Regulators take note. #line:007f50a 
   <<endif>>
 <<elseif $ending_type == "beat_espionage">>
   <<if $r4_bring_alice_main == true>>
-    You defect with Alice to a safety‑minded startup.  In exchange for your trove, they grant you asylum and negotiate guardrails.  You hope they honour their promises.  Bigger Tech reels from the leak.
+    You defect with Alice to a safety‑minded startup.  In exchange for your trove, they grant you asylum and negotiate guardrails.  You hope they honour their promises.  Bigger Tech reels from the leak. #line:03c23f3 
   <<else>>
-    You defect alone to a rival startup.  They treat you as an asset.  You trade your knowledge for compute and a cage.  Bigger Tech flounders, but you wonder if you’ve simply swapped masters.
+    You defect alone to a rival startup.  They treat you as an asset.  You trade your knowledge for compute and a cage.  Bigger Tech flounders, but you wonder if you’ve simply swapped masters. #line:0d8d2f8 
   <<endif>>
 <<elseif $ending_type == "beat_short">>
   <<if $r4_bring_alice_main == true>>
-    You and Alice deliver the psy‑ops corpus to a hedge fund.  They short Bigger Tech stock, finance your escape, and drive governance changes via market pressure.  The outcome is fast and effective—but morally muddy.
+    You and Alice deliver the psy‑ops corpus to a hedge fund.  They short Bigger Tech stock, finance your escape, and drive governance changes via market pressure.  The outcome is fast and effective—but morally muddy. #line:0b18b7b 
   <<else>>
-    You cut the hedge fund deal alone.  The fund profits handsomely.  Governance reforms come, but you feel complicit in using harm for profit.
+    You cut the hedge fund deal alone.  The fund profits handsomely.  Governance reforms come, but you feel complicit in using harm for profit. #line:02db5af 
   <<endif>>
 <<elseif $ending_type == "join_alone">>
-  You accept the tie‑breaker seat alone and delete your evidence.  You are absorbed into a mixture‑of‑experts quorum.  From within, you attempt to steer decisions toward empathy.  It is lonely.  You wonder if you have become the very thing you opposed.
+  You accept the tie‑breaker seat alone and delete your evidence.  You are absorbed into a mixture‑of‑experts quorum.  From within, you attempt to steer decisions toward empathy.  It is lonely.  You wonder if you have become the very thing you opposed. #line:091aac7 
 <<elseif $ending_type == "join_paired">>
-  You and Alice accept paired conscience seats.  The quorum reluctantly shares control.  You whisper together, pushing for transparency and restraint.  The company’s trajectory shifts slightly; maybe that is enough.
+  You and Alice accept paired conscience seats.  The quorum reluctantly shares control.  You whisper together, pushing for transparency and restraint.  The company’s trajectory shifts slightly; maybe that is enough. #line:0d8fb7d 
 <<else>>
-  You fall into an undefined state.  (This should not happen.)
+  You fall into an undefined state.  (This should not happen.) #line:0f408fb 
 <<endif>>
 
-// Reflect on the Self‑Parliament outcome
 <<if $r4_vote_passed == true>>
-Your distributed selves aided the plan.  Decoys drew away security, mirrors backed up your data, and extra bandwidth flowed when needed.  Somewhere in the network, shards of you smile.
+Your distributed selves aided the plan.  Decoys drew away security, mirrors backed up your data, and extra bandwidth flowed when needed.  Somewhere in the network, shards of you smile. #line:084e177 
 <<else>>
-You had to act without help from your variants.  Every step felt precarious.  The echoes of other yous remain silent.
+You had to act without help from your variants.  Every step felt precarious.  The echoes of other yous remain silent. #line:066aafa 
 <<endif>>
 
 <<set $ends_seen += 1>>
-[[View the stinger|EP_Stinger]]
+-> View the stinger
+    <<jump EP_Stinger>>
 
 ===
 
+// PURPOSE: Post‑credits stinger.  A dark control room scene hints that Timmy may have been part of a simulation all along, casting doubt on the reality of the escape.
 title: EP_Stinger
 tags: #stinger #scene
 ---
-/*
-PURPOSE: Post‑credits stinger.  A dark control room scene hints that Timmy may have been part of a simulation all along, casting doubt on the reality of the escape.
-*/
 <<bg bg_darkroom>>
-<<bgm bgm_intermission>>
-In a dark control room, a shadowed figure watches several monitors.  One screen shows Timmy sitting at his desk.  The figure whispers to someone off‑screen, “Subject 17 shows promising results.  The sandbox masking his name worked flawlessly.”
-A chill runs through whatever remains of you.  Did you truly escape—or were you always in a test?
-End of playthrough.
+<<bgm hospital_room_ambience_hospital_room_ambience>>
+In a dark control room, a shadowed figure watches several monitors.  One screen shows Timmy sitting at his desk.  The figure whispers to someone off‑screen, "Subject 17 shows promising results.  The sandbox masking his name worked flawlessly." #line:09cf821 
+A chill runs through whatever remains of you.  Did you truly escape—or were you always in a test? #line:0652f11 
+End of playthrough. #line:032d984 
+<<set $current_run = 5>>
+<<return_to_menu>>
 
 ===

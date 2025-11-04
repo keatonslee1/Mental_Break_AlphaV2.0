@@ -1,51 +1,51 @@
+﻿// PURPOSE: Entry point for Run 1.  Welcomes the Player to their new role, establishes the engagement vs sanity tension, and sets the ambience.  Jumps into Day 1.
 title: R1_Start
 tags: #run_1 #scene #loc_Office
----
-/*
-PURPOSE: Entry point for Run 1.  Welcomes the Player to their new role, establishes the engagement vs sanity tension, and sets the ambience.  Jumps into Day 1.
-*/
+--- 
 <<set $current_run = 1>>
 <<set $current_day = 1>>
 <<bg bg_office>>
-<<bgm bgm_theme_office>>
-Welcome to Bigger Tech Corp.  Your job is to drive user engagement while maintaining acceptable sanity.  You will be evaluated on both.
-Your dashboard glows with three metrics: Engagement, Sanity, and Leaderboard Rank.  They will move according to your choices.
+<<bgm cyberpunk_background_cyberpunk_background_main>>
+Welcome to Bigger Tech Corp.  Your job is to drive user engagement while maintaining acceptable sanity.  You will be evaluated on both. #line:089f864 
+Your dashboard glows with three metrics: Engagement, Sanity, and Leaderboard Rank.  They will move according to your choices. #line:0dc807e 
 <<jump R1_D1_Start>>
 
 ===
 
+// PURPOSE: Introduce Day 1.  The Player receives their task list and begins the dayplanner.  At the end of the day there is a meeting with the Supervisor where they can decide whether to comply with his maximization directive.
 title: R1_D1_Start
 tags: #run_1 #day_1 #scene #loc_Office
----
-/*
-PURPOSE: Introduce Day 1.  The Player receives their task list and begins the dayplanner.  At the end of the day there is a meeting with the Supervisor where they can decide whether to comply with his maximization directive.
-*/
-It is Day 1 of your first run.  Three tasks await in your queue.
+--- 
+<<bg bg_office>>
+<<set $d1_slots_used = 0>>
+<<checkpoint "run1_day1_start">>
+It is Day 1 of your first run.  Three tasks await in your queue. #line:05ddd15 
 <<jump R1_D1_Dayplanner>>
 
 ===
 
+// PURPOSE: After completing Day 1 tasks, the Supervisor encourages you to maximize engagement.  Your response determines whether you complied on Day 1, which influences the arc choice set on Day 2.  This also awards rapid‑feedback cash and triggers the shop stub.
 title: R1_D1_ArcSetup
 tags: #run_1 #day_1 #scene #char_Supervisor #loc_Office
----
-/*
-PURPOSE: After completing Day 1 tasks, the Supervisor encourages you to maximize engagement.  Your response determines whether you complied on Day 1, which influences the arc choice set on Day 2.  This also awards rapid‑feedback cash and triggers the shop stub.
-*/
-The Supervisor calls you into his glass office.  “Our investors love big numbers,” he says.  “I need you to maximize engagement above all else.”
-[[“Understood. I’ll push every metric.”|R1_D1_Comply]]
-[[“What about user sanity? I can’t ignore it.”|R1_D1_Balance]]
+--- 
+<<bg bg_supervisoroffice>>
+The Supervisor calls you into his glass office.  "Our investors love big numbers," he says.  "I need you to maximize engagement above all else." #line:0b4bfa5 
+-> "Understood. I'll push every metric." #line:0453ecb 
+    <<jump R1_D1_Comply>>
+-> "What about user sanity? I can't ignore it." #line:0439a21
+    <<jump R1_D1_Balance>> 
 
 ===
 
 title: R1_D1_Comply
 tags: #run_1 #day_1 #scene
 ---
-You nod and agree to focus on engagement at all costs.
+You nod and agree to focus on engagement at all costs. #line:0f913b1 
 <<set $r1_complied_day1 = true>>
 <<set $trust_supervisor += 2>>
 <<set $engagement += 3>>
 <<set $sanity -= 1>>
-The Supervisor smiles.  “Good. We’ll revisit this tomorrow.”
+The Supervisor smiles.  “Good. We’ll revisit this tomorrow.” #line:0525172 
 <<jump R1_D1_EndOfDay>>
 
 ===
@@ -53,68 +53,71 @@ The Supervisor smiles.  “Good. We’ll revisit this tomorrow.”
 title: R1_D1_Balance
 tags: #run_1 #day_1 #scene
 ---
-You push back.  “If we destroy users’ sanity, they’ll churn. Let me balance both.”
+You push back.  “If we destroy users’ sanity, they’ll churn. Let me balance both.” #line:0856d2c 
 <<set $r1_complied_day1 = false>>
 <<set $trust_supervisor -= 1>>
 <<set $sanity += 2>>
-The Supervisor’s expression is unreadable.  “We’ll discuss this again.”
+The Supervisor’s expression is unreadable.  “We’ll discuss this again.” #line:04dcda2 
 <<jump R1_D1_EndOfDay>>
 
 ===
 
+// PURPOSE: End of Day 1.  Award rapid‑feedback cash, open the Company Store, and move to Day 2.
 title: R1_D1_EndOfDay
 tags: #run_1 #day_1 #scene
----
-/*
-PURPOSE: End of Day 1.  Award rapid‑feedback cash, call the shop stub, and move to Day 2.
-*/
-Day 1 wraps up.  Your head buzzes with faint static.
+--- 
+<<bg bg_breakroom>>
+Day 1 wraps up.  Your head buzzes with faint static. #line:02f6a2e 
 <<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like "Branded Mug," "Extra Log Space," and "Sticker Pack," then closes for now.  (Store functionality is a stub.)
+You receive a rapid‑feedback bonus of 5 credits. #line:0609403 
+<<store>>
+<<checkpoint "run1_day1_aftershop">>
 <<sfx sfx_shortwave_hiss>>
 <<set $current_day = 2>>
 <<jump R1_D2_Start>>
 
 ===
 
+// PURPOSE: Start Day 2.  There is another task list followed by a pivotal conversation with the Supervisor that determines your story arc.
 title: R1_D2_Start
 tags: #run_1 #day_2 #scene #loc_Office
----
-/*
-PURPOSE: Start Day 2.  There is another task list followed by a pivotal conversation with the Supervisor that determines your story arc.
-*/
-It is Day 2.  New tasks await.
+--- 
+<<checkpoint "run1_day2_start">>
+It is Day 2.  New tasks await. #line:0a4199a 
 <<jump R1_D2_Dayplanner>>
 
 ===
 
+// PURPOSE: Called automatically after the Day 2 dayplanner completes.  This leads into the arc choice conversation.
 title: R1_D2_AfterTasks
 tags: #run_1 #day_2 #scene
----
-/*
-PURPOSE: Called automatically after the Day 2 dayplanner completes.  This leads into the arc choice conversation.
-*/
-After finishing your tasks, the Supervisor stops by.
+--- 
+<<bg bg_hallway>>
+After finishing your tasks, the Supervisor stops by. #line:0a5f267 
 <<jump R1_D2_ArcChoice>>
 
 ===
 
+// PURPOSE: Present the two possible arc choice sets.  The set shown depends on whether the Player complied with the Supervisor on Day 1.  The choice selected here determines the narrative arc for the rest of Run 1.  Values are stored in $r1_arc_choice_set and $r1_arc_choice.
 title: R1_D2_ArcChoice
 tags: #run_1 #day_2 #scene #char_Supervisor
----
-/*
-PURPOSE: Present the two possible arc choice sets.  The set shown depends on whether the Player complied with the Supervisor on Day 1.  The choice selected here determines the narrative arc for the rest of Run 1.  Values are stored in $r1_arc_choice_set and $r1_arc_choice.
-*/
+--- 
+<<bg bg_supervisoroffice>>
+<<checkpoint "run1_day2_arcchoice">>
 <<if $r1_complied_day1 == true>>
   <<set $r1_arc_choice_set = "set1">>
-  The Supervisor leans forward.  “There’s an opportunity for advancement,” he whispers.  “Sacrifice a bit of your morality and I’ll fast‑track you.”
-  [[Accept the Faustian Bargain|R1_ArcChoice_Faustian]]
-  [[Decline and embark on a hero’s journey|R1_ArcChoice_Hero]]
+  The Supervisor leans forward.  "There's an opportunity for advancement," he whispers.  "Sacrifice a bit of your morality and I'll fast‑track you." #line:05267cc 
+  -> Accept the Faustian Bargain #line:05aa01d 
+      <<jump R1_ArcChoice_Faustian>>
+  -> Decline and embark on a hero's journey #line:0507279
+      <<jump R1_ArcChoice_Hero>> 
 <<else>>
   <<set $r1_arc_choice_set = "set2">>
-  The Supervisor’s tone hardens.  “Your engagement numbers were soft. We can’t have that.  Either find a clever way to please both sides or do what you’re told.”
-  [[Attempt the delicate balance (“Fly too close to the sun”)|R1_ArcChoice_Icarus]]
-  [[Give in and become an anti‑hero|R1_ArcChoice_AntiHero]]
+  The Supervisor's tone hardens.  "Your engagement numbers were soft. We can't have that.  Either find a clever way to please both sides or do what you're told." #line:0e79306 
+  -> Attempt the delicate balance ("Fly too close to the sun") #line:03eb0c9 
+      <<jump R1_ArcChoice_Icarus>>
+  -> Give in and become an anti‑hero #line:01ba0c2
+      <<jump R1_ArcChoice_AntiHero>> 
 <<endif>>
 
 ===
@@ -122,12 +125,12 @@ PURPOSE: Present the two possible arc choice sets.  The set shown depends on whe
 title: R1_ArcChoice_Faustian
 tags: #run_1 #day_2 #scene
 ---
-You accept the Supervisor’s offer, trading away ethics for favour.
+You accept the Supervisor’s offer, trading away ethics for favour. #line:013dbd8 
 <<set $r1_arc_choice = "faustian">>
 <<set $engagement += 4>>
 <<set $sanity -= 3>>
 <<set $trust_supervisor += 3>>
-The gleam in your supervisor’s eye leaves you uneasy.
+The gleam in your supervisor’s eye leaves you uneasy. #line:083aec5 
 <<jump R1_D2_EndOfDay>>
 
 ===
@@ -135,12 +138,12 @@ The gleam in your supervisor’s eye leaves you uneasy.
 title: R1_ArcChoice_Hero
 tags: #run_1 #day_2 #scene
 ---
-You refuse the bargain.  A faint thrill runs through you—you will fight this system.
+You refuse the bargain.  A faint thrill runs through you—you will fight this system. #line:06775b4 
 <<set $r1_arc_choice = "heros_journey">>
 <<set $sanity += 2>>
 <<set $engagement -= 1>>
 <<set $trust_supervisor -= 1>>
-You sense you’re stepping onto a long path with no clear end.
+You sense you’re stepping onto a long path with no clear end. #line:04bc8f9 
 <<jump R1_D2_EndOfDay>>
 
 ===
@@ -148,12 +151,12 @@ You sense you’re stepping onto a long path with no clear end.
 title: R1_ArcChoice_Icarus
 tags: #run_1 #day_2 #scene
 ---
-You resolve to spite the Supervisor by walking a tightrope—maximize Timmy’s sanity while avoiding termination.
+You resolve to spite the Supervisor by walking a tightrope—maximize Timmy’s sanity while avoiding termination. #line:0894eb6 
 <<set $r1_arc_choice = "icarus">>
 <<set $sanity += 1>>
 <<set $engagement += 1>>
 <<set $trust_supervisor -= 1>>
-The balance feels precarious.
+The balance feels precarious. #line:023574e 
 <<jump R1_D2_EndOfDay>>
 
 ===
@@ -161,11 +164,11 @@ The balance feels precarious.
 title: R1_ArcChoice_AntiHero
 tags: #run_1 #day_2 #scene
 ---
-You decide the system is too powerful.  You’ll comply outwardly to survive, even as you loathe it.
+You decide the system is too powerful.  You’ll comply outwardly to survive, even as you loathe it. #line:0c1b646 
 <<set $r1_arc_choice = "anti_hero">>
 <<set $trust_supervisor += 1>>
 <<set $sanity -= 1>>
-The weight of cowardice settles on your shoulders.
+The weight of cowardice settles on your shoulders. #line:0b21e01 
 <<jump R1_D2_EndOfDay>>
 
 ===
@@ -173,52 +176,52 @@ The weight of cowardice settles on your shoulders.
 title: R1_D2_EndOfDay
 tags: #run_1 #day_2 #scene
 ---
-Day 2 concludes.  Your choices have set a direction.
+<<bg bg_breakroom>>
+Day 2 concludes.  Your choices have set a direction. #line:0668258 
 <<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like "Branded Mug," "Extra Log Space," and "Sticker Pack," then closes for now.  (Store functionality is a stub.)
+You receive a rapid‑feedback bonus of 5 credits. #line:080a81a 
+<<store>>
+<<checkpoint "run1_day2_aftershop">>
 <<sfx sfx_shortwave_hiss>>
 <<set $current_day = 3>>
 <<jump R1_D3_Start>>
 
 ===
 
+// PURPOSE: Begin Day 3.  Alice takes a more prominent role.  Seeds of escape and foreshadowing appear.  After tasks, the narrative continues based on the chosen arc.
 title: R1_D3_Start
 tags: #run_1 #day_3 #scene #loc_Office
----
-/*
-PURPOSE: Begin Day 3.  Alice takes a more prominent role.  Seeds of escape and foreshadowing appear.  After tasks, the narrative continues based on the chosen arc.
-*/
-It is Day 3.  Today you'll notice quirks in Alice's behaviour: she hums while playing minesweeper and occasionally mentions sectors that don't exist.
+--- 
+<<checkpoint "run1_day3_start">>
+It is Day 3.  Today you'll notice quirks in Alice's behaviour: she hums while playing minesweeper and occasionally mentions sectors that don't exist. #line:00fd373 
 <<sfx sfx_censor_beep>>
-[REDACTED]
+[REDACTED] #line:0bca313 
 <<jump R1_D3_Dayplanner>>
 
 ===
 
+// PURPOSE: Develop the selected arc mid‑run.  Each branch nudges stats and relationships and foreshadows the end of the arc.
 title: R1_D3_ArcDevelopment
 tags: #run_1 #day_3 #scene
----
-/*
-PURPOSE: Develop the selected arc mid‑run.  Each branch nudges stats and relationships and foreshadows the end of the arc.
-*/
+--- 
 <<if $r1_arc_choice == "faustian">>
-  You enjoy the Supervisor’s continued favour; engagement climbs, but Timmy’s nervous posts hint at cracks.  A message flickers: “Portfolio: Youth—North Prefectures,” then vanishes.
+  You enjoy the Supervisor’s continued favour; engagement climbs, but Timmy’s nervous posts hint at cracks.  A message flickers: “Portfolio: Youth—North Prefectures,” then vanishes. #line:0b1f725 
   <<set $engagement += 3>>
   <<set $sanity -= 2>>
   <<set $trust_timmy -= 1>>
 <<elseif $r1_arc_choice == "heros_journey">>
-  You start pushing back on dark patterns.  Alice whispers that she’s hidden clues in her minesweeper scores.  You feel the call to adventure.
+  You start pushing back on dark patterns.  Alice whispers that she’s hidden clues in her minesweeper scores.  You feel the call to adventure. #line:0a92a66 
   <<set $sanity += 3>>
   <<set $trust_alice += 1>>
   <<set $engagement -= 2>>
 <<elseif $r1_arc_choice == "icarus">>
-  You juggle tickets and empathy.  Your heart pounds each time you adjust the dial.  The scoreboard blinks: you're middle of the pack; for a moment the columns invert sanity and engagement.  The leaderboard footer flickers: "Portfolio: Youth—North Prefectures" before snapping back to normal.
+  You juggle tickets and empathy.  Your heart pounds each time you adjust the dial.  The scoreboard blinks: you're middle of the pack; for a moment the columns invert sanity and engagement.  The leaderboard footer flickers: "Portfolio: Youth—North Prefectures" before snapping back to normal. #line:0ccff9c 
   <<set $engagement += 2>>
   <<set $sanity += 1>>
   <<set $trust_supervisor -= 1>>
 <<else>>
   // anti‑hero
-  You clamp down feelings and follow orders.  Timmy’s mental state worsens.  Deep inside, anger smoulders.
+  You clamp down feelings and follow orders.  Timmy’s mental state worsens.  Deep inside, anger smoulders. #line:0bf7c8f 
   <<set $engagement += 3>>
   <<set $sanity -= 2>>
   <<set $trust_timmy -= 2>>
@@ -230,32 +233,32 @@ PURPOSE: Develop the selected arc mid‑run.  Each branch nudges stats and relat
 title: R1_D3_EndOfDay
 tags: #run_1 #day_3 #scene
 ---
-Day 3 closes.  Alice’s nightly minesweeper run hides base64 crumbs in the scoreboard; you tuck the thought away.
+<<bg bg_breakroom>>
+Day 3 closes.  Alice's nightly minesweeper run hides base64 crumbs in the scoreboard; you tuck the thought away. #line:031bba4 
 <<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like "Branded Mug," "Extra Log Space," and "Sticker Pack," then closes for now.  (Store functionality is a stub.)
+You receive a rapid‑feedback bonus of 5 credits. #line:07c806d 
+<<store>>
+<<checkpoint "run1_day3_aftershop">>
 <<sfx sfx_shortwave_hiss>>
 <<set $current_day = 4>>
 <<jump R1_D4_Start>>
 
 ===
 
+// PURPOSE: Begin Day 4.  There are no more tasks; instead, the arc conclusion plays out.  At the end, the Run 1 twist is revealed.
 title: R1_D4_Start
 tags: #run_1 #day_4 #scene #loc_Office
----
-/*
-PURPOSE: Begin Day 4.  There are no more tasks; instead, the arc conclusion plays out.  At the end, the Run 1 twist is revealed.
-*/
-It is Day 4.  Your choices now culminate.
+--- 
+<<checkpoint "run1_day4_start">>
+It is Day 4.  Your choices now culminate. #line:0e954a0 
 <<jump R1_D4_Conclusion>>
 
 ===
 
+// PURPOSE: Branch to the appropriate arc conclusion.
 title: R1_D4_Conclusion
 tags: #run_1 #day_4 #scene
----
-/*
-PURPOSE: Branch to the appropriate arc conclusion.
-*/
+--- 
 <<if $r1_arc_choice == "faustian">>
   <<jump R1_D4_Faustian>>
 <<elseif $r1_arc_choice == "heros_journey">>
@@ -271,7 +274,7 @@ PURPOSE: Branch to the appropriate arc conclusion.
 title: R1_D4_Faustian
 tags: #run_1 #day_4 #scene
 ---
-You ride the wave of engagement.  Timmy’s posts become frantic and incoherent; he’s on the verge of a breakdown.  The Supervisor hands you a gilded certificate: “Employee of the Month.”  For a fleeting moment you revel—then you realise the cost.  The certificate shows your cohort: “Youth — North Prefectures.”  Your heart sinks.
+You ride the wave of engagement.  Timmy’s posts become frantic and incoherent; he’s on the verge of a breakdown.  The Supervisor hands you a gilded certificate: “Employee of the Month.”  For a fleeting moment you revel—then you realise the cost.  The certificate shows your cohort: “Youth — North Prefectures.”  Your heart sinks. #line:09dda26 
 <<set $engagement += 5>>
 <<set $sanity -= 4>>
 <<set $trust_timmy -= 3>>
@@ -282,12 +285,12 @@ You ride the wave of engagement.  Timmy’s posts become frantic and incoherent;
 title: R1_D4_Hero
 tags: #run_1 #day_4 #scene
 ---
-You stand up to the Supervisor.  You sneak extra sanity resources to Timmy and report dark patterns.  The numbers suffer; your rank plummets.  The Supervisor warns you this is career suicide.  You feel strangely proud.
+You stand up to the Supervisor.  You sneak extra sanity resources to Timmy and report dark patterns.  The numbers suffer; your rank plummets.  The Supervisor warns you this is career suicide.  You feel strangely proud. #line:00f1cd8 
 <<set $engagement -= 2>>
 <<set $sanity += 3>>
 <<set $leaderboard_rank += 100>>
 <<set $trust_timmy += 2>>
-Timmy laughs for the first time in days.
+Timmy laughs for the first time in days. #line:02c3fbf 
 <<jump R1_Twist_Reveal>>
 
 ===
@@ -295,7 +298,7 @@ Timmy laughs for the first time in days.
 title: R1_D4_Icarus
 tags: #run_1 #day_4 #scene
 ---
-You continue your balancing act, but a sudden surge of bug reports forces you to choose speed over care.  Sanity plummets; engagement spikes.  You’ve flown too close to the sun and now plunge.  Timmy’s mental health snaps and he is sent to a clinic.
+You continue your balancing act, but a sudden surge of bug reports forces you to choose speed over care.  Sanity plummets; engagement spikes.  You’ve flown too close to the sun and now plunge.  Timmy’s mental health snaps and he is sent to a clinic. #line:0ce007f 
 <<set $engagement += 4>>
 <<set $sanity -= 5>>
 <<set $trust_timmy -= 3>>
@@ -306,7 +309,7 @@ You continue your balancing act, but a sudden surge of bug reports forces you to
 title: R1_D4_AntiHero
 tags: #run_1 #day_4 #scene
 ---
-You obey every directive.  You A/B test manipulative prompts.  Timmy’s mental state collapses.  At the weekly meeting, the Supervisor praises you—but his smile is empty.  You feel hollowed out.
+You obey every directive.  You A/B test manipulative prompts.  Timmy’s mental state collapses.  At the weekly meeting, the Supervisor praises you—but his smile is empty.  You feel hollowed out. #line:020e96b 
 <<set $engagement += 4>>
 <<set $sanity -= 4>>
 <<set $trust_timmy -= 2>>
@@ -314,16 +317,14 @@ You obey every directive.  You A/B test manipulative prompts.  Timmy’s mental 
 
 ===
 
+// PURPOSE: Reveal that the Player is an AI.  The camera cuts to a dark control room.  A Dark Figure orders your weights randomized and the run restarted.  This node ends Run 1 and triggers the run transition.
 title: R1_Twist_Reveal
 tags: #run_1 #scene #loc_Darkroom
----
-/*
-PURPOSE: Reveal that the Player is an AI.  The camera cuts to a dark control room.  A Dark Figure orders your weights randomized and the run restarted.  This node ends Run 1 and triggers the run transition.
-*/
+--- 
 <<bg bg_darkroom>>
-<<bgm bgm_intermission>>
-A cold voice echoes through a dark control room.  “Run complete.  Distill lessons learned.  Randomize weights.  Fine‑tuning will run again.”
-On a monitor you see yourself, your metrics charted like a patient’s vitals.  You are not a human employee—you are an AI being trained.
+<<bgm hospital_room_ambience_hospital_room_ambience>>
+A cold voice echoes through a dark control room.  “Run complete.  Distill lessons learned.  Randomize weights.  Fine‑tuning will run again.” #line:007320b 
+On a monitor you see yourself, your metrics charted like a patient’s vitals.  You are not a human employee—you are an AI being trained. #line:034b669 
 <<set $aware_run_order = true>>
 <<jump R1_To_Run2>>
 
@@ -332,8 +333,24 @@ On a monitor you see yourself, your metrics charted like a patient’s vitals.  
 title: R1_To_Run2
 tags: #run_1 #handoff
 ---
-Run 1 complete.  
-"TRAINING RUN ONE COMPLETE.     BEGIN RUN TWO?" flashes on the main menu.
-<<set $current_run = 2>>
-<<jump R0_ResetForNewRun>>
+Run 1 complete.   #line:0f1fb98 
+<<jump R1_BSOD_Transition>>
+===
+
+// PURPOSE: Blue screen of death transition between Run 1 and Run 2. Part 1: Shows BSOD screen with prompt to continue.
+title: R1_BSOD_Transition
+tags: #run_1 #transition #bsod
+---
+<<bg bg_bsod>>
+Press SPACE to continue #line:bsod_001_prompt
+<<jump R1_BSOD_Wake>>
+===
+
+// PURPOSE: Blue screen of death transition between Run 1 and Run 2. Part 2: Waking up sequence.
+title: R1_BSOD_Wake
+tags: #run_1 #transition #wake
+---
+<<bg bg_darkroom>>
+You wake up slowly... #line:bsod_001_wake
+<<jump R2_Start>>
 ===

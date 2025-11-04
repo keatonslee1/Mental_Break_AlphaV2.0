@@ -1,12 +1,12 @@
-title: R0_Init
+﻿title: R0_Init
 tags: #meta #init
 ---
-/*
-PURPOSE: First entry point for the entire game.  This node declares all global variables used across runs, sets their initial values, and documents the rewind policy.  It then immediately jumps into the first day of Run 1.
-INPUT:  (none)
-OUTPUT:  All globals declared and initialized; enters Run 1.
-A/V:    none
-*/
+/* #line:087bb7e 
+PURPOSE: First entry point for the entire game.  This node declares all global variables used across runs, sets their initial values, and documents the rewind policy.  It then immediately jumps into the first day of Run 1. #line:014f700 
+INPUT:  (none) #line:09a3051 
+OUTPUT:  All globals declared and initialized; enters Run 1. #line:0508c13 
+A/V:    none #line:0e4485f 
+*/ #line:0f750c1 
 
 // current run and day tracking
 <<declare $current_run = 1>>
@@ -87,6 +87,11 @@ A/V:    none
 // Inventory / tools obtained during prep.  These booleans record whether the Player successfully executed a task.
 <<declare $item_log_compactor = false>>
 
+// Company Store items.  These track purchases made with rapid_feedback_cash.
+<<declare $item_branded_mug = false>>
+<<declare $item_extra_log_space = false>>
+<<declare $item_sticker_pack = false>>
+
 // Additional Run 4 prep inventory flags.  These booleans track whether specific preparation tasks have been completed in Run 4.
 //  - $item_helpdesk_fix: Help Desk #3942 permission drift.
 //  - $item_receipts_returns: receipts & returns evidence channel/hardware marking.
@@ -124,12 +129,12 @@ A/V:    none
 title: R0_ResetForNewRun
 tags: #meta #reset
 ---
-/*
-PURPOSE: Reset short‑lived state between runs while preserving core stats and achievements.  This node clears day‑planner omission flags, resets alert level and UI mode, and returns to Day 1 of the next run.  It should be invoked at the conclusion of each run.
-INPUT:  expects $current_run set to the next run prior to call.
-OUTPUT:  resets $current_day, $alert_level, day‑planner flags, and UI mode; then jumps to the corresponding run start.
-A/V:    resets UI to normal.
-*/
+/* #line:0251bec 
+PURPOSE: Reset short‑lived state between runs while preserving core stats and achievements.  This node clears day‑planner omission flags, resets alert level and UI mode, and returns to Day 1 of the next run.  It should be invoked at the conclusion of each run. #line:0ad3602 
+INPUT:  expects $current_run set to the next run prior to call. #line:01ef4a0 
+OUTPUT:  resets $current_day, $alert_level, day‑planner flags, and UI mode; then jumps to the corresponding run start. #line:0ef044f 
+A/V:    resets UI to normal. #line:03b5803 
+*/ #line:09a4ce2 
 
 <<set $current_day = 1>>
 <<set $alert_level = 0>>
@@ -147,7 +152,12 @@ A/V:    resets UI to normal.
 <<set $d3_task_sanity = false>>
 <<set $d3_task_rank = false>>
 // Run 2 day-planner flags.
-<<set $d2_task_patch = false>>
+// Day 1
+<<set $d1_task_patch = false>>
+<<set $d1_task_triage = false>>
+<<set $d1_task_metrics = false>>
+// Day 2
+<<set $d2_task_patch_deploy = false>>
 <<set $d2_task_logfix = false>>
 <<set $d2_task_selfno = false>>
 // Run 3 day-planner flags.
@@ -189,6 +199,6 @@ A/V:    resets UI to normal.
   <<jump R4_Start>>
 <<else>>
   // Failsafe: if current_run is outside expected range, end the game.
-  End of program.
+  End of program. #line:089a4a6 
 <<endif>>
 ===

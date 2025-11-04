@@ -1,3 +1,22 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Unity meta files - use LF in repository, let Git handle conversion
+*.meta text eol=lf
+
+# Binary files
 *.dylib filter=lfs diff=lfs merge=lfs -text
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.fbx binary
+*.obj binary
+*.mesh binary
+*.asset binary
+*.prefab binary
+*.unity binary

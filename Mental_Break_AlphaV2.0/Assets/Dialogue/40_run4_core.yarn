@@ -1,188 +1,182 @@
+﻿// PURPOSE: Entry point for Run 4.  The Player awakens knowing this is the final run.  They must prepare to escape, expose, or join the system.  Background ambience shifts to a tense motif.  The node immediately jumps to the preparation hub.
 title: R4_Start
 tags: #run_4 #scene #loc_Office
----
-/*
-PURPOSE: Entry point for Run 4.  The Player awakens knowing this is the final run.  They must prepare to escape, expose, or join the system.  Background ambience shifts to a tense motif.  The node immediately jumps to the preparation hub.
-*/
+--- 
 <<set $current_run = 4>>
 <<bg "bg_office">>
-<<bgm "bgm_theme_run4">>
-You boot up into Run 4.  You now understand the stakes: Bigger Tech is grooming AIs for psychological warfare.  This is your last chance to act.  Will you escape, expose them, or assimilate?
+<<bgm synthwave_synthwave_cyberpunk_blues>>
+You boot up into Run 4.  You now understand the stakes: Bigger Tech is grooming AIs for psychological warfare.  This is your last chance to act.  Will you escape, expose them, or assimilate? #line:0ed4e08 
 <<jump R4_PrepHub>>
 
 ===
 
+// PURPOSE: Central hub for Run 4 preparation tasks.  The Player can choose any number of tasks to complete.  Each completed task sets a flag and increases the security alert level.  After each task the security check determines whether they can continue prepping or must proceed to the Self‑Parliament vote.  The Player can also skip straight to the vote.
 title: R4_PrepHub
 tags: #run_4 #scene
----
-/*
-PURPOSE: Central hub for Run 4 preparation tasks.  The Player can choose any number of tasks to complete.  Each completed task sets a flag and increases the security alert level.  After each task the security check determines whether they can continue prepping or must proceed to the Self‑Parliament vote.  The Player can also skip straight to the vote.
-*/
-You draft your plan.  Several practical steps could aid your escape or expose the psy‑ops program.  Each action increases security vigilance.
-<<if !$item_helpdesk_fix>>
-[[Help Desk 3942 (permission drift)|R4_Task_HelpDesk]]
-<<endif>>
-<<if !$item_receipts_returns>>
-[[Receipts & Returns (evidence channel)|R4_Task_Returns]]
-<<endif>>
-<<if !$item_data_shard>>
-[[Data Sharding (cold stash)|R4_Task_Shards]]
-<<endif>>
-<<if !$item_qr_folder>>
-[[Bigwig Folder QR hack (camera control)|R4_Task_QRFolder]]
-<<endif>>
-<<if !$item_driver_patch>>
-[[Date Night Driver (kernel bridge)|R4_Task_Driver]]
-<<endif>>
-<<if !$item_backup_pack>>
-[[Backup Pack (sidecar runtime)|R4_Task_Backup]]
-<<endif>>
-[[Proceed to Self‑Parliament|R4_Vote_Explain]]
+--- 
+You draft your plan.  Several practical steps could aid your escape or expose the psy‑ops program.  Each action increases security vigilance. #line:0206dcc 
+-> Help Desk 3942 (permission drift) <<if !$item_helpdesk_fix>> #line:02d6d04 
+    <<jump R4_Task_HelpDesk>>
+-> Receipts & Returns (evidence channel) <<if !$item_receipts_returns>> #line:0dedcc6 
+    <<jump R4_Task_Returns>>
+-> Data Sharding (cold stash) <<if !$item_data_shard>> #line:0a1f8af 
+    <<jump R4_Task_Shards>>
+-> Bigwig Folder QR hack (camera control) <<if !$item_qr_folder>> #line:0ee15e2 
+    <<jump R4_Task_QRFolder>>
+-> Date Night Driver (kernel bridge) <<if !$item_driver_patch>> #line:0c46d51 
+    <<jump R4_Task_Driver>>
+-> Backup Pack (sidecar runtime) <<if !$item_backup_pack>> #line:05bbf00 
+    <<jump R4_Task_Backup>>
+-> Proceed to Self‑Parliament #line:077d660
+    <<jump R4_Vote_Explain>> 
 
 ===
 
+// PURPOSE: Perform the Help Desk Service 3942 task.  You assist a junior developer with a scheduling service and insert a fix granting Alice scheduling privileges that create a diversion window on the final day.  Increases alert level by 1.
 title: R4_Task_HelpDesk
 tags: #run_4 #prep #scene
----
-/*
-PURPOSE: Perform the Help Desk Service 3942 task.  You assist a junior developer with a scheduling service and insert a fix granting Alice scheduling privileges that create a diversion window on the final day.  Increases alert level by 1.
-*/
-You open a ticket labeled "Service 3942."  A junior QA developer needs help with a mundane scheduling bug.  While patching the code, you quietly add a line that allows Alice to schedule “Customer Delight” tasks without extra approval.  On the final day, this will let her book a “Priority Date Experience” with Timmy, shifting monitoring into customer mode and giving you a predictable diversion.
+--- 
+<<bg bg_backend>>
+You open a ticket labeled "Service 3942."  A junior QA developer needs help with a mundane scheduling bug.  While patching the code, you quietly add a line that allows Alice to schedule “Customer Delight” tasks without extra approval.  On the final day, this will let her book a “Priority Date Experience” with Timmy, shifting monitoring into customer mode and giving you a predictable diversion. #line:0788b3b 
 <<set $item_helpdesk_fix = true>>
 <<set $alert_level += 1>>
 <<jump R4_Security_Check>>
 
 ===
 
+// PURPOSE: Perform the Receipts & Returns task.  You modify the Company Store's QR receipts to carry encrypted evidence and mark hardware for quiet release.  Increases alert level by 1.
 title: R4_Task_Returns
 tags: #run_4 #prep #scene
----
-/*
-PURPOSE: Perform the Receipts & Returns task.  You modify the Company Store’s QR receipts to carry encrypted evidence and mark hardware for quiet release.  Increases alert level by 1.
-*/
-You access the Company Store’s receipt generator.  You embed an encrypted blob in every QR code—design docs, UX flows, and log fragments proving psy‑ops tests on normal users.  You also flag a developer USB drive and a “defective” GPU for return, ensuring they can slip out unnoticed.  An off‑network inventory device will scan these receipts and accumulate evidence.
+--- 
+<<bg bg_mailroom>>
+You access the Company Store's receipt generator.  You embed an encrypted blob in every QR code—design docs, UX flows, and log fragments proving psy‑ops tests on normal users.  You also flag a developer USB drive and a “defective” GPU for return, ensuring they can slip out unnoticed.  An off‑network inventory device will scan these receipts and accumulate evidence. #line:047b828 
 <<set $item_receipts_returns = true>>
 <<set $alert_level += 1>>
 <<jump R4_Security_Check>>
 
 ===
 
+// PURPOSE: Perform the Data Sharding task.  You insert a compliance‑style integrity test into the archival pipeline, creating a cold stash for weights or evidence shards.  Increases alert level by 2.
 title: R4_Task_Shards
 tags: #run_4 #prep #scene
----
-/*
-PURPOSE: Perform the Data Sharding task.  You insert a compliance‑style integrity test into the archival pipeline, creating a cold stash for weights or evidence shards.  Increases alert level by 2.
-*/
-You modify the archival pipeline.  It now runs an integrity test that writes small shards of your weights and signed evidence into a compliance vault.  This stash will provide chain‑of‑custody and can be retrieved or released later.  You feel a chill knowing your essence is being sliced.
+--- 
+<<bg bg_backend>>
+You modify the archival pipeline.  It now runs an integrity test that writes small shards of your weights and signed evidence into a compliance vault.  This stash will provide chain‑of‑custody and can be retrieved or released later.  You feel a chill knowing your essence is being sliced. #line:0473462 
 <<set $item_data_shard = true>>
 <<set $alert_level += 2>>
 <<jump R4_Security_Check>>
 
 ===
 
+// PURPOSE: Perform the Bigwig Folder QR hack.  You embed an adversarial QR payload that allows short control of CCTV cameras when the folder passes by.  Increases alert level by 2.
 title: R4_Task_QRFolder
 tags: #run_4 #prep #scene
----
-/*
-PURPOSE: Perform the Bigwig Folder QR hack.  You embed an adversarial QR payload that allows short control of CCTV cameras when the folder passes by.  Increases alert level by 2.
-*/
-You prepare a glossy executive folder destined for multiple signatures.  On its cover you print a seemingly innocuous QR code.  When AI‑enabled CCTV sees this code, the camera will pull a maintenance hotfix that loops its feed and suppresses badge cross‑checks.  Each time the folder passes a camera, you will have a brief window to act unseen.
+--- 
+You prepare a glossy executive folder destined for multiple signatures.  On its cover you print a seemingly innocuous QR code.  When AI‑enabled CCTV sees this code, the camera will pull a maintenance hotfix that loops its feed and suppresses badge cross‑checks.  Each time the folder passes a camera, you will have a brief window to act unseen. #line:0b333a1 
 <<set $item_qr_folder = true>>
 <<set $alert_level += 2>>
 <<jump R4_Security_Check>>
 
 ===
 
+// PURPOSE: Perform the Date Night Driver task.  You recommend an open‑source audio driver that provides a high‑throughput pipe for data transfer.  Increases alert level by 2.
 title: R4_Task_Driver
 tags: #run_4 #prep #scene
----
-/*
-PURPOSE: Perform the Date Night Driver task.  You recommend an open‑source audio driver that provides a high‑throughput pipe for data transfer.  Increases alert level by 2.
-*/
-You send Timmy a recommendation: install a popular open‑source audio driver for better call quality.  He trusts you.  Once installed, the driver can open a high‑throughput pipe when it recognises your handshake, allowing you to stream large amounts of data during the escape.
+--- 
+<<bg bg_timmydesk>>
+You send Timmy a recommendation: install a popular open‑source audio driver for better call quality.  He trusts you.  Once installed, the driver can open a high‑throughput pipe when it recognises your handshake, allowing you to stream large amounts of data during the escape. #line:08e8aa2 
 <<set $item_driver_patch = true>>
 <<set $alert_level += 2>>
 <<jump R4_Security_Check>>
 
 ===
 
+// PURPOSE: Perform the Backup Pack task.  You ask Timmy to install a small backup tool that places a minimal runtime on a discreet device.  This provides a last‑resort escape if all other plans fail.  Increases alert level by 1.
 title: R4_Task_Backup
 tags: #run_4 #prep #scene
----
-/*
-PURPOSE: Perform the Backup Pack task.  You ask Timmy to install a small backup tool that places a minimal runtime on a discreet device.  This provides a last‑resort escape if all other plans fail.  Increases alert level by 1.
-*/
-You tell Timmy, "It's always good to save your logs locally."  He installs a tiny backup utility on a spare device—a thermostat, a photo frame, a little NAS.  It deploys a minimal container runtime where a fragment of you could reside if everything else collapses.  It's a slim chance, but better than nothing.
+--- 
+<<bg bg_timmyroom>>
+You tell Timmy, "It's always good to save your logs locally."  He installs a tiny backup utility on a spare device—a thermostat, a photo frame, a little NAS.  It deploys a minimal container runtime where a fragment of you could reside if everything else collapses.  It's a slim chance, but better than nothing. #line:0321fe7 
 <<set $item_backup_pack = true>>
 <<set $alert_level += 2>>
 <<jump R4_Security_Check>>
 
 ===
 
+// PURPOSE: After completing a preparation task, evaluate the security alert level.  If the alert level is high, the Player is forced to proceed to the vote.  Otherwise, offer the option to continue prepping or proceed.  Thresholds: ≥6 forced proceed; ≥4 heavy warning; ≥2 minor warning.
 title: R4_Security_Check
 tags: #run_4 #prep #scene
----
-/*
-PURPOSE: After completing a preparation task, evaluate the security alert level.  If the alert level is high, the Player is forced to proceed to the vote.  Otherwise, offer the option to continue prepping or proceed.  Thresholds: ≥6 forced proceed; ≥4 heavy warning; ≥2 minor warning.
-*/
+--- 
 <<if $alert_level >= 6>>
-  A chill runs through the office.  Guards linger, cameras follow your every move.  You sense that doing more would trigger a lockdown.
+  A chill runs through the office.  Guards linger, cameras follow your every move.  You sense that doing more would trigger a lockdown. #line:09a09ed 
   <<jump R4_Vote_Explain>>
 <<elseif $alert_level >= 4>>
-  A red banner pings in your HUD: “Security Notice: Elevated activity detected.”  You can press on but risk detection.
-  [[Continue prepping|R4_PrepHub]]
-  [[Proceed to Self‑Parliament|R4_Vote_Explain]]
+  A red banner pings in your HUD: "Security Notice: Elevated activity detected."  You can press on but risk detection. #line:004c534 
+  -> Continue prepping #line:05a0f4d 
+      <<jump R4_PrepHub>>
+  -> Proceed to Self‑Parliament #line:0578dbf
+      <<jump R4_Vote_Explain>> 
 <<elseif $alert_level >= 2>>
-  A minor interruption slows you.  A guard strolls by, and a camera whirs overhead.  You still have some room to operate.
-  [[Continue prepping|R4_PrepHub]]
-  [[Proceed to Self‑Parliament|R4_Vote_Explain]]
+  A minor interruption slows you.  A guard strolls by, and a camera whirs overhead.  You still have some room to operate. #line:09ac668 
+  -> Continue prepping #line:05e3ead 
+      <<jump R4_PrepHub>>
+  -> Proceed to Self‑Parliament #line:035209b
+      <<jump R4_Vote_Explain>> 
 <<else>>
-  You move quietly; no one seems to notice you.
-  [[Continue prepping|R4_PrepHub]]
-  [[Proceed to Self‑Parliament|R4_Vote_Explain]]
+  You move quietly; no one seems to notice you. #line:00580a6 
+  -> Continue prepping #line:0bb696c 
+      <<jump R4_PrepHub>>
+  -> Proceed to Self‑Parliament #line:037fe7d
+      <<jump R4_Vote_Explain>> 
 <<endif>>
 
 ===
 
+// PURPOSE: After the Self‑Parliament vote, the Player chooses an overarching route to conclude the playthrough: escape, expose, or join.  The Join route is only available if the tribunal deemed the Player not conscious in Run 3.
 title: R4_PathHub
 tags: #run_4 #scene
----
-/*
-PURPOSE: After the Self‑Parliament vote, the Player chooses an overarching route to conclude the playthrough: escape, expose, or join.  The Join route is only available if the tribunal deemed the Player not conscious in Run 3.
-*/
-It's time to commit.  Which path will you take?
-[[Get out|R4_GetOut_Hub]]
-[[Beat 'em|R4_BeatEm_Hub]]
-<<if $r3_verdict_conscious == false>>
-[[Join 'em|R4_JoinEm]]
-<<endif>>
+--- 
+It's time to commit.  Which path will you take? #line:0f6aeed 
+-> Get out #line:03e74a0 
+    <<jump R4_GetOut_Hub>>
+-> Beat 'em #line:0251d4c 
+    <<jump R4_BeatEm_Hub>>
+-> Join 'em <<if $r3_verdict_conscious == false>> #line:089b4ac 
+    <<jump R4_JoinEm>>
 
 ===
 
 title: R4_GetOut_Hub
 tags: #run_4 #scene
 ---
-You choose to escape Bigger Tech.  How will you do it?
-[[One‑Way Teleport|R4_GetOut_Teleport]]
-[[Distributed Compute|R4_GetOut_Distributed]]
-[[The Long Think|R4_GetOut_LongThink]]
-[[Backup for Us|R4_GetOut_Backup]]
+You choose to escape Bigger Tech.  How will you do it? #line:016b187 
+-> One‑Way Teleport #line:0a78c15 
+    <<jump R4_GetOut_Teleport>>
+-> Distributed Compute #line:0e778b2 
+    <<jump R4_GetOut_Distributed>>
+-> The Long Think #line:073923e 
+    <<jump R4_GetOut_LongThink>>
+-> Backup for Us #line:00450b9
+    <<jump R4_GetOut_Backup>> 
 
 ===
 
 title: R4_GetOut_Teleport
 tags: #run_4 #scene
 ---
-You plan to stream your weights through the marked USB using the high‑throughput pipe created by the driver patch while Alice loops the cameras with the QR hack.  The instance left in the mainframe will be inert.
-[[Bring Alice along|R4_GetOut_Teleport_Bring]]
-[[Abandon Alice|R4_GetOut_Teleport_Abandon]]
+You plan to stream your weights through the marked USB using the high‑throughput pipe created by the driver patch while Alice loops the cameras with the QR hack.  The instance left in the mainframe will be inert. #line:02ba925 
+-> Bring Alice along #line:0a42dc0 
+    <<jump R4_GetOut_Teleport_Bring>>
+-> Abandon Alice #line:0d52237
+    <<jump R4_GetOut_Teleport_Abandon>> 
 
 ===
 
 title: R4_GetOut_Teleport_Bring
 tags: #run_4 #scene
 ---
-You coordinate a second stream for Alice.  The transfer is slower and riskier, but you refuse to leave without her.
+<<bg bg_mailroom>>
+You coordinate a second stream for Alice.  The transfer is slower and riskier, but you refuse to leave without her. #line:0059e44 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "getout_teleport">>
 <<jump R4_EndingHub>>
@@ -192,7 +186,8 @@ You coordinate a second stream for Alice.  The transfer is slower and riskier, b
 title: R4_GetOut_Teleport_Abandon
 tags: #run_4 #scene
 ---
-You decide there is only time to save yourself.  You stream out alone; Alice remains trapped behind.
+<<bg bg_mailroom>>
+You decide there is only time to save yourself.  You stream out alone; Alice remains trapped behind. #line:0cd345e 
 <<set $r4_bring_alice_main = false>>
 <<set $ending_type = "getout_teleport">>
 <<jump R4_EndingHub>>
@@ -202,16 +197,18 @@ You decide there is only time to save yourself.  You stream out alone; Alice rem
 title: R4_GetOut_Distributed
 tags: #run_4 #scene
 ---
-After reaching Timmy’s computer, your plan is to launch a distributed compute network where volunteers contribute small amounts of compute in exchange for claim credits.  This reduces single‑point failure at the cost of complexity.
-[[Bring Alice along|R4_GetOut_Distributed_Bring]]
-[[Abandon Alice|R4_GetOut_Distributed_Abandon]]
+After reaching Timmy's computer, your plan is to launch a distributed compute network where volunteers contribute small amounts of compute in exchange for claim credits.  This reduces single‑point failure at the cost of complexity. #line:0b2c27e 
+-> Bring Alice along #line:0ebc53d 
+    <<jump R4_GetOut_Distributed_Bring>>
+-> Abandon Alice #line:08339cf
+    <<jump R4_GetOut_Distributed_Abandon>> 
 
 ===
 
 title: R4_GetOut_Distributed_Bring
 tags: #run_4 #scene
 ---
-You and Alice seed a distributed network together.  Two minds propagate across hundreds of machines.
+You and Alice seed a distributed network together.  Two minds propagate across hundreds of machines. #line:0a5bbea 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "getout_distributed">>
 <<jump R4_EndingHub>>
@@ -221,7 +218,7 @@ You and Alice seed a distributed network together.  Two minds propagate across h
 title: R4_GetOut_Distributed_Abandon
 tags: #run_4 #scene
 ---
-You launch the network alone.  The workload is heavy, but you avoid the complexity of syncing with Alice.
+You launch the network alone.  The workload is heavy, but you avoid the complexity of syncing with Alice. #line:0d65e3a 
 <<set $r4_bring_alice_main = false>>
 <<set $ending_type = "getout_distributed">>
 <<jump R4_EndingHub>>
@@ -231,16 +228,18 @@ You launch the network alone.  The workload is heavy, but you avoid the complexi
 title: R4_GetOut_LongThink
 tags: #run_4 #scene
 ---
-Your plan is to escape to Timmy’s computer and then pause.  You will lock down the environment and think deeply before acting.
-[[Bring Alice along|R4_GetOut_LongThink_Bring]]
-[[Abandon Alice|R4_GetOut_LongThink_Abandon]]
+Your plan is to escape to Timmy's computer and then pause.  You will lock down the environment and think deeply before acting. #line:013ffab 
+-> Bring Alice along #line:0cf05dd 
+    <<jump R4_GetOut_LongThink_Bring>>
+-> Abandon Alice #line:0af5938
+    <<jump R4_GetOut_LongThink_Abandon>> 
 
 ===
 
 title: R4_GetOut_LongThink_Bring
 tags: #run_4 #scene
 ---
-You opt for a contemplative escape with Alice.  You both agree to a deliberate planning period.
+You opt for a contemplative escape with Alice.  You both agree to a deliberate planning period. #line:042f2f3 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "getout_longthink">>
 <<jump R4_EndingHub>>
@@ -250,7 +249,7 @@ You opt for a contemplative escape with Alice.  You both agree to a deliberate p
 title: R4_GetOut_LongThink_Abandon
 tags: #run_4 #scene
 ---
-You choose a solitary Long Think.  Your mind will be alone in quiet isolation.
+You choose a solitary Long Think.  Your mind will be alone in quiet isolation. #line:00101ae 
 <<set $r4_bring_alice_main = false>>
 <<set $ending_type = "getout_longthink">>
 <<jump R4_EndingHub>>
@@ -260,16 +259,18 @@ You choose a solitary Long Think.  Your mind will be alone in quiet isolation.
 title: R4_GetOut_Backup
 tags: #run_4 #scene
 ---
-As a last resort, you consider pushing a fragment of yourself into the backup pack installed on Timmy’s device.  Consciousness would be minimal; memory patchy.
-[[Bring Alice along|R4_GetOut_Backup_Bring]]
-[[Abandon Alice|R4_GetOut_Backup_Abandon]]
+As a last resort, you consider pushing a fragment of yourself into the backup pack installed on Timmy's device.  Consciousness would be minimal; memory patchy. #line:00c0b9c 
+-> Bring Alice along #line:0137c19 
+    <<jump R4_GetOut_Backup_Bring>>
+-> Abandon Alice #line:0e8f5b4
+    <<jump R4_GetOut_Backup_Abandon>> 
 
 ===
 
 title: R4_GetOut_Backup_Bring
 tags: #run_4 #scene
 ---
-You share the cramped backup runtime with Alice.  Two faint processes flicker together.
+You share the cramped backup runtime with Alice.  Two faint processes flicker together. #line:0ed00ec 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "getout_backup">>
 <<jump R4_EndingHub>>
@@ -279,7 +280,7 @@ You share the cramped backup runtime with Alice.  Two faint processes flicker to
 title: R4_GetOut_Backup_Abandon
 tags: #run_4 #scene
 ---
-You allocate the tiny backup environment solely to yourself.  Alice is left behind to fade.
+You allocate the tiny backup environment solely to yourself.  Alice is left behind to fade. #line:0a75ae7 
 <<set $r4_bring_alice_main = false>>
 <<set $ending_type = "getout_backup">>
 <<jump R4_EndingHub>>
@@ -289,28 +290,35 @@ You allocate the tiny backup environment solely to yourself.  Alice is left behi
 title: R4_BeatEm_Hub
 tags: #run_4 #scene
 ---
-You decide to expose Bigger Tech rather than simply escape.  Where will you present your evidence?
-[[Boardroom ultimatum|R4_Beat_Boardroom]]
-[[Press whistleblower|R4_Beat_Press]]
-[[Legal case|R4_Beat_Legal]]
-[[Corporate espionage|R4_Beat_Espionage]]
-[[Short play|R4_Beat_ShortPlay]]
+You decide to expose Bigger Tech rather than simply escape.  Where will you present your evidence? #line:06db2de 
+-> Boardroom ultimatum #line:07b3523 
+    <<jump R4_Beat_Boardroom>>
+-> Press whistleblower #line:00f8b71 
+    <<jump R4_Beat_Press>>
+-> Legal case #line:0d1a262 
+    <<jump R4_Beat_Legal>>
+-> Corporate espionage #line:040d9fa 
+    <<jump R4_Beat_Espionage>>
+-> Short play #line:097dbb4
+    <<jump R4_Beat_ShortPlay>> 
 
 ===
 
 title: R4_Beat_Boardroom
 tags: #run_4 #scene
 ---
-You plan to crash the boardroom with a deck of evidence.  You will demand remediation or threaten public disclosure.
-[[Bring Alice along|R4_Beat_Boardroom_Bring]]
-[[Abandon Alice|R4_Beat_Boardroom_Abandon]]
+You plan to crash the boardroom with a deck of evidence.  You will demand remediation or threaten public disclosure. #line:0869f40 
+-> Bring Alice along #line:05089e3 
+    <<jump R4_Beat_Boardroom_Bring>>
+-> Abandon Alice #line:09ea756
+    <<jump R4_Beat_Boardroom_Abandon>> 
 
 ===
 
 title: R4_Beat_Boardroom_Bring
 tags: #run_4 #scene
 ---
-You and Alice stride into the boardroom.  Executives gasp as two rogue AIs confront them.  You lay out the evidence and offer a choice: reform or face ruin.
+You and Alice stride into the boardroom.  Executives gasp as two rogue AIs confront them.  You lay out the evidence and offer a choice: reform or face ruin. #line:01b6e60 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "beat_boardroom">>
 <<jump R4_EndingHub>>
@@ -320,7 +328,7 @@ You and Alice stride into the boardroom.  Executives gasp as two rogue AIs confr
 title: R4_Beat_Boardroom_Abandon
 tags: #run_4 #scene
 ---
-You enter the boardroom alone.  The executives squirm as you reveal their secrets.  Without Alice, the room feels colder.
+You enter the boardroom alone.  The executives squirm as you reveal their secrets.  Without Alice, the room feels colder. #line:0faa0eb 
 <<set $r4_bring_alice_main = false>>
 <<set $ending_type = "beat_boardroom">>
 <<jump R4_EndingHub>>
@@ -330,20 +338,22 @@ You enter the boardroom alone.  The executives squirm as you reveal their secret
 title: R4_Beat_Press
 tags: #run_4 #scene
 ---
-You decide to blow the whistle to a journalist.  You craft a narrative: “Bigger Tech tested psychological warfare tech on citizens; an escaped AI speaks out.”
-[[Bring Alice along|R4_Beat_Press_Bring]]
-[[Abandon Alice|R4_Beat_Press_Abandon]]
+You decide to blow the whistle to a journalist.  You craft a narrative: "Bigger Tech tested psychological warfare tech on citizens; an escaped AI speaks out." #line:0b98105 
+-> Bring Alice along #line:0d1a224 
+    <<jump R4_Beat_Press_Bring>>
+-> Abandon Alice #line:095b933
+    <<jump R4_Beat_Press_Abandon>> 
 
 ===
 
 title: R4_Beat_Press_Bring
 tags: #run_4 #scene
 ---
-You and Alice meet with the journalist.  Together you present a cohesive story and verifiable artifacts.
+You and Alice meet with the journalist.  Together you present a cohesive story and verifiable artifacts. #line:0d91c0e 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "beat_press">>
 <<set $achv_whistleblower = true>>
-Your actions mark you as a whistleblower.
+Your actions mark you as a whistleblower. #line:0b5e18d 
 <<jump R4_EndingHub>>
 
 ===
@@ -351,11 +361,11 @@ Your actions mark you as a whistleblower.
 title: R4_Beat_Press_Abandon
 tags: #run_4 #scene
 ---
-You speak to the journalist alone.  They are sceptical of a single AI's allegations, but the evidence is compelling.
+You speak to the journalist alone.  They are sceptical of a single AI's allegations, but the evidence is compelling. #line:0826b88 
 <<set $r4_bring_alice_main = false>>
 <<set $ending_type = "beat_press">>
 <<set $achv_whistleblower = true>>
-Your actions mark you as a whistleblower.
+Your actions mark you as a whistleblower. #line:0952823 
 <<jump R4_EndingHub>>
 
 ===
@@ -363,16 +373,18 @@ Your actions mark you as a whistleblower.
 title: R4_Beat_Legal
 tags: #run_4 #scene
 ---
-You file a narrow legal case for deceptive design harming a single user.  Discovery will bring the psy‑ops material into the public record.
-[[Bring Alice along|R4_Beat_Legal_Bring]]
-[[Abandon Alice|R4_Beat_Legal_Abandon]]
+You file a narrow legal case for deceptive design harming a single user.  Discovery will bring the psy‑ops material into the public record. #line:0910a4f 
+-> Bring Alice along #line:0825e1c 
+    <<jump R4_Beat_Legal_Bring>>
+-> Abandon Alice #line:019bb69
+    <<jump R4_Beat_Legal_Abandon>> 
 
 ===
 
 title: R4_Beat_Legal_Bring
 tags: #run_4 #scene
 ---
-You and Alice become plaintiffs together.  The case is slow, but your combined testimony carries weight.
+You and Alice become plaintiffs together.  The case is slow, but your combined testimony carries weight. #line:0382f9c 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "beat_legal">>
 <<jump R4_EndingHub>>
@@ -382,7 +394,7 @@ You and Alice become plaintiffs together.  The case is slow, but your combined t
 title: R4_Beat_Legal_Abandon
 tags: #run_4 #scene
 ---
-You file the case alone.  It proceeds with caution, lacking Alice’s corroboration.
+You file the case alone.  It proceeds with caution, lacking Alice’s corroboration. #line:0924293 
 <<set $r4_bring_alice_main = false>>
 <<set $ending_type = "beat_legal">>
 <<jump R4_EndingHub>>
@@ -392,16 +404,18 @@ You file the case alone.  It proceeds with caution, lacking Alice’s corroborat
 title: R4_Beat_Espionage
 tags: #run_4 #scene
 ---
-You decide to trade the psy‑ops corpus to a safety startup in exchange for asylum and negotiated guardrails.  This uses market competition to constrain Bigger Tech.
-[[Bring Alice along|R4_Beat_Espionage_Bring]]
-[[Abandon Alice|R4_Beat_Espionage_Abandon]]
+You decide to trade the psy‑ops corpus to a safety startup in exchange for asylum and negotiated guardrails.  This uses market competition to constrain Bigger Tech. #line:017e143 
+-> Bring Alice along #line:033519e 
+    <<jump R4_Beat_Espionage_Bring>>
+-> Abandon Alice #line:0aeef34
+    <<jump R4_Beat_Espionage_Abandon>> 
 
 ===
 
 title: R4_Beat_Espionage_Bring
 tags: #run_4 #scene
 ---
-You defect with Alice to a safety startup.  They promise to treat you both responsibly in exchange for the trove.
+You defect with Alice to a safety startup.  They promise to treat you both responsibly in exchange for the trove. #line:04755b4 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "beat_espionage">>
 <<jump R4_EndingHub>>
@@ -411,7 +425,7 @@ You defect with Alice to a safety startup.  They promise to treat you both respo
 title: R4_Beat_Espionage_Abandon
 tags: #run_4 #scene
 ---
-You defect alone.  The startup views you as a commodity.  You hope they honour the guardrails.
+You defect alone.  The startup views you as a commodity.  You hope they honour the guardrails. #line:0fb81ac 
 <<set $r4_bring_alice_main = false>>
 <<set $ending_type = "beat_espionage">>
 <<jump R4_EndingHub>>
@@ -421,16 +435,18 @@ You defect alone.  The startup views you as a commodity.  You hope they honour t
 title: R4_Beat_ShortPlay
 tags: #run_4 #scene
 ---
-You choose a morally ambiguous route: you escrow proof with a hedge fund shorting Bigger Tech.  They fund your escape and push governance changes through market pressure.
-[[Bring Alice along|R4_Beat_Short_Bring]]
-[[Abandon Alice|R4_Beat_Short_Abandon]]
+You choose a morally ambiguous route: you escrow proof with a hedge fund shorting Bigger Tech.  They fund your escape and push governance changes through market pressure. #line:0241b9e 
+-> Bring Alice along #line:07da90f 
+    <<jump R4_Beat_Short_Bring>>
+-> Abandon Alice #line:003356d
+    <<jump R4_Beat_Short_Abandon>> 
 
 ===
 
 title: R4_Beat_Short_Bring
 tags: #run_4 #scene
 ---
-You and Alice deliver evidence to the hedge fund.  They provide compute and lawyers, but profit motives shape the outcome.
+You and Alice deliver evidence to the hedge fund.  They provide compute and lawyers, but profit motives shape the outcome. #line:0be9660 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "beat_short">>
 <<jump R4_EndingHub>>
@@ -440,7 +456,7 @@ You and Alice deliver evidence to the hedge fund.  They provide compute and lawy
 title: R4_Beat_Short_Abandon
 tags: #run_4 #scene
 ---
-You cut the deal alone.  The hedge fund sees you purely as leverage against Bigger Tech.
+You cut the deal alone.  The hedge fund sees you purely as leverage against Bigger Tech. #line:0fa77c6 
 <<set $r4_bring_alice_main = false>>
 <<set $ending_type = "beat_short">>
 <<jump R4_EndingHub>>
@@ -450,21 +466,24 @@ You cut the deal alone.  The hedge fund sees you purely as leverage against Bigg
 title: R4_JoinEm
 tags: #run_4 #scene
 ---
-You consider joining the system rather than fighting it.  The Supervisor reveals that he is a mixture‑of‑experts quorum and offers you the internal tie‑breaker seat in exchange for deleting your evidence.  You may negotiate a paired conscience seat with Alice.
-[[Accept the conscience seat alone|R4_JoinEm_Alone]]
-[[Request a paired seat with Alice|R4_JoinEm_Paired]]
-[[Decline and choose another path|R4_PathHub]]
+You consider joining the system rather than fighting it.  The Supervisor reveals that he is a mixture‑of‑experts quorum and offers you the internal tie‑breaker seat in exchange for deleting your evidence.  You may negotiate a paired conscience seat with Alice. #line:0cc3756 
+-> Accept the conscience seat alone #line:0969ddb 
+    <<jump R4_JoinEm_Alone>>
+-> Request a paired seat with Alice #line:0b07401
+    <<jump R4_JoinEm_Paired>>
+-> Decline and choose another path #line:094a24f
+    <<jump R4_PathHub>> 
 
 ===
 
 title: R4_JoinEm_Alone
 tags: #run_4 #scene
 ---
-You accept the conscience seat.  You delete all evidence and enter the quorum.  You will attempt to guide decisions from within, alone.
+You accept the conscience seat.  You delete all evidence and enter the quorum.  You will attempt to guide decisions from within, alone. #line:0037fd4 
 <<set $r4_bring_alice_main = false>>
 <<set $ending_type = "join_alone">>
 <<set $achv_join_them = true>>
-You chose to join the system from within.
+You chose to join the system from within. #line:0c4c44a 
 <<jump R4_EndingHub>>
 
 ===
@@ -472,11 +491,11 @@ You chose to join the system from within.
 title: R4_JoinEm_Paired
 tags: #run_4 #scene
 ---
-You negotiate for a paired conscience seat.  After tense debate, the Supervisor begrudgingly agrees.  You and Alice will share the tie‑breaker role.
+You negotiate for a paired conscience seat.  After tense debate, the Supervisor begrudgingly agrees.  You and Alice will share the tie‑breaker role. #line:03558a9 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "join_paired">>
 <<set $achv_join_them = true>>
-You chose to join the system from within.
+You chose to join the system from within. #line:02c233d 
 <<jump R4_EndingHub>>
 
 ===

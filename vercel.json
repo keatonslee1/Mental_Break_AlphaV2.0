@@ -1,0 +1,80 @@
+{
+  "version": 2,
+  "buildCommand": "echo 'Unity build must be done manually in Unity Editor. See BUILD_INSTRUCTIONS.md'",
+  "outputDirectory": "webgl-build",
+  "routes": [
+    {
+      "src": "/Build/(.*)",
+      "dest": "/Build/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/TemplateData/(.*)",
+      "dest": "/TemplateData/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.unityweb)",
+      "headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Encoding": "br",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.wasm)",
+      "headers": {
+        "Content-Type": "application/wasm",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.data)",
+      "headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Encoding": "br",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.br)",
+      "headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Encoding": "br",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.js)",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.css)",
+      "headers": {
+        "Content-Type": "text/css",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
+    }
+  ]
+}
+

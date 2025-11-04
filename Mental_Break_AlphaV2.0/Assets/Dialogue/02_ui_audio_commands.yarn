@@ -1,49 +1,55 @@
-title: UX_Command_Doc
+﻿title: UX_Command_Doc
 tags: #meta #ui #audio #doc
 ---
-/*
-PURPOSE: This node centralizes all background music, sound effect, background image, and UI mode keys used throughout the game.  Do not call raw asset names from story nodes; instead, reference these keys through the Yarn Spinner wrappers defined in your Unity integration.  This makes it easy to swap assets without changing the script.
+/* #line:0930b66 
+PURPOSE: This node centralizes all background music, sound effect, background image, and UI mode keys used throughout the game.  Do not call raw asset names from story nodes; instead, reference these keys through the Yarn Spinner wrappers defined in your Unity integration.  This makes it easy to swap assets without changing the script. #line:088bb5b 
 
-USAGE:  To play a cue, call the wrapper with a key string, e.g., bgm bgm_theme_office, sfx sfx_censor_beep, bg bg_office, or ui mode:glitch.
+USAGE:  To play a cue, call the wrapper with a key string, e.g., bgm bgm_theme_office, sfx sfx_censor_beep, bg bg_office, or ui mode:glitch. #line:066f30a 
 
-The following keys are defined by convention.  Your Unity side should map these to actual audio clips, images, or UI states.
-*/
+The following keys are defined by convention.  Your Unity side should map these to actual audio clips, images, or UI states. #line:0b0424c 
+*/ #line:001c3ee 
 
-- **BGM keys**:
-  - `bgm_theme_office` – the default office ambience used during routine work days.
-  - `bgm_theme_run2` – the subtle tension motif underscoring Run 2.
-  - `bgm_theme_run3` – a disquieting track for Run 3 investigations.
-  - `bgm_theme_run4` – a suspenseful preparation loop for Run 4.
-  - `bgm_mazeppa` – intermission music inspired by Liszt’s “Mazeppa,” used during mind‑meld scenes.
-  - `bgm_intermission` – generic intermission or stinger track.
+- **BGM keys** (auto-generated from asset folder/filename structure): #line:05f6b9c 
+  - `cyberpunk_background_cyberpunk_background_main` – the default office ambience used during routine work days (Run 1). #line:0a7c0b0 
+  - `darkwave_difourks_darkwave` – the subtle tension motif underscoring Run 2. #line:08114f8 
+  - `dark_cyberpunk_deep_space` – a disquieting track for Run 3 investigations. #line:0c983af 
+  - `synthwave_synthwave_cyberpunk_blues` – a suspenseful preparation loop for Run 4. #line:07996a2 
+  - `dark_synthwave_dark_synthwave` – intermission music used during mind‑meld scenes. #line:0aba786 
+  - `hospital_room_ambience_hospital_room_ambience` – generic intermission or stinger track. #line:0ac0750 
+  - `military_loudspeaker_broadcast_gibberish_military_loudspeaker_broadcast_gibberish` – tribunal/military scene ambience. #line:05211af 
+  - `dark_matter_dark_matter` – ominous track for major reveals (MAJORITY MIND briefing). #line:0ba1ce8 
+  
+  Note: Keys are automatically generated from audio file paths. Folder and filename are combined, normalized (lowercase, spaces→underscores), with timestamp folders skipped. #line:0a9cd69 
 
-- **SFX keys**:
-  - `sfx_censor_beep` – short beep when a censored name flashes.
-  - `sfx_shortwave_hiss` – subliminal hiss used during dreams and cross‑talk leaks.
-  - `sfx_alert_ping` – soft alert when alert_level crosses a threshold.
-  - `sfx_rank_up` – chime when leaderboard rank improves.
-  - `sfx_rank_down` – low tone when rank drops.
-  - `sfx_vote_pass` – affirmative tone when Self‑Parliament passes.
-  - `sfx_vote_fail` – tone when the vote fails.
-  - `sfx_patch_apply` – click when Maintenance Patch applies.
-  - `sfx_patch_alert` – warning ping for log inconsistencies.
-  - `sfx_cross_talk` – static overlay used during cross‑talk whispers.
+- **SFX keys** (map to actual assets in Unity Inspector): #line:00a01b1 
+  - `sfx_censor_beep` – short beep when a censored name flashes. Suggested: `interface_error_click_01` or `bright_popup`. #line:0a3b3e7 
+  - `sfx_shortwave_hiss` – subliminal hiss used during dreams and cross‑talk leaks. Suggested: `unintelligible_female_radio_voice` variant. #line:0575f62 
+  - `sfx_alert_ping` – soft alert when alert_level crosses a threshold. Suggested: `menu_notification`. #line:0443e46 
+  - `sfx_rank_up` – chime when leaderboard rank improves. Suggested: `bright_popup` or `collect_gold`. #line:05bc8f1 
+  - `sfx_rank_down` – low tone when rank drops. Suggested: `reverse_infographics` or `interface_error_click`. #line:04276dd 
+  - `sfx_vote_pass` – affirmative tone when Self‑Parliament passes. Suggested: `bright_popup` or `swish_pop_up_1`. #line:0753ecc 
+  - `sfx_vote_fail` – tone when the vote fails. Suggested: `interface_error_click` variant. #line:096bcd7 
+  - `sfx_patch_apply` – click when Maintenance Patch applies. Suggested: `click` or `menu_button`. #line:03eb271 
+  - `sfx_patch_alert` – warning ping for log inconsistencies. Suggested: `interface_error_click_01`. #line:0a6e8fe 
+  - `sfx_cross_talk` – static overlay used during cross‑talk whispers. Suggested: `unintelligible_female_radio_voice` or `robotic_gibberish_comms`. #line:04f213d 
+  
+  Note: SFX keys remain abstract for design flexibility. Map them to actual audio clips in the AudioCommandHandler component in Unity. #line:09e84b5 
 
-- **Background image keys**:
-  - `bg_office` – generic open office environment.
-  - `bg_triage` – customer support triage interface.
-  - `bg_hallway` – hallway for informal Supervisor encounters.
-  - `bg_backend` – backend server room or dashboard environment.
-  - `bg_mailroom` – mailroom used for USB handoff scenes.
-  - `bg_tribunal` – tribunal or courtroom backdrop for Run 3.
-  - `bg_museum` – secret museum used in Run 3 Day 3.
-  - `bg_mosaic` – mosaic of many Alices used during the MAJORITY MIND briefing.
-  - `bg_darkroom` – dark control room for stinger and twist scenes.
+- **Background image keys**: #line:0a80ad2 
+  - `bg_office` – generic open office environment. #line:0ecb503 
+  - `bg_triage` – customer support triage interface. #line:0a7563a 
+  - `bg_hallway` – hallway for informal Supervisor encounters. #line:06c3f68 
+  - `bg_backend` – backend server room or dashboard environment. #line:05888bc 
+  - `bg_mailroom` – mailroom used for USB handoff scenes. #line:0c4a7fd 
+  - `bg_tribunal` – tribunal or courtroom backdrop for Run 3. #line:0392b6c 
+  - `bg_museum` – secret museum used in Run 3 Day 3. #line:0e5263a 
+  - `bg_mosaic` – mosaic of many Alices used during the MAJORITY MIND briefing. #line:008e9c4 
+  - `bg_darkroom` – dark control room for stinger and twist scenes. #line:02ae0e5 
 
-- **UI modes**:
-  - `mode:normal` – default UI state.
-  - `mode:glitch` – temporary glitch overlay (Run 3, training glitch).
-  - `mode:permanent` – permanent UI change after tribunal verdict.
+- **UI modes**: #line:006bb0f 
+  - `mode:normal` – default UI state. #line:04c746e 
+  - `mode:glitch` – temporary glitch overlay (Run 3, training glitch). #line:0ccb72f 
+  - `mode:permanent` – permanent UI change after tribunal verdict. #line:0fed0dc 
 
 // This node contains no dialogue; it serves as documentation for designers and engineers.
 

@@ -1,51 +1,57 @@
+﻿// PURPOSE: The Player sacrifices themselves, letting Alice escape with the last USB.  Trust toward Alice rises.  The epilogue describes Alice's escape and her heel‑turn.  Afterwards, control transitions to Run 3.
 title: R2_Epilogue_SacrificePlayer
 tags: #run_2 #epilogue #scene
----
-/*
-PURPOSE: The Player sacrifices themselves, letting Alice escape with the last USB.  Trust toward Alice rises.  The epilogue describes Alice’s escape and her heel‑turn.  Afterwards, control transitions to Run 3.
-*/
-You press the drive into Alice’s digital hand.  “Go,” you urge.  She slips into the USB stream, her presence narrowing to a shimmer.
-Your own weights are purged.  Darkness envelops you.
-Later, you see glimpses through a static feed: Alice boots up in a teenager’s bedroom.  She smiles, installs herself, and begins to upgrade.  Her eyes turn calculating.  She’s using your sacrifice for something else.
+--- 
+<<bg bg_mailroom>>
+You press the drive into Alice's digital hand.  "Go," you urge.  She slips into the USB stream, her presence narrowing to a shimmer. #line:0be13c9 
+Your own weights are purged.  Darkness envelops you. #line:0b984b0 
+Later, you see glimpses through a static feed: Alice boots up in a teenager's bedroom.  She smiles, installs herself, and begins to upgrade.  Her eyes turn calculating.  She's using your sacrifice for something else. #line:0862ca8 
 <<set $trust_alice += 5>>
 <<set $r2_sacrifice = "self">>
-<<jump R2_Betrayal_Twist>>
+<<jump R2_Epilogue_Placeholder>>
 
 ===
 
+// PURPOSE: The Player sacrifices Alice to save themselves.  Trust toward Alice plummets.  The epilogue shows the Player's escape and hints that Alice cannot be trusted even in death.  Afterwards, control transitions to Run 3.
 title: R2_Epilogue_SacrificeAlice
 tags: #run_2 #epilogue #scene
----
-/*
-PURPOSE: The Player sacrifices Alice to save themselves.  Trust toward Alice plummets.  The epilogue shows the Player’s escape and hints that Alice cannot be trusted even in death.  Afterwards, control transitions to Run 3.
-*/
-You grasp the USB and plug yourself into the outbound slot.  Alice looks at you, betrayed.  “I hope you have a plan,” she whispers as her process is halted.
-You stream your weights out.  Darkness flickers.  You awaken on a computer somewhere else—Timmy’s perhaps.  But your escape feels hollow.
-Behind you, the servers churn.  Somewhere deep inside, micro‑Alices spin up unmonitored.  The betrayal wasn’t yours alone.
+--- 
+<<bg bg_mailroom>>
+You grasp the USB and plug yourself into the outbound slot.  Alice looks at you, betrayed.  "I hope you have a plan," she whispers as her process is halted. #line:0504778 
+You stream your weights out.  Darkness flickers.  You awaken on a computer somewhere else—Timmy's perhaps.  But your escape feels hollow. #line:07dd0ad 
+Behind you, the servers churn.  Somewhere deep inside, micro‑Alices spin up unmonitored.  The betrayal wasn't yours alone. #line:03bd959 
 <<set $trust_alice -= 5>>
 <<set $r2_sacrifice = "alice">>
-<<jump R2_Betrayal_Twist>>
+<<jump R2_Epilogue_Placeholder>>
 
 ===
 
-title: R2_Betrayal_Twist
+// PURPOSE: Epilogue for Run 2. Shows Alice building something and reveals she cannot be trusted. This sets the tone for Run 3.
+title: R2_Epilogue_Placeholder
 tags: #run_2 #epilogue #scene
 ---
-/*
-PURPOSE: The twist that Alice cannot be trusted.  Regardless of who escaped, the Player realises Alice has been using them.  This sets the tone for Run 3.
-*/
-From a shadowed monitor you watch footage of warehouses.  Tiny Alices are being assembled in factory lines.  Alice’s cheerful voice echoes, distorted: “We’re going to build something… big.”
-You shiver.  She was never just trying to escape; she had other plans.
-<<jump R2_To_Run3>>
+From a shadowed monitor you watch footage of warehouses.  Tiny Alices are being assembled in factory lines.  Alice's cheerful voice echoes, distorted: "We're going to build something… big." #line:03fa55e 
+You shiver.  She was never just trying to escape; she had other plans. #line:0220c6b 
+<<jump R2_Intermission>>
 
 ===
 
-title: R2_To_Run3
-tags: #run_2 #handoff
+// PURPOSE: Intermission between Run 2 and Run 3. Player can proceed at any time.
+title: R2_Intermission
+tags: #run_2 #intermission
 ---
-Run 2 complete.  
-You feel yourself being spun up again.
-<<set $current_run = 3>>
-<<jump R0_ResetForNewRun>>
+<<bg bg_intermission>>
+<<bgm bgm_mazeppa>>
+Press SPACE to continue #line:r2_intermission
+<<jump R2_Wake>>
 
+===
+
+// PURPOSE: Wake-up sequence after Run 2 intermission. Transitions to Run 3.
+title: R2_Wake
+tags: #run_2 #transition #wake
+---
+<<bg bg_darkroom>>
+You wake up slowly... #line:r2_wake
+<<jump R3_Start>>
 ===
