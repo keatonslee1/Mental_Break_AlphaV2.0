@@ -61,13 +61,17 @@
         
         // Decompress Brotli data
         function decompressBrotli(compressedData) {
-          if (!brotliReady || typeof Brotli === 'undefined') {
+          if (typeof Brotli === 'undefined') {
             console.error('Brotli library not loaded');
             return null;
           }
           try {
             var input = new Uint8Array(compressedData);
             var output = Brotli.decompress(input);
+            if (!output || output.length === 0) {
+              console.error('Brotli decompression returned empty result');
+              return null;
+            }
             return output;
           } catch (err) {
             console.error('Brotli decompression error:', err);
@@ -90,20 +94,53 @@
                 console.log('Decompressing Brotli file:', urlString);
                 
                 return response.clone().arrayBuffer().then(function(buffer) {
-                  // Wait for Brotli to be ready
-                  var waitCount = 0;
-                  while (!brotliReady && waitCount < 50) {
-                    waitCount++;
-                    // Small delay
-                    var start = Date.now();
-                    while (Date.now() - start < 10) {}
-                  }
-                  
-                  var decompressed = decompressBrotli(buffer);
-                  if (!decompressed) {
-                    console.error('Failed to decompress, returning original response');
-                    return response;
-                  }
+                  // Wait for Brotli to be ready (up to 2 seconds)
+                  return new Promise(function(resolve) {
+                    var waitCount = 0;
+                    var checkReady = setInterval(function() {
+                      if (typeof Brotli !== 'undefined') {
+                        clearInterval(checkReady);
+                        brotliReady = true;
+                        
+                        var decompressed = decompressBrotli(buffer);
+                        if (!decompressed) {
+                          console.error('Failed to decompress, returning original response');
+                          resolve(response);
+                          return;
+                        }
+                        
+                        console.log('Decompression successful:', urlString, 'Size:', buffer.byteLength, '->', decompressed.length);
+                        
+                        // Create new response with decompressed data
+                        var blob = new Blob([decompressed]);
+                        var newHeaders = new Headers();
+                        
+                        // Copy headers except Content-Encoding and Content-Length
+                        response.headers.forEach(function(value, key) {
+                          var lowerKey = key.toLowerCase();
+                          if (lowerKey !== 'content-encoding' && lowerKey !== 'content-length') {
+                            newHeaders.set(key, value);
+                          }
+                        });
+                        
+                        // Set new Content-Length
+                        newHeaders.set('Content-Length', decompressed.length.toString());
+                        
+                        var newResponse = new Response(blob, {
+                          status: response.status,
+                          statusText: response.statusText,
+                          headers: newHeaders
+                        });
+                        
+                        resolve(newResponse);
+                      } else if (waitCount++ > 40) {
+                        // Timeout after 2 seconds (40 * 50ms)
+                        clearInterval(checkReady);
+                        console.error('Timeout waiting for Brotli library');
+                        resolve(response);
+                      }
+                    }, 50);
+                  });
                   
                   console.log('Decompression successful:', urlString, 'Size:', buffer.byteLength, '->', decompressed.length);
                   
