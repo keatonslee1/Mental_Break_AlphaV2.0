@@ -108,10 +108,22 @@
         document.getElementsByTagName('head')[0].appendChild(meta);
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
+        // Hide keyboard controls on mobile
+        var controlsElement = document.querySelector("#game-controls");
+        if (controlsElement) {
+          controlsElement.style.display = "none";
+        }
 
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
+        // Check WebGL support on mobile
+        var canvasTest = document.createElement('canvas');
+        var gl = canvasTest.getContext('webgl2') || canvasTest.getContext('webgl');
+        if (!gl) {
+          console.warn("WebGL not supported on this mobile device");
+          unityShowBanner("WebGL is not supported on this device. Please use a modern browser or try on desktop.", 'warning');
+        }
+
+        // Lower canvas resolution on mobile devices for better performance
+        config.devicePixelRatio = 1;
 
 
       } else {
@@ -134,7 +146,17 @@
                 };
 
               }).catch((message) => {
-                alert(message);
+                console.error("Unity WebGL load error:", message);
+                var errorMsg = "Failed to load game. ";
+                if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                  errorMsg += "Mobile devices may have limited WebGL support. Please try:\n";
+                  errorMsg += "1. Use a modern browser (Chrome, Safari latest version)\n";
+                  errorMsg += "2. Ensure you're on a high-end device\n";
+                  errorMsg += "3. Try on desktop for best experience\n\n";
+                }
+                errorMsg += "Error: " + message;
+                unityShowBanner(errorMsg, 'error');
+                document.querySelector("#unity-loading-bar").style.display = "none";
               });
             };
 
