@@ -40,9 +40,9 @@
         var div = document.createElement('div');
         div.innerHTML = msg;
         warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        if (type == 'error') div.style = 'background: #d32f2f; color: white; padding: 10px; border-radius: 4px;';
         else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          if (type == 'warning') div.style = 'background: #f57c00; color: white; padding: 10px; border-radius: 4px;';
           setTimeout(function() {
             warningBanner.removeChild(div);
             updateBannerVisibility();
