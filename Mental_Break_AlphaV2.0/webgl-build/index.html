@@ -44,39 +44,114 @@
       
       // Brotli decompression fallback for iOS/Safari
       var brotliDecompressor = null;
+      var brotliReady = false;
+      
       if (needsBrotliFallback) {
-        // Wait for brotli-wasm to load
-        window.addEventListener('load', function() {
-          if (typeof BrotliWASM !== 'undefined') {
-            BrotliWASM().then(function(module) {
-              brotliDecompressor = module;
-              console.log('Brotli decompression fallback loaded for iOS/Safari');
-            }).catch(function(err) {
-              console.error('Failed to load Brotli decompressor:', err);
-            });
-          }
-        });
+        console.log('iOS/Safari detected - loading Brotli decompression fallback');
         
-        // Intercept fetch requests for .br files
+        // Initialize Brotli decompressor
+        if (typeof BrotliWASM !== 'undefined') {
+          BrotliWASM().then(function(module) {
+            brotliDecompressor = module;
+            brotliReady = true;
+            console.log('Brotli decompression fallback ready for iOS/Safari');
+          }).catch(function(err) {
+            console.error('Failed to load Brotli decompressor:', err);
+            unityShowBanner('Failed to load Brotli decompressor. Game may not work on this device.', 'warning');
+          });
+        } else {
+          // Wait for script to load
+          var checkBrotli = setInterval(function() {
+            if (typeof BrotliWASM !== 'undefined') {
+              clearInterval(checkBrotli);
+              BrotliWASM().then(function(module) {
+                brotliDecompressor = module;
+                brotliReady = true;
+                console.log('Brotli decompression fallback ready for iOS/Safari');
+              }).catch(function(err) {
+                console.error('Failed to load Brotli decompressor:', err);
+              });
+            }
+          }, 100);
+          
+          // Timeout after 5 seconds
+          setTimeout(function() {
+            clearInterval(checkBrotli);
+            if (!brotliReady) {
+              console.error('Brotli decompressor failed to load');
+            }
+          }, 5000);
+        }
+        
+        // Intercept fetch requests for .br files BEFORE Unity's loader processes them
         var originalFetch = window.fetch;
         window.fetch = function(url, options) {
-          if (typeof url === 'string' && url.endsWith('.br')) {
+          var urlString = typeof url === 'string' ? url : url.url || url.toString();
+          
+          if (urlString && urlString.endsWith('.br')) {
             return originalFetch(url, options).then(function(response) {
-              // If Content-Encoding is br but browser didn't decompress, do it manually
+              // Clone response to read it without consuming it
               var contentEncoding = response.headers.get('Content-Encoding');
-              if (contentEncoding === 'br' && brotliDecompressor) {
-                return response.arrayBuffer().then(function(buffer) {
+              
+              // If Content-Encoding is br, we need to decompress it
+              if (contentEncoding === 'br') {
+                return response.clone().arrayBuffer().then(function(buffer) {
+                  if (!brotliReady || !brotliDecompressor) {
+                    console.warn('Brotli decompressor not ready yet, waiting...');
+                    // Wait a bit and try again
+                    return new Promise(function(resolve) {
+                      var waitForBrotli = setInterval(function() {
+                        if (brotliReady && brotliDecompressor) {
+                          clearInterval(waitForBrotli);
+                          try {
+                            var decompressed = brotliDecompressor.decompress(new Uint8Array(buffer));
+                            var blob = new Blob([decompressed]);
+                            var newResponse = new Response(blob, {
+                              status: response.status,
+                              statusText: response.statusText,
+                              headers: new Headers()
+                            });
+                            // Copy all headers except Content-Encoding
+                            response.headers.forEach(function(value, key) {
+                              if (key.toLowerCase() !== 'content-encoding') {
+                                newResponse.headers.set(key, value);
+                              }
+                            });
+                            // Set Content-Length to decompressed size
+                            newResponse.headers.set('Content-Length', decompressed.length.toString());
+                            resolve(newResponse);
+                          } catch (err) {
+                            console.error('Brotli decompression failed:', err);
+                            resolve(response);
+                          }
+                        }
+                      }, 50);
+                      
+                      // Timeout after 2 seconds
+                      setTimeout(function() {
+                        clearInterval(waitForBrotli);
+                        console.error('Timeout waiting for Brotli decompressor');
+                        resolve(response);
+                      }, 2000);
+                    });
+                  }
+                  
                   try {
                     var decompressed = brotliDecompressor.decompress(new Uint8Array(buffer));
-                    // Create a new response with decompressed data
                     var blob = new Blob([decompressed]);
                     var newResponse = new Response(blob, {
                       status: response.status,
                       statusText: response.statusText,
-                      headers: new Headers(response.headers)
+                      headers: new Headers()
                     });
-                    // Remove Content-Encoding header since we've decompressed
-                    newResponse.headers.delete('Content-Encoding');
+                    // Copy all headers except Content-Encoding
+                    response.headers.forEach(function(value, key) {
+                      if (key.toLowerCase() !== 'content-encoding') {
+                        newResponse.headers.set(key, value);
+                      }
+                    });
+                    // Set Content-Length to decompressed size
+                    newResponse.headers.set('Content-Length', decompressed.length.toString());
                     return newResponse;
                   } catch (err) {
                     console.error('Brotli decompression failed:', err);
@@ -84,9 +159,11 @@
                   }
                 });
               }
+              
               return response;
             });
           }
+          
           return originalFetch(url, options);
         };
       }
