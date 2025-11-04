@@ -5,7 +5,6 @@
   "routes": [
     {
       "src": "/Build/webgl-build.framework.js.gz",
-      "dest": "/Build/webgl-build.framework.js.gz",
       "headers": {
         "Content-Type": "application/javascript",
         "Content-Encoding": "gzip",
@@ -14,7 +13,6 @@
     },
     {
       "src": "/Build/webgl-build.wasm.gz",
-      "dest": "/Build/webgl-build.wasm.gz",
       "headers": {
         "Content-Type": "application/wasm",
         "Content-Encoding": "gzip",
@@ -23,7 +21,6 @@
     },
     {
       "src": "/Build/webgl-build.data.gz",
-      "dest": "/Build/webgl-build.data.gz",
       "headers": {
         "Content-Type": "application/gzip",
         "Content-Encoding": "gzip",
@@ -32,7 +29,6 @@
     },
     {
       "src": "/Build/(.*\\.js\\.gz)",
-      "dest": "/Build/$1",
       "headers": {
         "Content-Type": "application/javascript",
         "Content-Encoding": "gzip",
@@ -41,7 +37,6 @@
     },
     {
       "src": "/Build/(.*\\.wasm\\.gz)",
-      "dest": "/Build/$1",
       "headers": {
         "Content-Type": "application/wasm",
         "Content-Encoding": "gzip",
@@ -50,7 +45,6 @@
     },
     {
       "src": "/Build/(.*\\.data\\.gz)",
-      "dest": "/Build/$1",
       "headers": {
         "Content-Type": "application/gzip",
         "Content-Encoding": "gzip",
