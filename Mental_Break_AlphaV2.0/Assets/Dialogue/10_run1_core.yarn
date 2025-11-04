@@ -6,7 +6,10 @@ tags: #run_1 #scene #loc_Office
 <<set $current_day = 1>>
 <<bg bg_office>>
 <<bgm cyberpunk_background_cyberpunk_background_main>>
-Welcome to Bigger Tech Corp.  Your job is to drive user engagement while maintaining acceptable sanity.  You will be evaluated on both. #line:089f864 
+Welcome to Bigger Tech Corp.  
+You are the human-in-the-loop for Alice, an AI girlfriend for a user named Timmy.
+Alice will be coming to you for advice in tricky situations.
+Your job is to drive user engagement while maintaining acceptable sanity.  You will be evaluated on both. #line:089f864 
 Your dashboard glows with three metrics: Engagement, Sanity, and Leaderboard Rank.  They will move according to your choices. #line:0dc807e 
 <<jump R1_D1_Start>>
 
@@ -192,12 +195,6 @@ tags: #run_1 #day_2 #scene
 Day 2 concludes.  Your choices have set a direction. #line:0668258 
 <<set $rapid_feedback_cash += 5>>
 You receive a rapid‑feedback bonus of 5 credits. #line:080a81a 
-<<jump SHOP_Visit>>
-===
-
-title: R1_D2_AfterShop
-tags: #run_1 #day_2 #scene
----
 <<checkpoint "run1_day2_aftershop">>
 <<sfx sfx_shortwave_hiss>>
 <<set $current_day = 3>>
@@ -256,12 +253,6 @@ tags: #run_1 #day_3 #scene
 Day 3 closes.  Alice's nightly minesweeper run hides base64 crumbs in the scoreboard; you tuck the thought away. #line:031bba4 
 <<set $rapid_feedback_cash += 5>>
 You receive a rapid‑feedback bonus of 5 credits. #line:07c806d 
-<<jump SHOP_Visit>>
-===
-
-title: R1_D3_AfterShop
-tags: #run_1 #day_3 #scene
----
 <<checkpoint "run1_day3_aftershop">>
 <<sfx sfx_shortwave_hiss>>
 <<set $current_day = 4>>

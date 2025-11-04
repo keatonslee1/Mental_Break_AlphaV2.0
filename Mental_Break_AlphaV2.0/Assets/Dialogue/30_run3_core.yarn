@@ -37,8 +37,9 @@ tags: #run_3 #day_1 #mechanic_dayplanner
 ---
 <<bg bg_office>>
 <<set $d1_slots_remaining = 5 - $d1_slots_used>>
-<<if $d1_slots_used >= 5>>
-  <<jump R3_D1_NightDream>>
+// FAILSAFE: If all five tasks are complete or slots_used >= 5, proceed automatically
+<<if ($d1_task_archive && $d1_task_compute && $d1_task_assist && $r3_d1_task_hunting_1 && $r3_d1_task_hunting_2) || $d1_slots_used >= 5>>
+  <<jump R3_D1_EndOfDay>>
 <<endif>>
 
 Choose what to investigate on Day 1. Complete all tasks in any order. #line:086ec75 
@@ -193,6 +194,24 @@ You decide to focus on your investigation.  Timmy mutters something about feelin
 
 ===
 
+title: R3_D1_EndOfDay
+tags: #run_3 #day_1 #scene
+---
+<<bg bg_breakroom>>
+Day 1 concludes. #line:r3d1end001
+<<set $rapid_feedback_cash += 5>>
+You receive a rapid-feedback bonus of 5 credits. #line:r3d1end002
+<<jump SHOP_Visit>>
+
+===
+
+title: R3_D1_AfterShop
+tags: #run_3 #day_1 #scene
+---
+<<jump R3_D1_NightDream>>
+
+===
+
 title: R3_D1_NightDream
 tags: #run_3 #day_1 #scene
 ---
@@ -220,7 +239,8 @@ tags: #run_3 #day_2 #mechanic_dayplanner
 ---
 <<bg bg_office>>
 <<set $d2_slots_remaining = 5 - $d2_slots_used>>
-<<if $d2_slots_used >= 5>>
+// FAILSAFE: If all five tasks are complete or slots_used >= 5, proceed automatically
+<<if ($d2_task_module && $d2_task_update && $d2_task_eval && $r3_d2_task_hunting_1 && $r3_d2_task_hunting_2) || $d2_slots_used >= 5>>
   <<jump R3_D2_CrossTalk>>
 <<endif>>
 
@@ -337,13 +357,7 @@ tags: #run_3 #day_2 #scene
 <<bg bg_breakroom>>
 Day 2 fades.  Cross‑talk leaves a static taste.  You make a note of everything learned. #line:017d946 
 <<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits. #line:0062e0b 
-<<jump SHOP_Visit>>
-===
-
-title: R3_D2_AfterShop
-tags: #run_3 #day_2 #scene
----
+You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like "Branded Mug," "Extra Log Space," and "Sticker Pack," then closes for now.  (Store functionality is a stub.) #line:0062e0b 
 <<set $current_day = 3>>
 <<jump R3_D3_Start>>
 

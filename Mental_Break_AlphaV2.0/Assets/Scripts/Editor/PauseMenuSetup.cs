@@ -71,14 +71,34 @@ public class PauseMenuSetup : EditorWindow
         SetupPauseMenuManager(hintTextObj, panelObj);
 
         Debug.Log("Pause Menu UI setup complete! Check the Canvas in the Hierarchy.");
-        EditorUtility.DisplayDialog("Pause Menu Setup", 
-            "Pause Menu UI has been created successfully!\n\n" +
+        
+        // Check if LoadMenuPanel exists
+        bool loadMenuExists = false;
+        Transform loadMenuPanel = canvas.transform.Find("LoadMenuPanel");
+        if (loadMenuPanel == null)
+        {
+            // Also check if it's a child of PauseMenuPanel
+            loadMenuPanel = panelObj.transform.Find("LoadMenuPanel");
+        }
+        loadMenuExists = loadMenuPanel != null;
+        
+        string dialogMessage = "Pause Menu UI has been created successfully!\n\n" +
             "Next steps:\n" +
             "1. Check the Canvas in Hierarchy\n" +
             "2. Verify PauseMenuManager component has all references assigned\n" +
-            "3. Adjust button positions/sizes as needed\n" +
-            "4. Test by pressing ESC in Play mode", 
-            "OK");
+            "3. Adjust button positions/sizes as needed\n";
+        
+        if (!loadMenuExists)
+        {
+            dialogMessage += "4. Run 'Tools -> Setup Load Menu UI' to create the Load Menu Panel\n";
+            dialogMessage += "5. Test by pressing ESC in Play mode";
+        }
+        else
+        {
+            dialogMessage += "4. Test by pressing ESC in Play mode";
+        }
+        
+        EditorUtility.DisplayDialog("Pause Menu Setup", dialogMessage, "OK");
     }
 
     private static GameObject CreateHintText(Transform parent)
@@ -150,8 +170,8 @@ public class PauseMenuSetup : EditorWindow
 
     private static void CreateMenuButtons(Transform panelParent)
     {
-        string[] buttonNames = { "ResumeButton", "SaveGameButton", "LoadGameButton", "MainMenuButton", "ExitButton" };
-        string[] buttonTexts = { "Resume", "Save Game", "Load Game", "Main Menu", "Exit to Desktop" };
+        string[] buttonNames = { "ResumeButton", "SaveGameButton", "LoadGameButton", "MainMenuButton", "ExitButton", "SkipDayButton", "RestartDayButton" };
+        string[] buttonTexts = { "Resume", "Save Game", "Load Game", "Main Menu", "Exit to Desktop", "Skip Day", "Restart Day" };
 
         for (int i = 0; i < buttonNames.Length; i++)
         {
@@ -262,6 +282,8 @@ public class PauseMenuSetup : EditorWindow
         AssignButtonReference(serializedManager, "loadGameButton", "LoadGameButton", panelObj.transform);
         AssignButtonReference(serializedManager, "mainMenuButton", "MainMenuButton", panelObj.transform);
         AssignButtonReference(serializedManager, "exitButton", "ExitButton", panelObj.transform);
+        AssignButtonReference(serializedManager, "skipDayButton", "SkipDayButton", panelObj.transform);
+        AssignButtonReference(serializedManager, "restartDayButton", "RestartDayButton", panelObj.transform);
 
         serializedManager.ApplyModifiedProperties();
 

@@ -4,7 +4,8 @@ tags: #run_1 #day_1 #mechanic_dayplanner #loc_Office
 --- 
 <<bg bg_office>>
 <<set $d1_slots_remaining = 2 - $d1_slots_used>>
-<<if $d1_slots_used >= 2>>
+// FAILSAFE: If all three tasks are complete or slots_used >= 2, proceed automatically
+<<if ($d1_task_ops && $d1_task_calls && $d1_task_dash) || $d1_slots_used >= 2>>
   <<jump R1_D1_ArcSetup>>
 <<endif>>
 
@@ -141,7 +142,8 @@ tags: #run_1 #day_2 #mechanic_dayplanner
 ---
 <<bg bg_office>>
 <<set $d2_slots_remaining = 2 - $d2_slots_used>>
-<<if $d2_slots_used >= 2>>
+// FAILSAFE: If all three tasks are complete or slots_used >= 2, proceed automatically
+<<if ($d2_task_triage && $d2_task_copy && $d2_task_metrics) || $d2_slots_used >= 2>>
   <<jump R1_D2_AfterTasks>>
 <<endif>>
 
@@ -278,7 +280,8 @@ tags: #run_1 #day_3 #mechanic_dayplanner
 ---
 <<bg bg_office>>
 <<set $d3_slots_remaining = 2 - $d3_slots_used>>
-<<if $d3_slots_used >= 2>>
+// FAILSAFE: If all three tasks are complete or slots_used >= 2, proceed automatically
+<<if ($d3_task_flag && $d3_task_sanity && $d3_task_rank) || $d3_slots_used >= 2>>
   <<jump R1_D3_ArcDevelopment>>
 <<endif>>
 

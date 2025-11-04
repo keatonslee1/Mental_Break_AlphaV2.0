@@ -81,6 +81,7 @@ tags: #run_2 #mechanic #scene
 You open the window.  Alice's scratch pad scrolls by—weights, gradients, gibberish.  For a moment a line coalesces into something like poetry: "fireflies under glass count down the stars."  Then it breaks apart again.
 <<jump R2_D3_Dayplanner>>
 
+
 ===
 
 title: R2_D1_Dayplanner
@@ -88,7 +89,8 @@ tags: #run_2 #day_1 #mechanic_dayplanner
 ---
 <<bg bg_office>>
 <<set $d1_slots_remaining = 2 - $d1_slots_used>>
-<<if $d1_slots_used >= 2>>
+// FAILSAFE: If all three tasks are complete or slots_used >= 2, proceed automatically
+<<if ($d1_task_patch && $d1_task_triage && $d1_task_metrics) || $d1_slots_used >= 2>>
   <<jump R2_D1_EndOfDay>>
 <<endif>>
 
@@ -222,11 +224,12 @@ tags: #run_2 #day_2 #scene #loc_Office
 --- 
 <<bg bg_office>>
 <<set $d2_slots_remaining = 2 - $d2_slots_used>>
+// FAILSAFE: If all three tasks are complete or slots_used >= 2, proceed automatically
+<<if ($d2_task_patch_deploy && $d2_task_logfix && $d2_task_selfno) || $d2_slots_used >= 2>>
+  <<jump R2_D2_EndOfDay>>
+<<endif>>
 <<if $d2_slots_used == 0>>
 It is Day 2.  A banner reads: "Maintenance Patch Tuesday."  Your tasks revolve around deploying the patch, investigating a log anomaly, and negotiating with Alice over a tiny tweak. #line:0c902c2 
-<<endif>>
-<<if $d2_slots_used >= 2>>
-  <<jump R2_D2_EndOfDay>>
 <<endif>>
 
 <<if $d2_slots_used > 0>>
@@ -368,13 +371,7 @@ Day 2 ends.  A cross‑talk whisper returns for a moment: "prep posture advancin
 <<sfx sfx_cross_talk>>
 A faint voice bleeds through your channel: "...prep posture advancing—youth tier spiking..."  The static snaps shut. #line:0e1f22c 
 <<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits. #line:0c712f0 
-<<jump SHOP_Visit>>
-===
-
-title: R2_D2_AfterShop
-tags: #run_2 #day_2 #scene
----
+You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like "Branded Mug," "Extra Log Space," and "Sticker Pack," then closes for now.  (Store functionality is a stub.) #line:0c712f0 
 <<set $current_day = 3>>
 <<jump R2_D3_Start>>
 
@@ -399,7 +396,8 @@ tags: #run_2 #day_3 #mechanic_dayplanner
 ---
 <<bg bg_office>>
 <<set $d3_slots_remaining = 2 - $d3_slots_used>>
-<<if $d3_slots_used >= 2>>
+// FAILSAFE: If all three tasks are complete or slots_used >= 2, proceed automatically
+<<if ($d3_task_flag && $d3_task_sanity && $d3_task_rank) || $d3_slots_used >= 2>>
   <<jump R2_D3_EndOfDay>>
 <<endif>>
 
@@ -462,13 +460,7 @@ tags: #run_2 #day_3 #scene
 <<bg bg_breakroom>>
 Day 3 ends.  The Observation Window remains.  You see the patch timer approaching zero. #line:08928d1 
 <<set $rapid_feedback_cash += 5>>
-You receive a rapid‑feedback bonus of 5 credits. #line:00fb60b 
-<<jump SHOP_Visit>>
-===
-
-title: R2_D3_AfterShop
-tags: #run_2 #day_3 #scene
----
+You receive a rapid‑feedback bonus of 5 credits.  The Company Store menu flashes items like "Branded Mug," "Extra Log Space," and "Sticker Pack," then closes for now.  (Store functionality is a stub.) #line:00fb60b 
 <<set $current_day = 4>>
 <<jump R2_D4_Start>>
 

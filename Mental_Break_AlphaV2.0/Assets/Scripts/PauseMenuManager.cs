@@ -26,6 +26,9 @@ public class PauseMenuManager : MonoBehaviour
     [Tooltip("Warning text above pause menu buttons (optional - will be created if null)")]
     public Component pauseWarningText;
 
+    [Tooltip("Run/Day tracker text on middle-left (optional - will be created if null)")]
+    public Component runDayTrackerText;
+
     [Header("Menu Buttons")]
     [Tooltip("Resume button (closes pause menu)")]
     public Button resumeButton;
@@ -44,6 +47,12 @@ public class PauseMenuManager : MonoBehaviour
 
     [Tooltip("Exit to Desktop button")]
     public Button exitButton;
+
+    [Tooltip("Skip Day button (safety feature to jump to end of day)")]
+    public Button skipDayButton;
+
+    [Tooltip("Restart Day button (safety feature to jump to start of day, or previous day if already at start)")]
+    public Button restartDayButton;
 
     [Header("Settings")]
     [Tooltip("Scene name for the main menu")]
@@ -135,6 +144,9 @@ public class PauseMenuManager : MonoBehaviour
         // Setup warning text if needed
         SetupWarningText();
 
+        // Setup run/day tracker if needed
+        SetupRunDayTracker();
+
         // Setup button listeners
         if (resumeButton != null)
         {
@@ -189,6 +201,24 @@ public class PauseMenuManager : MonoBehaviour
         {
             Debug.LogError("PauseMenuManager: exitButton is not assigned.");
         }
+
+        if (skipDayButton != null)
+        {
+            skipDayButton.onClick.AddListener(OnSkipDay);
+        }
+        else
+        {
+            Debug.LogWarning("PauseMenuManager: skipDayButton is not assigned. Skip Day feature will not be available.");
+        }
+
+        if (restartDayButton != null)
+        {
+            restartDayButton.onClick.AddListener(OnRestartDay);
+        }
+        else
+        {
+            Debug.LogWarning("PauseMenuManager: restartDayButton is not assigned. Restart Day feature will not be available.");
+        }
     }
 
     private void Update()
@@ -198,6 +228,9 @@ public class PauseMenuManager : MonoBehaviour
         {
             TogglePause();
         }
+
+        // Update run/day tracker
+        UpdateRunDayTracker();
     }
 
     /// <summary>
@@ -375,6 +408,8 @@ public class PauseMenuManager : MonoBehaviour
         if (loadGameButton != null) loadGameButton.gameObject.SetActive(false);
         if (mainMenuButton != null) mainMenuButton.gameObject.SetActive(false);
         if (exitButton != null) exitButton.gameObject.SetActive(false);
+        if (skipDayButton != null) skipDayButton.gameObject.SetActive(false);
+        if (restartDayButton != null) restartDayButton.gameObject.SetActive(false);
         HideWarningText(); // Hide warning text when hiding buttons
         Debug.Log("PauseMenuManager: HidePauseMenuButtons() - after state: " + DescribeButtonStates());
         // NOTE: LoadMenuPanel is NOT affected by this method - it's a separate child of PauseMenuPanel
@@ -393,6 +428,8 @@ public class PauseMenuManager : MonoBehaviour
         // Main menu button hidden for MVP (too buggy, but backend code kept)
         // if (mainMenuButton != null) mainMenuButton.gameObject.SetActive(true);
         if (exitButton != null) exitButton.gameObject.SetActive(true);
+        if (skipDayButton != null) skipDayButton.gameObject.SetActive(true);
+        if (restartDayButton != null) restartDayButton.gameObject.SetActive(true);
         ShowWarningText(); // Show warning text when showing buttons
         Debug.Log("PauseMenuManager: ShowPauseMenuButtons() - after state: " + DescribeButtonStates());
     }
@@ -647,6 +684,78 @@ public class PauseMenuManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Setup run/day tracker text on middle-left
+    /// </summary>
+    private void SetupRunDayTracker()
+    {
+        // Find or create Canvas
+        Canvas canvas = FindAnyObjectByType<Canvas>();
+        if (canvas == null) return;
+
+        // If tracker text is not assigned, create it programmatically
+        if (runDayTrackerText == null)
+        {
+            GameObject trackerObj = new GameObject("RunDayTracker");
+            trackerObj.transform.SetParent(canvas.transform, false);
+
+            RectTransform rect = trackerObj.AddComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 0.5f);
+            rect.anchoredPosition = new Vector2(20f, -40f); // 20 pixels from left edge, 40 pixels from top (same height as hint text, moved down)
+            rect.sizeDelta = new Vector2(300f, 80f); // Increased size to accommodate larger text
+
+#if USE_TMP
+            TextMeshProUGUI tmpText = trackerObj.AddComponent<TextMeshProUGUI>();
+            if (TMPro.TMP_Settings.instance != null && TMPro.TMP_Settings.instance.defaultFontAsset != null)
+            {
+                tmpText.font = TMPro.TMP_Settings.instance.defaultFontAsset;
+            }
+            tmpText.text = "Run 1, Day 1";
+            tmpText.fontSize = 48; // Increased size to match hint text
+            tmpText.alignment = TextAlignmentOptions.MidlineLeft;
+            tmpText.color = Color.white;
+            runDayTrackerText = tmpText;
+#else
+            Text text = trackerObj.AddComponent<Text>();
+            text.text = "Run 1, Day 1";
+            text.fontSize = 48; // Increased size to match hint text
+            text.alignment = TextAnchor.MiddleLeft;
+            text.color = Color.white;
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            runDayTrackerText = text;
+#endif
+        }
+    }
+
+    /// <summary>
+    /// Update run/day tracker text with current values
+    /// </summary>
+    private void UpdateRunDayTracker()
+    {
+        if (runDayTrackerText == null || dialogueRunner == null || dialogueRunner.VariableStorage == null) return;
+
+        // Get current run and day from Yarn variables
+        float currentRun = 1f;
+        float currentDay = 1f;
+        dialogueRunner.VariableStorage.TryGetValue<float>("$current_run", out currentRun);
+        dialogueRunner.VariableStorage.TryGetValue<float>("$current_day", out currentDay);
+
+        string trackerText = $"Run {Mathf.RoundToInt(currentRun)}, Day {Mathf.RoundToInt(currentDay)}";
+
+#if USE_TMP
+        if (runDayTrackerText is TextMeshProUGUI tmpText)
+        {
+            tmpText.text = trackerText;
+        }
+#endif
+        if (runDayTrackerText is Text regularText)
+        {
+            regularText.text = trackerText;
+        }
+    }
+
+    /// <summary>
     /// Update hint text visibility and content based on pause state
     /// </summary>
     private void UpdateHintVisibility()
@@ -664,6 +773,8 @@ public class PauseMenuManager : MonoBehaviour
             tmpText.text = GetKeybindTipsText();
             // Set alignment to right-center for middle positioning
             tmpText.alignment = TMPro.TextAlignmentOptions.MidlineRight;
+            // Make text larger for readability
+            tmpText.fontSize = 48;
         }
 #endif
         if (pauseHintText is UnityEngine.UI.Text regularText)
@@ -673,19 +784,23 @@ public class PauseMenuManager : MonoBehaviour
             regularText.text = GetKeybindTipsText();
             // Set alignment to right-center for middle positioning
             regularText.alignment = TextAnchor.MiddleRight;
+            // Make text larger for readability
+            regularText.fontSize = 48;
         }
 
         if (hintGameObject != null)
         {
-            // Position hint text at middle-right (equator) of the screen
+            // Position hint text at top-right, moved up from center
             RectTransform rectTransform = hintGameObject.GetComponent<RectTransform>();
             if (rectTransform != null)
             {
-                // Anchor to right-middle (1, 0.5) and pivot at right-center (1, 0.5)
-                rectTransform.anchorMin = new Vector2(1f, 0.5f);
-                rectTransform.anchorMax = new Vector2(1f, 0.5f);
+                // Anchor to top-right (1, 1) and pivot at right-center (1, 0.5)
+                rectTransform.anchorMin = new Vector2(1f, 1f);
+                rectTransform.anchorMax = new Vector2(1f, 1f);
                 rectTransform.pivot = new Vector2(1f, 0.5f);
-                rectTransform.anchoredPosition = new Vector2(-20f, 0f);
+                rectTransform.anchoredPosition = new Vector2(-20f, -200f); // 200 pixels from top (moved down)
+                // Increase size to accommodate larger text and multiple lines
+                rectTransform.sizeDelta = new Vector2(500f, 120f); // Taller to prevent line cutoff
             }
             
             hintGameObject.SetActive(shouldShow);
@@ -845,6 +960,187 @@ public class PauseMenuManager : MonoBehaviour
 #else
         Application.Quit();
 #endif
+    }
+
+    /// <summary>
+    /// Skip Day button handler - jumps to end of current day node
+    /// Safety feature to help users get unstuck from story glitches or loops
+    /// </summary>
+    public void OnSkipDay()
+    {
+        if (dialogueRunner == null || dialogueRunner.VariableStorage == null)
+        {
+            Debug.LogError("PauseMenuManager: Cannot skip day - DialogueRunner or VariableStorage is null.");
+            return;
+        }
+
+        // Get current run and day from Yarn variables
+        float currentRun = 1f;
+        float currentDay = 1f;
+        
+        bool hasRun = dialogueRunner.VariableStorage.TryGetValue<float>("$current_run", out currentRun);
+        bool hasDay = dialogueRunner.VariableStorage.TryGetValue<float>("$current_day", out currentDay);
+
+        // Default to 1 if values are not found (safety fallback)
+        if (!hasRun)
+        {
+            Debug.LogWarning("PauseMenuManager: $current_run not found, defaulting to 1.");
+            currentRun = 1f;
+        }
+        if (!hasDay)
+        {
+            Debug.LogWarning("PauseMenuManager: $current_day not found, defaulting to 1.");
+            currentDay = 1f;
+        }
+
+        // Construct the end-of-day node name: R{run}_D{day}_EndOfDay
+        int runInt = Mathf.RoundToInt(currentRun);
+        int dayInt = Mathf.RoundToInt(currentDay);
+        string nodeName = $"R{runInt}_D{dayInt}_EndOfDay";
+
+        Debug.Log($"PauseMenuManager: Skipping to end of day - Jumping to node: {nodeName}");
+
+        // Stop current dialogue if it's running (especially if waiting for option selection)
+        // This prevents DialogueException when trying to start new dialogue while waiting for options
+        if (dialogueRunner.IsDialogueRunning)
+        {
+            Debug.Log("PauseMenuManager: Stopping current dialogue before skipping to end of day");
+            try
+            {
+                if (dialogueRunner.Dialogue != null)
+                {
+                    dialogueRunner.Dialogue.Stop();
+                    Debug.Log("PauseMenuManager: Current dialogue stopped successfully");
+                }
+            }
+            catch (System.Exception stopEx)
+            {
+                Debug.LogWarning($"PauseMenuManager: Error stopping dialogue (continuing anyway): {stopEx.Message}");
+            }
+        }
+
+        // Jump to the end-of-day node
+        // This works at any time, even if dialogue isn't running or tasks aren't completed
+        try
+        {
+            dialogueRunner.StartDialogue(nodeName);
+            Debug.Log($"PauseMenuManager: Successfully jumped to {nodeName}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"PauseMenuManager: Failed to jump to node {nodeName}: {ex.Message}");
+            return;
+        }
+
+        // Close the pause menu
+        ResumeGame();
+    }
+
+    /// <summary>
+    /// Restart Day button handler - jumps to start of current day node, or previous day if already at start
+    /// Safety feature to help users restart the day or go back to previous day
+    /// </summary>
+    public void OnRestartDay()
+    {
+        if (dialogueRunner == null || dialogueRunner.VariableStorage == null)
+        {
+            Debug.LogError("PauseMenuManager: Cannot restart day - DialogueRunner or VariableStorage is null.");
+            return;
+        }
+
+        if (dialogueRunner.Dialogue == null)
+        {
+            Debug.LogError("PauseMenuManager: Cannot restart day - Dialogue is null.");
+            return;
+        }
+
+        // Get current run and day from Yarn variables
+        float currentRun = 1f;
+        float currentDay = 1f;
+        
+        bool hasRun = dialogueRunner.VariableStorage.TryGetValue<float>("$current_run", out currentRun);
+        bool hasDay = dialogueRunner.VariableStorage.TryGetValue<float>("$current_day", out currentDay);
+
+        // Default to 1 if values are not found (safety fallback)
+        if (!hasRun)
+        {
+            Debug.LogWarning("PauseMenuManager: $current_run not found, defaulting to 1.");
+            currentRun = 1f;
+        }
+        if (!hasDay)
+        {
+            Debug.LogWarning("PauseMenuManager: $current_day not found, defaulting to 1.");
+            currentDay = 1f;
+        }
+
+        int runInt = Mathf.RoundToInt(currentRun);
+        int dayInt = Mathf.RoundToInt(currentDay);
+
+        // Construct expected start node name for current day
+        string expectedStartNode = $"R{runInt}_D{dayInt}_Start";
+
+        // Check current node to see if we're already at the day start
+        string currentNode = dialogueRunner.Dialogue.CurrentNode;
+        string targetNode;
+
+        if (!string.IsNullOrEmpty(currentNode) && currentNode == expectedStartNode)
+        {
+            // Already on the day start node - go to previous day if possible
+            if (dayInt > 1)
+            {
+                // Go to previous day's start
+                int previousDay = dayInt - 1;
+                targetNode = $"R{runInt}_D{previousDay}_Start";
+                Debug.Log($"PauseMenuManager: Already at {expectedStartNode}, going to previous day: {targetNode}");
+            }
+            else
+            {
+                // Can't go back further (already on day 1)
+                targetNode = expectedStartNode;
+                Debug.LogWarning($"PauseMenuManager: Already at {expectedStartNode} (Day 1), cannot go back further. Staying on current node.");
+            }
+        }
+        else
+        {
+            // Not on day start - go to current day's start
+            targetNode = expectedStartNode;
+            Debug.Log($"PauseMenuManager: Restarting day - Jumping to node: {targetNode}");
+        }
+
+        // Stop current dialogue if it's running (especially if waiting for option selection)
+        // This prevents DialogueException when trying to start new dialogue while waiting for options
+        if (dialogueRunner.IsDialogueRunning)
+        {
+            Debug.Log("PauseMenuManager: Stopping current dialogue before restarting day");
+            try
+            {
+                if (dialogueRunner.Dialogue != null)
+                {
+                    dialogueRunner.Dialogue.Stop();
+                    Debug.Log("PauseMenuManager: Current dialogue stopped successfully");
+                }
+            }
+            catch (System.Exception stopEx)
+            {
+                Debug.LogWarning($"PauseMenuManager: Error stopping dialogue (continuing anyway): {stopEx.Message}");
+            }
+        }
+
+        // Jump to the target node
+        // This works at any time, even if dialogue isn't running or tasks aren't completed
+        try
+        {
+            dialogueRunner.StartDialogue(targetNode);
+            Debug.Log($"PauseMenuManager: Successfully jumped to {targetNode}");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"PauseMenuManager: Failed to jump to node {targetNode}: {ex.Message}");
+            return;
+        }
+
+        // Close the pause menu
+        ResumeGame();
     }
 
     private void OnDestroy()

@@ -2,7 +2,8 @@
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
-[Bb]uild/
+# Temporarily allow webgl-build/Build for deployment
+# [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
@@ -11,7 +12,8 @@
 .vs/
 
 # Unity WebGL Build
-webgl-build/
+# Temporarily commented out to allow deployment
+# webgl-build/
 
 # Visual Studio Code
 .vscode/
