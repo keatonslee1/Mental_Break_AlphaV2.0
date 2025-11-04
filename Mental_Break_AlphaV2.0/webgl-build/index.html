@@ -6,6 +6,7 @@
     <title>Unity Web Player | Mental Break</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css?v=2.0">
+    <script src="https://cdn.jsdelivr.net/npm/brotli-wasm@1.4.0/brotli-wasm.js"></script>
   </head>
   <body>
     <div id="page-header">
@@ -36,6 +37,60 @@
       <p>Copyright Keaton Media LLC 2025 All Rights Reserved</p>
     </div>
     <script>
+      // Check if browser supports Brotli natively
+      var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      var needsBrotliFallback = isIOS || (isSafari && !window.chrome);
+      
+      // Brotli decompression fallback for iOS/Safari
+      var brotliDecompressor = null;
+      if (needsBrotliFallback) {
+        // Wait for brotli-wasm to load
+        window.addEventListener('load', function() {
+          if (typeof BrotliWASM !== 'undefined') {
+            BrotliWASM().then(function(module) {
+              brotliDecompressor = module;
+              console.log('Brotli decompression fallback loaded for iOS/Safari');
+            }).catch(function(err) {
+              console.error('Failed to load Brotli decompressor:', err);
+            });
+          }
+        });
+        
+        // Intercept fetch requests for .br files
+        var originalFetch = window.fetch;
+        window.fetch = function(url, options) {
+          if (typeof url === 'string' && url.endsWith('.br')) {
+            return originalFetch(url, options).then(function(response) {
+              // If Content-Encoding is br but browser didn't decompress, do it manually
+              var contentEncoding = response.headers.get('Content-Encoding');
+              if (contentEncoding === 'br' && brotliDecompressor) {
+                return response.arrayBuffer().then(function(buffer) {
+                  try {
+                    var decompressed = brotliDecompressor.decompress(new Uint8Array(buffer));
+                    // Create a new response with decompressed data
+                    var blob = new Blob([decompressed]);
+                    var newResponse = new Response(blob, {
+                      status: response.status,
+                      statusText: response.statusText,
+                      headers: new Headers(response.headers)
+                    });
+                    // Remove Content-Encoding header since we've decompressed
+                    newResponse.headers.delete('Content-Encoding');
+                    return newResponse;
+                  } catch (err) {
+                    console.error('Brotli decompression failed:', err);
+                    return response;
+                  }
+                });
+              }
+              return response;
+            });
+          }
+          return originalFetch(url, options);
+        };
+      }
+
       var canvas = document.querySelector("#unity-canvas");
 
       // Shows a temporary message banner/ribbon for a few seconds, or
