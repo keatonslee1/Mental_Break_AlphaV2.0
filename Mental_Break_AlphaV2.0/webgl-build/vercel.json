@@ -25,7 +25,7 @@
       "src": "/Build/webgl-build.data.gz",
       "dest": "/Build/webgl-build.data.gz",
       "headers": {
-        "Content-Type": "application/octet-stream",
+        "Content-Type": "application/gzip",
         "Content-Encoding": "gzip",
         "Cache-Control": "public, max-age=31536000, immutable"
       }
@@ -52,7 +52,7 @@
       "src": "/Build/(.*\\.data\\.gz)",
       "dest": "/Build/$1",
       "headers": {
-        "Content-Type": "application/octet-stream",
+        "Content-Type": "application/gzip",
         "Content-Encoding": "gzip",
         "Cache-Control": "public, max-age=31536000, immutable"
       }
@@ -90,7 +90,7 @@
     {
       "src": "/(.*\\.data\\.gz)",
       "headers": {
-        "Content-Type": "application/octet-stream",
+        "Content-Type": "application/gzip",
         "Content-Encoding": "gzip",
         "Cache-Control": "public, max-age=31536000, immutable"
       }
