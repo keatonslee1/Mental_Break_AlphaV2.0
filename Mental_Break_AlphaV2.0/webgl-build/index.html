@@ -141,31 +141,6 @@
                       }
                     }, 50);
                   });
-                  
-                  console.log('Decompression successful:', urlString, 'Size:', buffer.byteLength, '->', decompressed.length);
-                  
-                  // Create new response with decompressed data
-                  var blob = new Blob([decompressed]);
-                  var newHeaders = new Headers();
-                  
-                  // Copy headers except Content-Encoding and Content-Length
-                  response.headers.forEach(function(value, key) {
-                    var lowerKey = key.toLowerCase();
-                    if (lowerKey !== 'content-encoding' && lowerKey !== 'content-length') {
-                      newHeaders.set(key, value);
-                    }
-                  });
-                  
-                  // Set new Content-Length
-                  newHeaders.set('Content-Length', decompressed.length.toString());
-                  
-                  var newResponse = new Response(blob, {
-                    status: response.status,
-                    statusText: response.statusText,
-                    headers: newHeaders
-                  });
-                  
-                  return newResponse;
                 });
               }
               
@@ -194,29 +169,52 @@
             fetch(this._url).then(function(response) {
               if (response.headers.get('Content-Encoding') === 'br') {
                 return response.arrayBuffer().then(function(buffer) {
-                  var decompressed = decompressBrotli(buffer);
-                  if (decompressed) {
-                    // Create a mock response
-                    Object.defineProperty(xhr, 'status', { value: 200, writable: false });
-                    Object.defineProperty(xhr, 'statusText', { value: 'OK', writable: false });
-                    Object.defineProperty(xhr, 'response', { value: decompressed, writable: false });
-                    Object.defineProperty(xhr, 'responseText', { value: '', writable: false });
-                    Object.defineProperty(xhr, 'readyState', { value: 4, writable: false });
-                    
-                    if (originalOnReadyStateChange) {
-                      originalOnReadyStateChange.call(xhr);
-                    }
-                    if (xhr.onload) {
-                      xhr.onload();
-                    }
-                  } else {
-                    // Fallback to original XHR
-                    return originalXHRSend.call(xhr, data);
-                  }
+                  // Wait for Brotli to be ready
+                  return new Promise(function(resolve) {
+                    var waitCount = 0;
+                    var checkReady = setInterval(function() {
+                      if (typeof Brotli !== 'undefined') {
+                        clearInterval(checkReady);
+                        brotliReady = true;
+                        
+                        var decompressed = decompressBrotli(buffer);
+                        if (decompressed) {
+                          // Create ArrayBuffer from decompressed data
+                          var arrayBuffer = decompressed.buffer || new Uint8Array(decompressed).buffer;
+                          
+                          // Set XHR properties
+                          Object.defineProperty(xhr, 'status', { value: 200, writable: false });
+                          Object.defineProperty(xhr, 'statusText', { value: 'OK', writable: false });
+                          Object.defineProperty(xhr, 'response', { value: arrayBuffer, writable: false });
+                          Object.defineProperty(xhr, 'responseText', { value: '', writable: false });
+                          Object.defineProperty(xhr, 'readyState', { value: 4, writable: false });
+                          
+                          // Trigger callbacks
+                          if (originalOnReadyStateChange) {
+                            originalOnReadyStateChange.call(xhr);
+                          }
+                          if (xhr.onload) {
+                            xhr.onload();
+                          }
+                          resolve();
+                        } else {
+                          console.error('Failed to decompress for XHR');
+                          resolve();
+                        }
+                      } else if (waitCount++ > 40) {
+                        clearInterval(checkReady);
+                        console.error('Timeout waiting for Brotli library in XHR');
+                        resolve();
+                      }
+                    }, 50);
+                  });
                 });
               } else {
                 return originalXHRSend.call(xhr, data);
               }
+            }).catch(function(err) {
+              console.error('XHR fetch error:', err);
+              return originalXHRSend.call(xhr, data);
             });
             return;
           }
