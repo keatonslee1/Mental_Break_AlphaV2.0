@@ -40,16 +40,16 @@
   </head>
   <body>
     <!-- Page Header -->
-    <div id="page-header" style="background-color:#fff; padding:20px 0; text-align:center; height:75px;">
+    <div id="page-header" style="background-color:#333333; padding:20px 0; text-align:center; height:75px;">
       <h1 id="game-title">Mental Break - Alpha v2.0</h1>
       <p id="game-subtitle">Report Bugs on Discord: <a href="https://discord.gg/peHA2uHW" target="_blank" id="discord-link">https://discord.gg/peHA2uHW</a></p>
     </div>
   
     <!-- Unity Container -->
     <div id="unity-container" class="unity-desktop"
-         style="display:flex; justify-content:center; align-items:center; height:calc(100vh - 150px); margin:0 auto;">
+         style="display:flex; flex-direction:column; align-items:center; height:auto; margin:0 auto;">
       <canvas id="unity-canvas" width="960" height="600" tabindex="-1"
-             style="max-width:100%; max-height:100%; outline:none;"></canvas>
+              style="max-width:100%; max-height:100%; outline:none;"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -57,7 +57,8 @@
         </div>
       </div>
       <div id="unity-warning"></div>
-      <div id="unity-footer" style="display:flex; justify-content:space-between;">
+      <!-- Unity Footer -->
+      <div id="unity-footer" style="display:flex; justify-content:space-between; width:960px; margin-top:10px;">
         <div id="unity-logo-title-footer"></div>
         <div id="unity-fullscreen-button"></div>
         <div id="unity-build-title">Mental Break</div>
@@ -65,13 +66,12 @@
     </div>
   
     <!-- Game Controls -->
-    <div id="game-controls">
+    <div id="game-controls" style="margin-top:20px; text-align:center;">
       <p>Controls: Spacebar, Enter, Up, Down, ESC<br>Some UI elements only load after a page refresh.</p>
     </div>
   
     <!-- Page Footer -->
-    <div id="page-footer"
-         style="background-color:#fff; text-align:center; padding:20px 0; height:75px; position:absolute; bottom:0; width:100%;">
+    <div id="page-footer" style="background-color:#333333; text-align:center; padding:20px 0; height:75px; position:absolute; bottom:0; width:100%;">
       <p>Keaton@MachinicAnarchy.ai</p>
       <p><a href="https://linktr.ee/keatonlee" target="_blank" id="linktree-link">Linktree</a></p>
       <p>Copyright Keaton Media LLC 2025 All Rights Reserved</p>
