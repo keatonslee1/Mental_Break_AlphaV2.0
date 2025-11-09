@@ -182,7 +182,17 @@
   width: 100%;
 }
 
+#unity-container {
+  position: static !important;
+  margin: 0 auto;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+}
+
 #unity-container.unity-desktop {
+  position: static !important;
+  transform: none !important;
   width: 100%;
   display: flex;
   flex-direction: column;
