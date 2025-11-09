@@ -207,6 +207,10 @@
   color: var(--mb-muted);
 }
 
+.play-copy {
+  margin-top: 24px;
+}
+
 .play-copy h2 {
   font-weight: 700;
   font-size: 2rem;
@@ -278,10 +282,13 @@
   color: var(--mb-accent-3);
 }
 
-.services-area .section-title h2,
 .screenshots-area .section-title h2,
 .blog-area .section-title h2 {
   color: var(--mb-text);
+}
+
+.services-area {
+  display: none;
 }
 
 .services-area .service-item {
@@ -306,11 +313,19 @@
   background: var(--mb-surface-strong);
   border: 1px solid var(--mb-border);
   box-shadow: var(--mb-glow);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.portfolio-item {
+  display: flex;
 }
 
 .portfolio-box img {
   width: 100%;
   display: block;
+  flex-shrink: 0;
 }
 
 .portfolio-category {
@@ -324,6 +339,10 @@
 
 .portfolio-caption {
   padding: 0 24px 24px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .portfolio-caption h3 {
@@ -336,10 +355,23 @@
   border: 1px solid var(--mb-border);
   background: var(--mb-surface);
   box-shadow: var(--mb-glow);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .blog-post-caption h2 a {
   color: var(--mb-text);
+}
+
+.blog-post-img {
+  flex-shrink: 0;
+}
+
+.blog-post-caption {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .blog-post-caption h3 {
@@ -421,6 +453,22 @@
 
 .footer-top h2 a {
   color: var(--mb-accent-2);
+  font-size: 0.9rem;
+}
+
+.contact-discord-btn {
+  margin-top: 24px;
+}
+
+.contact-discord-btn .theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+}
+
+.contact-discord-btn .theme-btn i {
+  font-size: 1.2rem;
 }
 
 .footer-link {
