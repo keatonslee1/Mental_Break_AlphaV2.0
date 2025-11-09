@@ -36,18 +36,52 @@ title: SHOP_Visit
 tags: #scene #shop
 ---
 <<bg bg_companystore>>
-Upgrade Store Coming Soon
--> Continue
-    <<if $current_run == 1 and $current_day == 1>>
-        <<jump R1_D1_AfterShop>>
-    <<elseif $current_run == 2 and $current_day == 1>>
-        <<jump R2_D1_AfterShop>>
-    <<elseif $current_run == 3 and $current_day == 1>>
-        <<jump R3_D1_AfterShop>>
+The Company Store hums to life as the rapid-feedback kiosk dispenses your credits. Neon placards highlight today's stock:
+- Mental Break — "Give Timmy a breather." +10 Sanity.
+- Blackout Curtains — "Better sleep." +14 Sanity now; -6 Engagement on the very next node.
+- Blue-Light Filter — "Warmer tones tonight." +15 Sanity tomorrow night; -1 Engagement each node tomorrow.
+- Screen Protector — "Be less interesting to supervisors." Grants persistent heat reduction.
+- Priority Shipping Label — "Parcel waved through." Unlocks a dual escape during the mailroom sequence.
+- Bow for Alice — "Cute accessory." +1 Engagement each time you pick a pro-engagement choice.
+- Corporate Bond — "10% yield in one day." Pays out next day; unavailable in Run 4.
+
+A holographic attendant gestures toward the terminals. Browse or bank your credits?
+-> Browse the shelves
+    <<store>>
+    You close out the terminal, feeling the weight of your choices settle into the HUD.
+    <<jump SHOP_After>>
+-> Save the credits for later
+    You step away, credits still glowing in your account.
+    <<jump SHOP_After>>
+
+===
+
+title: SHOP_After
+tags: #scene #shop
+---
+// Shop visits only occur on Day 1 of each run
+<<if $current_run == 1 and $current_day == 1>>
+    <<jump R1_D1_AfterShop>>
+<<elseif $current_run == 2 and $current_day == 1>>
+    <<jump R2_D1_AfterShop>>
+<<elseif $current_run == 3 and $current_day == 1>>
+    <<jump R3_D1_AfterShop>>
+<<else>>
+    // Fallback: This should not normally occur, but handle gracefully
+    // If somehow shop is accessed outside Day 1, advance to next day start
+    <<set $current_day += 1>>
+    <<if $current_run == 1>>
+        <<jump R1_D2_Start>>
+    <<elseif $current_run == 2>>
+        <<jump R2_D2_Start>>
+    <<elseif $current_run == 3>>
+        <<jump R3_D2_Start>>
+    <<elseif $current_run == 4>>
+        <<jump R4_PrepHub>>
     <<else>>
-        // Fallback - should not happen
         <<jump R1_D2_Start>>
     <<endif>>
+<<endif>>
 
 ===
 

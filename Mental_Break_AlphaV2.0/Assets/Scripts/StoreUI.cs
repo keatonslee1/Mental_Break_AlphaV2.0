@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Yarn.Unity;
 using System.Collections.Generic;
+using System.Collections;
 
 #if USE_TMP
 using TMPro;
@@ -13,7 +14,7 @@ using TMPro;
 [System.Serializable]
 public class StoreItem
 {
-    public string id; // Yarn variable name (e.g., "item_branded_mug")
+    public string id; // Yarn variable name (e.g., "item_mental_break")
     public string displayName;
     public int cost;
     public string description;
@@ -48,18 +49,71 @@ public class StoreUI : MonoBehaviour
     [Tooltip("Text showing store items (used if itemButtonContainer is null)")]
     public Component storeItemsText;
 
+    [Tooltip("Optional text element for store effect notifications")]
+    public Component notificationText;
+
     [Header("Store Configuration")]
     [Tooltip("List of available store items")]
     public List<StoreItem> storeItems = new List<StoreItem>
     {
-        new StoreItem { id = "item_branded_mug", displayName = "Branded Mug", cost = 10, description = "A company-branded coffee mug. Increases morale." },
-        new StoreItem { id = "item_extra_log_space", displayName = "Extra Log Space", cost = 15, description = "Expands your log storage capacity." },
-        new StoreItem { id = "item_sticker_pack", displayName = "Sticker Pack", cost = 5, description = "A collection of company stickers. Purely cosmetic." }
+        new StoreItem
+        {
+            id = "item_mental_break",
+            displayName = "Mental Break",
+            cost = 10,
+            description = "Give Timmy a breather. +10 Sanity immediately."
+        },
+        new StoreItem
+        {
+            id = "item_blackout_curtains",
+            displayName = "Blackout Curtains",
+            cost = 14,
+            description = "Send Timmy blackout curtains. +14 Sanity now; -6 Engagement on the next node."
+        },
+        new StoreItem
+        {
+            id = "item_blue_light_filter",
+            displayName = "Blue-Light Filter",
+            cost = 16,
+            description = "Warm Timmy’s screens. +15 Sanity tomorrow night; -1 Engagement each node tomorrow."
+        },
+        new StoreItem
+        {
+            id = "item_screen_protector",
+            displayName = "Screen Protector",
+            cost = 12,
+            description = "Be less interesting to supervisors. Adds heat damping for the rest of the run."
+        },
+        new StoreItem
+        {
+            id = "item_priority_shipping",
+            displayName = "Priority Shipping Label",
+            cost = 18,
+            description = "Parcel gets waved through. Unlock a dual escape during the mailroom scene."
+        },
+        new StoreItem
+        {
+            id = "item_bow_for_alice",
+            displayName = "Bow for Alice",
+            cost = 11,
+            description = "Cute accessory. +1 Engagement each time you choose a pro-engagement option."
+        },
+        new StoreItem
+        {
+            id = "item_corporate_bond",
+            displayName = "Corporate Bond",
+            cost = 10,
+            description = "Earn 10% interest in one day. Not available going into Run 4."
+        }
     };
 
     private VariableStorageBehaviour variableStorage;
     private float lastCashValue = 0f;
     private Dictionary<string, Button> itemButtons = new Dictionary<string, Button>();
+    private Dictionary<string, StoreItem> storeItemLookup = new Dictionary<string, StoreItem>();
+    private Coroutine notificationRoutine;
+    private HashSet<string> blueLightPenalizedNodes = new HashSet<string>();
+    private const string StoreNotificationVar = "$store_last_notification";
 
     private void Start()
     {
@@ -89,8 +143,17 @@ public class StoreUI : MonoBehaviour
             dialogueRunner.onNodeStart.AddListener(OnNodeStarted);
         }
 
-        // Load previously purchased items
-        LoadPurchasedItems();
+        // Cache quick lookup for store items
+        storeItemLookup.Clear();
+        foreach (var item in storeItems)
+        {
+            if (item != null && !string.IsNullOrEmpty(item.id))
+            {
+                storeItemLookup[item.id] = item;
+            }
+        }
+
+        InitializeStoreState();
     }
 
     private void OnDestroy()
@@ -124,9 +187,17 @@ public class StoreUI : MonoBehaviour
 
     private void OnNodeStarted(string nodeName)
     {
-        // Check if this node mentions the store
-        // Store appears after rapid_feedback_cash is awarded, usually at end of day nodes
-        // This is a simple heuristic - you might want to tag specific nodes instead
+        if (variableStorage == null) return;
+
+        int currentRun = GetCurrentRun();
+        int currentDay = GetCurrentDay();
+
+        ProcessBlackoutCurtains();
+        ProcessBlueLightFilter(currentRun, currentDay, nodeName);
+        ProcessCorporateBond(currentRun, currentDay);
+        ProcessBowForAliceBonus();
+
+        RefreshEngagementBaseline();
     }
 
     private void ShowStore()
@@ -151,11 +222,9 @@ public class StoreUI : MonoBehaviour
     {
         if (variableStorage == null) return;
 
-        float cash = 0f;
-        if (variableStorage.TryGetValue<float>("$rapid_feedback_cash", out var cashValue))
-        {
-            cash = cashValue;
-        }
+        float cash = GetFloat("$rapid_feedback_cash", 0f);
+        int currentRun = GetCurrentRun();
+        int currentDay = GetCurrentDay();
 
         if (cashText != null)
         {
@@ -165,15 +234,15 @@ public class StoreUI : MonoBehaviour
         // Update UI based on whether we're using buttons or text
         if (itemButtonContainer != null && itemButtonPrefab != null)
         {
-            UpdateButtonBasedStore(cash);
+            UpdateButtonBasedStore(cash, currentRun, currentDay);
         }
         else if (storeItemsText != null)
         {
-            UpdateTextBasedStore(cash);
+            UpdateTextBasedStore(cash, currentRun, currentDay);
         }
     }
 
-    private void UpdateButtonBasedStore(float cash)
+    private void UpdateButtonBasedStore(float cash, int currentRun, int currentDay)
     {
         // Clear existing buttons
         foreach (var button in itemButtons.Values)
@@ -188,12 +257,9 @@ public class StoreUI : MonoBehaviour
         // Create buttons for each item
         foreach (var item in storeItems)
         {
-            // Check if item is already owned
-            bool isOwned = false;
-            if (variableStorage.TryGetValue<bool>($"${item.id}", out var ownedValue))
-            {
-                isOwned = ownedValue;
-            }
+            bool isOwned = IsItemOwned(item);
+            bool isAvailable = IsItemCurrentlyAvailable(item, currentRun, currentDay);
+            bool affordable = cash >= item.cost;
 
             GameObject buttonObj = Instantiate(itemButtonPrefab, itemButtonContainer);
             Button button = buttonObj.GetComponent<Button>();
@@ -208,14 +274,13 @@ public class StoreUI : MonoBehaviour
                 Component textComponent = buttonObj.GetComponentInChildren<Component>();
                 if (textComponent != null)
                 {
-                    string buttonText = isOwned 
-                        ? $"{item.displayName} (OWNED)"
-                        : $"{item.displayName} ({item.cost} credits)";
+                    string status = BuildItemStatus(item, isOwned, isAvailable, cash, currentRun, currentDay);
+                    string buttonText = $"{item.displayName}\n{item.description}\n{status}";
                     SetText(textComponent, buttonText);
                 }
 
-                // Enable/disable based on affordability and ownership
-                button.interactable = !isOwned && cash >= item.cost;
+                // Enable/disable based on affordability and availability
+                button.interactable = !isOwned && isAvailable && affordable;
 
                 // Set up click handler
                 string itemId = item.id; // Capture for closure
@@ -227,22 +292,16 @@ public class StoreUI : MonoBehaviour
         }
     }
 
-    private void UpdateTextBasedStore(float cash)
+    private void UpdateTextBasedStore(float cash, int currentRun, int currentDay)
     {
         string storeText = "Company Store\n\n";
         
         foreach (var item in storeItems)
         {
-            // Check if item is already owned
-            bool isOwned = false;
-            if (variableStorage.TryGetValue<bool>($"${item.id}", out var ownedValue))
-            {
-                isOwned = ownedValue;
-            }
-
-            string status = isOwned ? "[OWNED]" : $"[{item.cost} credits]";
-            string affordable = (!isOwned && cash >= item.cost) ? " (Available)" : (!isOwned ? " (Insufficient funds)" : "");
-            storeText += $"• {item.displayName} {status}{affordable}\n";
+            bool isOwned = IsItemOwned(item);
+            bool isAvailable = IsItemCurrentlyAvailable(item, currentRun, currentDay);
+            string status = BuildItemStatus(item, isOwned, isAvailable, cash, currentRun, currentDay);
+            storeText += $"- {item.displayName} [{status}]\n  {item.description}\n";
         }
 
         SetText(storeItemsText, storeText);
@@ -277,12 +336,11 @@ public class StoreUI : MonoBehaviour
             return;
         }
 
+        int currentRun = GetCurrentRun();
+        int currentDay = GetCurrentDay();
+
         // Check if already owned
-        bool isOwned = false;
-        if (variableStorage.TryGetValue<bool>($"${item.id}", out var ownedValue))
-        {
-            isOwned = ownedValue;
-        }
+        bool isOwned = IsItemOwned(item);
 
         if (isOwned)
         {
@@ -290,12 +348,14 @@ public class StoreUI : MonoBehaviour
             return;
         }
 
-        // Check if player has enough cash
-        float cash = 0f;
-        if (variableStorage.TryGetValue<float>("$rapid_feedback_cash", out var cashValue))
+        if (!IsItemCurrentlyAvailable(item, currentRun, currentDay))
         {
-            cash = cashValue;
+            Debug.Log($"Item '{item.displayName}' is currently unavailable.");
+            return;
         }
+
+        // Check if player has enough cash
+        float cash = GetFloat("$rapid_feedback_cash", 0f);
 
         if (cash < item.cost)
         {
@@ -310,79 +370,419 @@ public class StoreUI : MonoBehaviour
         Debug.Log($"Purchased '{item.displayName}' for {item.cost} credits.");
 
         // Apply item effects
-        ApplyItemEffects(item.id);
+        ApplyItemEffects(item, currentRun, currentDay);
+        RefreshEngagementBaseline();
 
         // Update display
         UpdateStoreDisplay();
-
-        // Save ownership to PlayerPrefs for persistence across runs
-        PlayerPrefs.SetInt(item.id, 1);
-        PlayerPrefs.Save();
     }
 
     /// <summary>
     /// Apply game effects when an item is purchased
     /// </summary>
-    private void ApplyItemEffects(string itemId)
+    private void ApplyItemEffects(StoreItem item, int currentRun, int currentDay)
     {
-        if (variableStorage == null) return;
+        if (variableStorage == null || item == null) return;
 
-        // Apply item-specific effects based on the story document
-        // Items are supposed to provide "powerups, items, and upgrades for Alice"
-        switch (itemId)
+        switch (item.id)
         {
-            case "item_branded_mug":
-                // Branded Mug: "Increases morale" - boosts sanity slightly
-                float currentSanity = 0f;
-                if (variableStorage.TryGetValue<float>("$sanity", out var sanityValue))
-                {
-                    currentSanity = sanityValue;
-                }
-                variableStorage.SetValue("$sanity", currentSanity + 2f);
-                Debug.Log("Branded Mug: +2 Sanity (morale boost)");
+            case "item_mental_break":
+                AdjustSanity(10f);
+                Debug.Log("Mental Break: +10 Sanity applied immediately.");
                 break;
 
-            case "item_extra_log_space":
-                // Extra Log Space: Expands capacity - could help with engagement tracking
-                float currentEngagement = 0f;
-                if (variableStorage.TryGetValue<float>("$engagement", out var engagementValue))
-                {
-                    currentEngagement = engagementValue;
-                }
-                variableStorage.SetValue("$engagement", currentEngagement + 1f);
-                Debug.Log("Extra Log Space: +1 Engagement (better tracking)");
+            case "item_blackout_curtains":
+                AdjustSanity(14f);
+                SetBool("$store_blackout_pending", true);
+                Debug.Log("Blackout Curtains: +14 Sanity applied; engagement penalty scheduled for the next node.");
                 break;
 
-            case "item_sticker_pack":
-                // Sticker Pack: "Purely cosmetic" - but could provide a small engagement boost
-                // Since it's cosmetic, give a tiny boost to make it feel worthwhile
-                float eng = 0f;
-                if (variableStorage.TryGetValue<float>("$engagement", out var engValue))
-                {
-                    eng = engValue;
-                }
-                variableStorage.SetValue("$engagement", eng + 0.5f);
-                Debug.Log("Sticker Pack: +0.5 Engagement (cosmetic boost)");
+            case "item_blue_light_filter":
+                ScheduleBlueLightEffects(currentRun, currentDay);
+                Debug.Log("Blue-Light Filter: Scheduled sanity bonus and engagement penalties for tomorrow.");
+                break;
+
+            case "item_screen_protector":
+                SetFloat("$store_screen_protector_heat_modifier", -1f);
+                Debug.Log("Screen Protector: Heat modifier set to -1 for the rest of the run.");
+                break;
+
+            case "item_priority_shipping":
+                Debug.Log("Priority Shipping Label: Mailroom dual-escape unlock flagged.");
+                break;
+
+            case "item_bow_for_alice":
+                Debug.Log("Bow for Alice: Engagement bonus tracking enabled.");
+                break;
+
+            case "item_corporate_bond":
+                ScheduleCorporateBond(currentRun, currentDay, item.cost);
+                Debug.Log("Corporate Bond: Payout scheduled for the next in-run day.");
                 break;
         }
     }
 
-    /// <summary>
-    /// Load purchased items from PlayerPrefs on game start
-    /// </summary>
-    public void LoadPurchasedItems()
+    private void InitializeStoreState()
     {
         if (variableStorage == null) return;
 
-        foreach (var item in storeItems)
+        // Ensure we have a baseline for engagement delta tracking.
+        if (!variableStorage.TryGetValue<float>("$store_prev_engagement", out _))
         {
-            // Check if item was purchased in a previous run
-            if (PlayerPrefs.GetInt(item.id, 0) == 1)
+            float engagement = GetFloat("$engagement", 0f);
+            variableStorage.SetValue("$store_prev_engagement", engagement);
+        }
+    }
+
+    private void RefreshEngagementBaseline()
+    {
+        if (variableStorage == null) return;
+        float engagement = GetFloat("$engagement", 0f);
+        variableStorage.SetValue("$store_prev_engagement", engagement);
+    }
+
+    private float GetFloat(string variableName, float defaultValue = 0f)
+    {
+        if (variableStorage != null && variableStorage.TryGetValue<float>(variableName, out var value))
+        {
+            return value;
+        }
+
+        return defaultValue;
+    }
+
+    private bool GetBool(string variableName)
+    {
+        if (variableStorage != null && variableStorage.TryGetValue<bool>(variableName, out var value))
+        {
+            return value;
+        }
+
+        return false;
+    }
+
+    private void SetBool(string variableName, bool value)
+    {
+        variableStorage?.SetValue(variableName, value);
+    }
+
+    private void SetFloat(string variableName, float value)
+    {
+        variableStorage?.SetValue(variableName, value);
+    }
+
+    private int GetCurrentRun()
+    {
+        return Mathf.Max(1, Mathf.RoundToInt(GetFloat("$current_run", 1f)));
+    }
+
+    private int GetCurrentDay()
+    {
+        return Mathf.Max(1, Mathf.RoundToInt(GetFloat("$current_day", 1f)));
+    }
+
+    private bool IsItemOwned(StoreItem item)
+    {
+        if (item == null) return false;
+        return GetBool($"${item.id}");
+    }
+
+    private bool IsItemCurrentlyAvailable(StoreItem item, int currentRun, int currentDay)
+    {
+        if (item == null) return false;
+
+        // Already owned items cannot be repurchased.
+        if (IsItemOwned(item))
+        {
+            return false;
+        }
+
+        // Corporate Bond unavailable when entering Run 4 or if an active bond is already pending.
+        if (item.id == "item_corporate_bond")
+        {
+            if (currentRun >= 4)
             {
-                variableStorage.SetValue($"${item.id}", true);
-                Debug.Log($"Loaded purchased item: {item.displayName}");
+                return false;
+            }
+
+            if (GetBool("$store_corporate_bond_active"))
+            {
+                return false;
             }
         }
+
+        return true;
+    }
+
+    private string BuildItemStatus(StoreItem item, bool isOwned, bool isAvailable, float cash, int currentRun, int currentDay)
+    {
+        if (item == null)
+        {
+            return "Unavailable";
+        }
+
+        if (isOwned)
+        {
+            switch (item.id)
+            {
+                case "item_blackout_curtains":
+                    return GetBool("$store_blackout_pending") ? "Owned (penalty pending)" : "Owned";
+                case "item_blue_light_filter":
+                    if (GetBool("$store_blue_filter_active"))
+                    {
+                        int targetRun = Mathf.RoundToInt(GetFloat("$store_blue_filter_target_run", currentRun));
+                        int targetDay = Mathf.RoundToInt(GetFloat("$store_blue_filter_target_day", currentDay));
+                        return $"Owned (effects target R{targetRun}D{targetDay})";
+                    }
+                    return "Owned";
+                case "item_screen_protector":
+                    return "Owned (heat damping active)";
+                case "item_priority_shipping":
+                    return "Owned (mailroom unlock)";
+                case "item_bow_for_alice":
+                    return "Owned (engagement bonus active)";
+                case "item_corporate_bond":
+                    if (GetBool("$store_corporate_bond_active"))
+                    {
+                        int targetRun = Mathf.RoundToInt(GetFloat("$store_corporate_bond_mature_run", currentRun));
+                        int targetDay = Mathf.RoundToInt(GetFloat("$store_corporate_bond_mature_day", currentDay));
+                        return $"Owned (matures R{targetRun}D{targetDay})";
+                    }
+                    return "Owned (payout collected)";
+                default:
+                    return "Owned";
+            }
+        }
+
+        if (!isAvailable)
+        {
+            if (item.id == "item_corporate_bond" && currentRun >= 4)
+            {
+                return "Unavailable in Run 4";
+            }
+
+            if (item.id == "item_corporate_bond" && GetBool("$store_corporate_bond_active"))
+            {
+                return "Unavailable (bond pending)";
+            }
+
+            return "Unavailable";
+        }
+
+        if (cash < item.cost)
+        {
+            float shortfall = Mathf.Max(0f, item.cost - cash);
+            return $"Cost: {item.cost} (Need {shortfall:F0} more)";
+        }
+
+        return $"Cost: {item.cost} (Available)";
+    }
+
+    private void AdjustSanity(float delta)
+    {
+        float sanity = GetFloat("$sanity", 0f);
+        SetFloat("$sanity", sanity + delta);
+    }
+
+    private void AdjustEngagement(float delta)
+    {
+        float engagement = GetFloat("$engagement", 0f);
+        SetFloat("$engagement", engagement + delta);
+    }
+
+    private void ScheduleBlueLightEffects(int currentRun, int currentDay)
+    {
+        SetBool("$store_blue_filter_active", true);
+        int targetRun = currentRun;
+        int targetDay = currentDay + 1;
+        blueLightPenalizedNodes.Clear();
+
+        if (targetDay > 4)
+        {
+            targetDay = 1;
+            targetRun += 1;
+        }
+
+        SetFloat("$store_blue_filter_target_run", targetRun);
+        SetFloat("$store_blue_filter_target_day", targetDay);
+        SetFloat("$store_blue_filter_penalties_applied", 0f);
+        SetBool("$store_blue_filter_bonus_applied", false);
+    }
+
+    private void ScheduleCorporateBond(int currentRun, int currentDay, int cost)
+    {
+        SetBool("$store_corporate_bond_active", true);
+        SetFloat("$store_corporate_bond_principal", cost);
+
+        int targetRun = currentRun;
+        int targetDay = currentDay + 1;
+
+        if (targetDay > 4)
+        {
+            targetDay = 1;
+            targetRun += 1;
+        }
+
+        SetFloat("$store_corporate_bond_mature_run", targetRun);
+        SetFloat("$store_corporate_bond_mature_day", targetDay);
+    }
+
+    private void ProcessBlackoutCurtains()
+    {
+        if (!GetBool("$store_blackout_pending"))
+        {
+            return;
+        }
+
+        AdjustEngagement(-6f);
+        SetBool("$store_blackout_pending", false);
+        QueueNotification("Blackout Curtains: Engagement drops by 6 while Timmy rests.");
+    }
+
+    private void ProcessBlueLightFilter(int currentRun, int currentDay, string nodeName)
+    {
+        if (!GetBool("$store_blue_filter_active"))
+        {
+            return;
+        }
+
+        int targetRun = Mathf.RoundToInt(GetFloat("$store_blue_filter_target_run", currentRun));
+        int targetDay = Mathf.RoundToInt(GetFloat("$store_blue_filter_target_day", currentDay));
+
+        // Not yet time to apply the effect.
+        if (currentRun < targetRun || (currentRun == targetRun && currentDay < targetDay))
+        {
+            return;
+        }
+
+        // Apply the scheduled bonuses/penalties on the target day.
+        if (currentRun == targetRun && currentDay == targetDay)
+        {
+            if (!GetBool("$store_blue_filter_bonus_applied"))
+            {
+                AdjustSanity(15f);
+                SetBool("$store_blue_filter_bonus_applied", true);
+                QueueNotification("Blue-Light Filter: Timmy sleeps deeply (+15 sanity).");
+            }
+
+            if (!string.IsNullOrEmpty(nodeName) && !blueLightPenalizedNodes.Contains(nodeName))
+            {
+                blueLightPenalizedNodes.Add(nodeName);
+                float applied = GetFloat("$store_blue_filter_penalties_applied", 0f) + 1f;
+                SetFloat("$store_blue_filter_penalties_applied", applied);
+                AdjustEngagement(-1f);
+                QueueNotification("Blue-Light Filter: Engagement dips by 1 while Timmy powers down.");
+            }
+
+            return;
+        }
+
+        // Past the scheduled day: clear the effect.
+        SetBool("$store_blue_filter_active", false);
+        blueLightPenalizedNodes.Clear();
+        QueueNotification("Blue-Light Filter effect has ended.");
+    }
+
+    private void ProcessCorporateBond(int currentRun, int currentDay)
+    {
+        if (!GetBool("$store_corporate_bond_active"))
+        {
+            return;
+        }
+
+        int targetRun = Mathf.RoundToInt(GetFloat("$store_corporate_bond_mature_run", currentRun));
+        int targetDay = Mathf.RoundToInt(GetFloat("$store_corporate_bond_mature_day", currentDay));
+
+        bool shouldPayout = currentRun > targetRun || (currentRun == targetRun && currentDay >= targetDay);
+        if (!shouldPayout)
+        {
+            return;
+        }
+
+        float principal = GetFloat("$store_corporate_bond_principal", 0f);
+        if (principal <= 0f)
+        {
+            SetBool("$store_corporate_bond_active", false);
+            return;
+        }
+
+        int payout = Mathf.RoundToInt(principal * 1.1f);
+        float currentCash = GetFloat("$rapid_feedback_cash", 0f);
+        SetFloat("$rapid_feedback_cash", currentCash + payout);
+
+        SetBool("$store_corporate_bond_active", false);
+        SetFloat("$store_corporate_bond_principal", 0f);
+        SetFloat("$store_corporate_bond_mature_run", 0f);
+        SetFloat("$store_corporate_bond_mature_day", 0f);
+
+        QueueNotification($"Corporate Bond matured: +{payout} credits.");
+    }
+
+    private void ProcessBowForAliceBonus()
+    {
+        if (!GetBool("$item_bow_for_alice"))
+        {
+            return;
+        }
+
+        float previousEngagement = GetFloat("$store_prev_engagement", GetFloat("$engagement", 0f));
+        float currentEngagement = GetFloat("$engagement", 0f);
+        float delta = currentEngagement - previousEngagement;
+
+        // Bow for Alice: +1 engagement per pro-engagement choice (any engagement increase)
+        if (delta > 0.05f)
+        {
+            AdjustEngagement(1f);
+            QueueNotification("Bow for Alice: Engagement nudges up by 1.");
+        }
+    }
+
+    private void QueueNotification(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        Debug.Log($"[StoreUI] {message}");
+        SetString(StoreNotificationVar, message);
+
+        if (notificationText != null)
+        {
+            SetText(notificationText, message);
+            if (notificationRoutine != null)
+            {
+                StopCoroutine(notificationRoutine);
+            }
+            notificationRoutine = StartCoroutine(ClearNotificationAfterDelay(4f));
+        }
+    }
+
+    private IEnumerator ClearNotificationAfterDelay(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+
+        if (notificationText != null)
+        {
+            SetText(notificationText, string.Empty);
+        }
+
+        notificationRoutine = null;
+    }
+
+    private void SetString(string variableName, string value)
+    {
+        variableStorage?.SetValue(variableName, value ?? string.Empty);
+    }
+
+    private string GetString(string variableName, string defaultValue = "")
+    {
+        if (variableStorage != null && variableStorage.TryGetValue<string>(variableName, out var value))
+        {
+            return value;
+        }
+
+        return defaultValue;
     }
 
     private void SetText(Component textComponent, string text)

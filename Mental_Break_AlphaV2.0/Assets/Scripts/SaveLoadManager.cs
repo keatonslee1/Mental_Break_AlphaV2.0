@@ -553,9 +553,25 @@ public class SaveLoadManager : MonoBehaviour
 
         // Inventory items
         SerializeVariable("$item_log_compactor", variableList);
-        SerializeVariable("$item_branded_mug", variableList);
-        SerializeVariable("$item_extra_log_space", variableList);
-        SerializeVariable("$item_sticker_pack", variableList);
+        SerializeVariable("$item_mental_break", variableList);
+        SerializeVariable("$item_blackout_curtains", variableList);
+        SerializeVariable("$item_blue_light_filter", variableList);
+        SerializeVariable("$item_screen_protector", variableList);
+        SerializeVariable("$item_priority_shipping", variableList);
+        SerializeVariable("$item_bow_for_alice", variableList);
+        SerializeVariable("$item_corporate_bond", variableList);
+        SerializeVariable("$store_blackout_pending", variableList);
+        SerializeVariable("$store_blue_filter_active", variableList);
+        SerializeVariable("$store_blue_filter_target_run", variableList);
+        SerializeVariable("$store_blue_filter_target_day", variableList);
+        SerializeVariable("$store_blue_filter_penalties_applied", variableList);
+        SerializeVariable("$store_blue_filter_bonus_applied", variableList);
+        SerializeVariable("$store_screen_protector_heat_modifier", variableList);
+        SerializeVariable("$store_prev_engagement", variableList);
+        SerializeVariable("$store_corporate_bond_active", variableList);
+        SerializeVariable("$store_corporate_bond_principal", variableList);
+        SerializeVariable("$store_corporate_bond_mature_run", variableList);
+        SerializeVariable("$store_corporate_bond_mature_day", variableList);
         SerializeVariable("$item_helpdesk_fix", variableList);
         SerializeVariable("$item_receipts_returns", variableList);
         SerializeVariable("$item_data_shard", variableList);

@@ -110,6 +110,7 @@ title: R4_Security_Check
 tags: #run_4 #prep #scene
 --- 
 <<bg bg_office>>
+// TODO(store_screen_protector): Factor $store_screen_protector_heat_modifier into alert level thresholds.
 <<if $alert_level >= 6>>
   A chill runs through the office.  Guards linger, cameras follow your every move.  You sense that doing more would trigger a lockdown. #line:09a09ed 
   <<jump R4_Vote_Explain>>
@@ -182,6 +183,7 @@ title: R4_GetOut_Teleport_Bring
 tags: #run_4 #scene
 ---
 <<bg bg_mailroom>>
+// TODO(store_priority_shipping): Require $item_priority_shipping before allowing both Alice and the Player to exit via the mailroom.
 You coordinate a second stream for Alice.  The transfer is slower and riskier, but you refuse to leave without her. #line:0059e44 
 <<set $r4_bring_alice_main = true>>
 <<set $ending_type = "getout_teleport">>

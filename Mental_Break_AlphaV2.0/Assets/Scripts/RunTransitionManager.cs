@@ -190,6 +190,25 @@ public class RunTransitionManager : MonoBehaviour
         variableStorage.SetValue("$leaderboard_rank", 50f); // Middle of pack
         variableStorage.SetValue("$rapid_feedback_cash", 0f);
         variableStorage.SetValue("$alert_level", 0f);
+        variableStorage.SetValue("$item_mental_break", false);
+        variableStorage.SetValue("$item_blackout_curtains", false);
+        variableStorage.SetValue("$item_blue_light_filter", false);
+        variableStorage.SetValue("$item_screen_protector", false);
+        variableStorage.SetValue("$item_priority_shipping", false);
+        variableStorage.SetValue("$item_bow_for_alice", false);
+        variableStorage.SetValue("$item_corporate_bond", false);
+        variableStorage.SetValue("$store_blackout_pending", false);
+        variableStorage.SetValue("$store_blue_filter_active", false);
+        variableStorage.SetValue("$store_blue_filter_target_run", 0f);
+        variableStorage.SetValue("$store_blue_filter_target_day", 0f);
+        variableStorage.SetValue("$store_blue_filter_penalties_applied", 0f);
+        variableStorage.SetValue("$store_blue_filter_bonus_applied", false);
+        variableStorage.SetValue("$store_screen_protector_heat_modifier", 0f);
+        variableStorage.SetValue("$store_prev_engagement", 0f);
+        variableStorage.SetValue("$store_corporate_bond_active", false);
+        variableStorage.SetValue("$store_corporate_bond_principal", 0f);
+        variableStorage.SetValue("$store_corporate_bond_mature_run", 0f);
+        variableStorage.SetValue("$store_corporate_bond_mature_day", 0f);
     }
 
     /// <summary>

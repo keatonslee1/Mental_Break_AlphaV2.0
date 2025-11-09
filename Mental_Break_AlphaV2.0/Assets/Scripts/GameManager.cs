@@ -396,6 +396,25 @@ public class GameManager : MonoBehaviour
                 storage.SetValue("$alert_level", 0);
                 storage.SetValue("$cross_talk_heard", 0);
                 storage.SetValue("$war_ops_awareness", 0);
+                storage.SetValue("$item_mental_break", false);
+                storage.SetValue("$item_blackout_curtains", false);
+                storage.SetValue("$item_blue_light_filter", false);
+                storage.SetValue("$item_screen_protector", false);
+                storage.SetValue("$item_priority_shipping", false);
+                storage.SetValue("$item_bow_for_alice", false);
+                storage.SetValue("$item_corporate_bond", false);
+                storage.SetValue("$store_blackout_pending", false);
+                storage.SetValue("$store_blue_filter_active", false);
+                storage.SetValue("$store_blue_filter_target_run", 0);
+                storage.SetValue("$store_blue_filter_target_day", 0);
+                storage.SetValue("$store_blue_filter_penalties_applied", 0);
+                storage.SetValue("$store_blue_filter_bonus_applied", false);
+                storage.SetValue("$store_screen_protector_heat_modifier", 0);
+                storage.SetValue("$store_prev_engagement", 0);
+                storage.SetValue("$store_corporate_bond_active", false);
+                storage.SetValue("$store_corporate_bond_principal", 0);
+                storage.SetValue("$store_corporate_bond_mature_run", 0);
+                storage.SetValue("$store_corporate_bond_mature_day", 0);
                 storage.SetValue("$ends_seen", 0);
 
                 // Boolean flags

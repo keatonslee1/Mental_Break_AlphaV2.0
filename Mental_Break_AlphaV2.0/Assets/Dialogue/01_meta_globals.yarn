@@ -89,9 +89,28 @@ A/V:    none #line:0e4485f
 <<declare $item_log_compactor = false>>
 
 // Company Store items.  These track purchases made with rapid_feedback_cash.
-<<declare $item_branded_mug = false>>
-<<declare $item_extra_log_space = false>>
-<<declare $item_sticker_pack = false>>
+<<declare $item_mental_break = false>>
+<<declare $item_blackout_curtains = false>>
+<<declare $item_blue_light_filter = false>>
+<<declare $item_screen_protector = false>>
+<<declare $item_priority_shipping = false>>
+<<declare $item_bow_for_alice = false>>
+<<declare $item_corporate_bond = false>>
+
+// Store effect state.  These variables are consumed by StoreUI to schedule deferred bonuses or penalties.
+<<declare $store_blackout_pending = false>>
+<<declare $store_blue_filter_active = false>>
+<<declare $store_blue_filter_target_run = 0>>
+<<declare $store_blue_filter_target_day = 0>>
+<<declare $store_blue_filter_penalties_applied = 0>>
+<<declare $store_blue_filter_bonus_applied = false>>
+<<declare $store_screen_protector_heat_modifier = 0>>
+<<declare $store_prev_engagement = 0>>
+<<declare $store_corporate_bond_active = false>>
+<<declare $store_corporate_bond_principal = 0>>
+<<declare $store_corporate_bond_mature_run = 0>>
+<<declare $store_corporate_bond_mature_day = 0>>
+<<declare $store_last_notification = "">>
 
 // Additional Run 4 prep inventory flags.  These booleans track whether specific preparation tasks have been completed in Run 4.
 //  - $item_helpdesk_fix: Help Desk #3942 permission drift.
@@ -187,6 +206,29 @@ A/V:    resets UI to normal. #line:03b5803
 <<set $r3_archive_restart_now = false>>
 // Run 2 flags (preserve across runs for downstream effects).
 // Note: $r2_sacrifice and $r2_log_inconsistency_choice are preserved; do not reset.
+// Reset Company Store inventory each run.
+<<set $item_mental_break = false>>
+<<set $item_blackout_curtains = false>>
+<<set $item_blue_light_filter = false>>
+<<set $item_screen_protector = false>>
+<<set $item_priority_shipping = false>>
+<<set $item_bow_for_alice = false>>
+<<set $item_corporate_bond = false>>
+
+// Clear scheduled store effects.
+<<set $store_blackout_pending = false>>
+<<set $store_blue_filter_active = false>>
+<<set $store_blue_filter_target_run = 0>>
+<<set $store_blue_filter_target_day = 0>>
+<<set $store_blue_filter_penalties_applied = 0>>
+<<set $store_blue_filter_bonus_applied = false>>
+<<set $store_screen_protector_heat_modifier = 0>>
+<<set $store_prev_engagement = $engagement>>
+<<set $store_corporate_bond_active = false>>
+<<set $store_corporate_bond_principal = 0>>
+<<set $store_corporate_bond_mature_run = 0>>
+<<set $store_corporate_bond_mature_day = 0>>
+<<set $store_last_notification = "">>
 
 <<ui "mode:normal">>
 
