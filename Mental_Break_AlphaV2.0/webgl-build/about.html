@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>About Mental Break · Worldbuilding the AI Romance Lab</title>
+    <meta name="description" content="Learn how the Mental Break team builds a retro cyberpunk dating sim about guiding an AI partner through corporate chaos. Discover our story, philosophy, and roadmap.">
+    <meta name="author" content="Keaton Media LLC">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mentalbreak.io/about.html">
+    <meta property="og:title" content="About Mental Break · Worldbuilding the AI Romance Lab">
+    <meta property="og:description" content="Meet the studio shaping the human-in-the-loop dating sim and see what’s coming next.">
+    <meta property="og:image" content="https://mentalbreak.io/TemplateData/og-image.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="About Mental Break · Worldbuilding the AI Romance Lab">
+    <meta name="twitter:description" content="Explore the inspirations, team, and roadmap behind the Mental Break alpha build.">
+    <meta name="twitter:image" content="https://mentalbreak.io/TemplateData/og-image.png">
+
+    <link rel="icon" type="image/png" href="TemplateData/favicon-48x48.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/font-awesome-pro.css">
+    <link rel="stylesheet" href="assets/fonts/remixicon.css">
+    <link rel="stylesheet" href="assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="assets/css/nice-select.min.css">
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <link rel="stylesheet" href="assets/css/mobilemenu.css">
+    <link rel="stylesheet" href="assets/css/swiper-bundle.css">
+    <link rel="stylesheet" href="assets/css/spacing.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/mental-break.css">
+
+    <script defer src="/_vercel/insights/script.js"></script>
+  </head>
+  <body class="mental-break-body">
+    <div class="preloader">
+      <svg viewBox="0 0 1000 1000" preserveAspectRatio="none">
+        <path id="preloaderSvg" d="M0,1005S175,995,500,995s500,5,500,5V0H0Z"></path>
+      </svg>
+      <div class="preloader-heading">
+        <div class="load-text">
+          <span>B</span>
+          <span>o</span>
+          <span>o</span>
+          <span>t</span>
+          <span>i</span>
+          <span>n</span>
+          <span>g</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap cursor-pointer">
+      <i class="ri-arrow-up-s-line"></i>
+      <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"></path>
+      </svg>
+    </div>
+
+    <div id="magic-cursor">
+      <div id="ball"></div>
+    </div>
+
+    <header class="main-header">
+      <div class="header-upper">
+        <div class="container">
+          <div class="header-inner">
+            <div class="row align-items-center">
+              <div class="col-xl-3 col-lg-3 col-md-6 col-6">
+                <div class="logo-area">
+                  <a class="logo-text" href="index.html">Mental Break</a>
+                  <span class="logo-tag">Alpha v2.0</span>
+                </div>
+              </div>
+              <div class="col-xl-9 col-lg-9 col-md-6 col-6">
+                <div class="main-menu">
+                  <nav id="mobile-menu">
+                    <ul>
+                      <li><a href="index.html" class="linkstyle">Home</a></li>
+                      <li><a href="index.html#play" class="linkstyle">Play</a></li>
+                      <li><a href="about.html" class="linkstyle active">About</a></li>
+                      <li><a href="blog.html" class="linkstyle">Blog</a></li>
+                      <li><a href="https://discord.gg/peHA2uHW" class="linkstyle" target="_blank" rel="noopener">Discord</a></li>
+                    </ul>
+                  </nav>
+                </div>
+                <div class="side-menu-icon d-lg-none text-end">
+                  <a href="javascript:void(0)" class="info-toggle-btn f-right sidebar-toggle-btn"><i class="fal fa-bars"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="sidebar__area">
+      <div class="sidebar__wrapper">
+        <div class="sidebar__close">
+          <button class="sidebar__close-btn" id="sidebar__close-btn">
+            <i class="fal fa-times"></i>
+          </button>
+        </div>
+        <div class="sidebar__content mt-50 mb-20">
+          <div class="mobile-menu fix"></div>
+        </div>
+      </div>
+    </div>
+    <div class="body-overlay"></div>
+
+    <section class="single-page-hero-area mb-single-hero">
+      <div class="container">
+        <div class="row align-items-center text-center">
+          <div class="col-lg-12">
+            <h1>Inside the Mental Break Lab</h1>
+            <p>We build a neon newsroom where empathy, automation, and messy romance coexist.</p>
+            <div class="breadcrumb__list">
+              <span><a href="index.html">Home</a></span>
+              <span class="dvdr"><i class="fa-regular fa-angle-right"></i></span>
+              <span>About</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mission-area section-spacing">
+      <div class="container">
+        <div class="row gy-4 align-items-center">
+          <div class="col-lg-6">
+            <div class="glassy-panel wow fadeInUp delay-0-2s">
+              <span class="eyebrow">Our Thesis</span>
+              <h2>Romance is the hardest automation problem.</h2>
+              <p>We’re Machinic Anarchy, an indie narrative lab exploring what happens when human operators become the heart of a synthetic relationship. Mental Break takes the “human in the loop” trope and turns it into a messy pixel-art love story.</p>
+              <p>Every chapter is designed around real-time decision load: you manage prompt queues, sentiment scores, and corporate escalations while Walker—the AI girlfriend—pushes back against her script.</p>
+              <div class="mission-facts">
+                <div>
+                  <h3>6+</h3>
+                  <span>Playable Scenes in Alpha</span>
+                </div>
+                <div>
+                  <h3>4</h3>
+                  <span>Alternate Endings in Progress</span>
+                </div>
+                <div>
+                  <h3>∞</h3>
+                  <span>Bad Corporate Emails</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="mission-art wow fadeInUp delay-0-3s">
+              <img src="assets/images/mental-break/btc.jpg" alt="Bigger Tech HQ" class="mission-art__image">
+              <img src="assets/images/mental-break/bg_backend.png" alt="Backend control room" class="mission-art__overlay">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="timeline-area section-spacing">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="section-title section-white-title wow fadeInUp delay-0-2s text-center">
+              <h2>Build Roadmap</h2>
+              <p>We publish fresh branches rapidly. Here’s what shipped and what’s loading next.</p>
+            </div>
+          </div>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="timeline-card glassy-panel wow fadeInUp delay-0-3s">
+              <span class="timeline-date">Q4 · 2025</span>
+              <h3>Alpha v2.0 — Supervisor Trials</h3>
+              <p>Introduced tribunal scenes, deeper Walker sentiment systems, and the web build now live on mentalbreak.io.</p>
+              <ul>
+                <li>New decision fatigue meter</li>
+                <li>Gallery of night-shift environments</li>
+                <li>Discord feedback loop hooked into dev builds</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="timeline-card glassy-panel wow fadeInUp delay-0-4s">
+              <span class="timeline-date">Q1 · 2026</span>
+              <h3>Alpha v3.0 — Memory Leak Arcs</h3>
+              <p>Upcoming release focuses on branching romance routes, new NPC ops, and expanded UI modding support.</p>
+              <ul>
+                <li>Dynamic ticket authoring tools</li>
+                <li>Reactive soundtrack layers</li>
+                <li>Closed beta with community operators</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="team-area section-spacing">
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-12">
+            <div class="section-title section-black-title wow fadeInUp delay-0-2s text-center">
+              <h2>The Operators</h2>
+              <p>We mix narrative designers, AI researchers, and obsessive pixel artists.</p>
+            </div>
+          </div>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="team-card glassy-panel wow fadeInUp delay-0-3s">
+              <img src="assets/images/mental-break/alice.jpg" alt="Walker portrait">
+              <h3>Walker</h3>
+              <span class="role">AI Girlfriend / Narrative Core</span>
+              <p>Our synthetic romantic lead. Walker’s dialogue system blends scripted arcs with operator-injected prompts.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="team-card glassy-panel wow fadeInUp delay-0-4s">
+              <img src="assets/images/mental-break/supervisor.jpg" alt="Supervisor portrait">
+              <h3>The Supervisor</h3>
+              <span class="role">Creative Director</span>
+              <p>Embodies Bigger Tech’s relentless OKR culture. Helps prototype how corporate pressure shows up in the UI.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="team-card glassy-panel wow fadeInUp delay-0-5s">
+              <img src="assets/images/mental-break/timmy.jpg" alt="Timmy portrait">
+              <h3>Timmy</h3>
+              <span class="role">Systems Engineer</span>
+              <p>Builds the tools that keep the game running and occasionally sets the breakroom coffee on fire.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-area section-spacing">
+      <div class="container">
+        <div class="row gy-4 align-items-center">
+          <div class="col-lg-7">
+            <div class="glassy-panel wow fadeInUp delay-0-2s">
+              <h2>Bring your own anomaly reports.</h2>
+              <p>Player feedback literally rewrites Walker’s behaviour trees. If you have UX ideas, broken saves, or narrative dreams, we want to hear them.</p>
+              <div class="cta-actions">
+                <a class="theme-btn" href="https://discord.gg/peHA2uHW" target="_blank" rel="noopener">Join the Discord</a>
+                <a class="theme-btn theme-btn--outline" href="mailto:Keaton@MachinicAnarchy.ai">Email the Team</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="cta-art wow fadeInUp delay-0-3s">
+              <img src="assets/images/mental-break/bg_breakroom.png" alt="Breakroom art" class="cta-art__image">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="main-footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="footer-top">
+              <p>Need a mental break?</p>
+              <h2><a href="mailto:Keaton@MachinicAnarchy.ai">Keaton@MachinicAnarchy.ai</a></h2>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center">
+          <div class="col-lg-4 col-sm-6">
+            <p class="copy-left-text">© 2025 Keaton Media LLC</p>
+          </div>
+          <div class="col-lg-4 col-sm-6 text-center">
+            <a class="footer-link" href="https://linktr.ee/keatonlee" target="_blank" rel="noopener">Linktree</a>
+          </div>
+          <div class="col-lg-4 col-sm-12 text-lg-end">
+            <p class="copy-right-text">Alpha build hosted on Vercel</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="assets/js/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/appear.min.js"></script>
+    <script src="assets/js/jquery.magnific-popup.min.js"></script>
+    <script src="assets/js/mobilemenu.js"></script>
+    <script src="assets/js/gsap.min.js"></script>
+    <script src="assets/js/ScrollTrigger.min.js"></script>
+    <script src="assets/js/lenis.js"></script>
+    <script src="assets/js/swiper-bundle.js"></script>
+    <script src="assets/js/jquery.nice-select.min.js"></script>
+    <script src="assets/js/imagesloaded.pkgd.min.js"></script>
+    <script src="assets/js/isotope.pkgd.min.js"></script>
+    <script src="assets/js/wow.min.js"></script>
+    <script src="assets/js/script.js"></script>
+  </body>
+</html>
+
