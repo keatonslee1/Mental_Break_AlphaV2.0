@@ -203,6 +203,18 @@ public class MetricsPanelUI : MonoBehaviour
         layoutElement.flexibleHeight = 0f;
         layoutElement.flexibleWidth = 1f;
 
+        // Add padding to the panel
+        HorizontalLayoutGroup panelLayout = panel.AddComponent<HorizontalLayoutGroup>();
+        panelLayout.padding.left = Mathf.RoundToInt(panelPadding.x);
+        panelLayout.padding.right = Mathf.RoundToInt(panelPadding.x);
+        panelLayout.padding.top = Mathf.RoundToInt(panelPadding.y);
+        panelLayout.padding.bottom = Mathf.RoundToInt(panelPadding.y);
+        panelLayout.childControlWidth = true;
+        panelLayout.childControlHeight = true;
+        panelLayout.childForceExpandWidth = true;
+        panelLayout.childForceExpandHeight = true;
+        panelLayout.childAlignment = TextAnchor.MiddleRight;
+
         // Add semi-transparent background
         Image bgImage = panel.AddComponent<Image>();
         bgImage.color = panelBackgroundColor;
@@ -237,13 +249,13 @@ public class MetricsPanelUI : MonoBehaviour
             text.font = TMPro.TMP_Settings.instance.defaultFontAsset;
         }
         text.text = $"{label}: 0%";
-        text.fontSize = fontSize;
+        text.fontSize = GetFontSize();
         text.alignment = TextAlignmentOptions.MidlineRight;
         text.color = color;
 #else
         Text text = textObj.AddComponent<Text>();
         text.text = $"{label}: 0%";
-        text.fontSize = fontSize;
+        text.fontSize = GetFontSize();
         text.alignment = TextAnchor.MiddleRight;
         text.color = color;
         // Use default Unity font
@@ -284,5 +296,83 @@ public class MetricsPanelUI : MonoBehaviour
         {
             sanityText.text = $"Sanity: {sanity:F0}%";
         }
+    }
+
+    private void ConfigureCanvasScaler(CanvasScaler scaler)
+    {
+        if (scaler == null) return;
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
+    }
+
+    private void EnsureContainerLayout()
+    {
+        if (metricsRoot == null)
+        {
+            return;
+        }
+
+        RectTransform rootRect = metricsRoot.GetComponent<RectTransform>();
+        if (rootRect == null)
+        {
+            return;
+        }
+
+        Rect safeArea = Screen.safeArea;
+        Vector2 screenSize = new Vector2(Screen.width, Screen.height);
+
+        if (screenSize != lastScreenSize || safeArea != lastSafeArea)
+        {
+            float safeWidth = Mathf.Max(safeArea.width, 200f);
+            float availableWidth = Mathf.Max(safeWidth - (rightMargin * 2f), 200f);
+            availableWidth = Mathf.Min(availableWidth, safeWidth);
+
+            float clampedFraction = Mathf.Clamp01(widthFraction);
+            float targetWidth = safeWidth * clampedFraction;
+
+            float minWidth = Mathf.Min(panelMinWidth, availableWidth);
+            float maxWidth = Mathf.Min(panelMaxWidth, availableWidth);
+            if (maxWidth < minWidth)
+            {
+                maxWidth = minWidth;
+            }
+
+            targetWidth = Mathf.Clamp(targetWidth, minWidth, maxWidth);
+
+            rootRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, targetWidth);
+
+            if (rootLayoutGroup != null)
+            {
+                int horizontalPadding = Mathf.RoundToInt(panelPadding.x);
+                int verticalPadding = Mathf.RoundToInt(panelPadding.y);
+
+                rootLayoutGroup.padding.left = horizontalPadding;
+                rootLayoutGroup.padding.right = horizontalPadding;
+                rootLayoutGroup.padding.top = verticalPadding;
+                rootLayoutGroup.padding.bottom = verticalPadding;
+                rootLayoutGroup.spacing = metricSpacing;
+            }
+
+            float safeTopPadding = Screen.height - safeArea.yMax;
+            float safeRightPadding = Screen.width - safeArea.xMax;
+            float horizontalOffset = (safeArea.xMax - (Screen.width * 0.5f)) - (targetWidth * 0.5f);
+            rootRect.anchoredPosition = new Vector2(horizontalOffset - safeRightPadding - rightMargin, -(safeTopPadding + topMargin));
+
+            lastScreenSize = screenSize;
+            lastSafeArea = safeArea;
+        }
+    }
+
+    private float GetPanelHeight()
+    {
+        int effectiveFontSize = Mathf.Max(fontSize, minFontSize);
+        return Mathf.Max(panelPreferredHeight, effectiveFontSize + panelPadding.y * 2f + 8f);
+    }
+
+    private int GetFontSize()
+    {
+        return Mathf.Max(fontSize, minFontSize);
     }
 }
