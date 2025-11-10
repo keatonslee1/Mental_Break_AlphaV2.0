@@ -4,38 +4,23 @@
   "outputDirectory": "webgl-build",
   "routes": [
     {
-      "src": "/Build/webgl-build.framework.js.gz",
-      "dest": "/Build/webgl-build.framework.js.gz",
-      "headers": {
-        "Content-Type": "application/javascript",
-        "Content-Encoding": "gzip",
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/Build/webgl-build.wasm.gz",
-      "dest": "/Build/webgl-build.wasm.gz",
+      "src": "/Build/(.*\\.wasm)",
       "headers": {
         "Content-Type": "application/wasm",
-        "Content-Encoding": "gzip",
         "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
     {
-      "src": "/Build/webgl-build.data.gz",
-      "dest": "/Build/webgl-build.data.gz",
+      "src": "/Build/(.*\\.data)",
       "headers": {
-        "Content-Type": "application/gzip",
-        "Content-Encoding": "gzip",
+        "Content-Type": "application/octet-stream",
         "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
     {
-      "src": "/Build/(.*\\.js\\.gz)",
-      "dest": "/Build/$1",
+      "src": "/Build/(.*\\.js)",
       "headers": {
         "Content-Type": "application/javascript",
-        "Content-Encoding": "gzip",
         "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
@@ -52,7 +37,16 @@
       "src": "/Build/(.*\\.data\\.gz)",
       "dest": "/Build/$1",
       "headers": {
-        "Content-Type": "application/gzip",
+        "Content-Type": "application/octet-stream",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/Build/(.*\\.js\\.gz)",
+      "dest": "/Build/$1",
+      "headers": {
+        "Content-Type": "application/javascript",
         "Content-Encoding": "gzip",
         "Cache-Control": "public, max-age=31536000, immutable"
       }
@@ -68,61 +62,6 @@
       "src": "/TemplateData/(.*)",
       "dest": "/TemplateData/$1",
       "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/about",
-      "dest": "/about.html",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
-    },
-    {
-      "src": "/blog",
-      "dest": "/blog.html",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
-    },
-    {
-      "src": "/about.html",
-      "dest": "/about.html",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
-    },
-    {
-      "src": "/blog.html",
-      "dest": "/blog.html",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      }
-    },
-    {
-      "src": "/(.*\\.js\\.gz)",
-      "dest": "/$1",
-      "headers": {
-        "Content-Type": "application/javascript",
-        "Content-Encoding": "gzip",
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/(.*\\.wasm\\.gz)",
-      "dest": "/$1",
-      "headers": {
-        "Content-Type": "application/wasm",
-        "Content-Encoding": "gzip",
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/(.*\\.data\\.gz)",
-      "dest": "/$1",
-      "headers": {
-        "Content-Type": "application/gzip",
-        "Content-Encoding": "gzip",
         "Cache-Control": "public, max-age=31536000, immutable"
       }
     },
@@ -159,6 +98,34 @@
       "src": "/(.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg)",
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/about",
+      "dest": "/about.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "src": "/blog",
+      "dest": "/blog.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "src": "/about.html",
+      "dest": "/about.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "src": "/blog.html",
+      "dest": "/blog.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
       }
     },
     {
