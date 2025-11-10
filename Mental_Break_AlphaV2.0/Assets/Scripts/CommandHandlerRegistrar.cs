@@ -57,6 +57,26 @@ public class CommandHandlerRegistrar : MonoBehaviour
     }
 
     /// <summary>
+    /// Recursively search for a child Transform by name
+    /// </summary>
+    private Transform FindChildRecursive(Transform parent, string name)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == name)
+            {
+                return child;
+            }
+            Transform found = FindChildRecursive(child, name);
+            if (found != null)
+            {
+                return found;
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
     /// Attempt to locate the StoreUI component, including on inactive objects.
     /// </summary>
     private StoreUI ResolveStoreHandler()
@@ -77,7 +97,11 @@ public class CommandHandlerRegistrar : MonoBehaviour
 #endif
 
         // Fallback for older Unity versions or if above didn't work
+#if UNITY_2023_1_OR_NEWER
+        var storeCandidates = FindObjectsByType<StoreUI>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+#else
         var storeCandidates = FindObjectsOfType<StoreUI>(true);
+#endif
         if (storeCandidates != null && storeCandidates.Length > 0)
         {
             foreach (var candidate in storeCandidates)
@@ -99,11 +123,48 @@ public class CommandHandlerRegistrar : MonoBehaviour
             }
         }
 
-        // Last resort: search by GameObject name
-        GameObject storePanel = GameObject.Find("StorePanel");
-        if (storePanel != null)
+        // Last resort: search by GameObject name in DontDestroyOnLoad hierarchy
+        GameObject dontDestroyRoot = GameObject.Find("DontDestroyOnLoad");
+        if (dontDestroyRoot != null)
         {
-            storeHandler = storePanel.GetComponent<StoreUI>();
+            // Search in DontDestroyOnLoad/Dialogue System/Canvas hierarchy
+            Transform dialogueSystem = dontDestroyRoot.transform.Find("Dialogue System");
+            if (dialogueSystem != null)
+            {
+                Transform canvas = dialogueSystem.Find("Canvas");
+                if (canvas != null)
+                {
+                    Transform storePanel = canvas.Find("StorePanel");
+                    if (storePanel != null)
+                    {
+                        storeHandler = storePanel.GetComponent<StoreUI>();
+                        if (storeHandler != null)
+                        {
+                            Debug.Log($"CommandHandlerRegistrar: Found StoreUI in DontDestroyOnLoad/Dialogue System/Canvas/StorePanel");
+                            return storeHandler;
+                        }
+                    }
+                }
+            }
+            
+            // Also search recursively in DontDestroyOnLoad
+            Transform storePanelRecursive = FindChildRecursive(dontDestroyRoot.transform, "StorePanel");
+            if (storePanelRecursive != null)
+            {
+                storeHandler = storePanelRecursive.GetComponent<StoreUI>();
+                if (storeHandler != null)
+                {
+                    Debug.Log($"CommandHandlerRegistrar: Found StoreUI in DontDestroyOnLoad hierarchy");
+                    return storeHandler;
+                }
+            }
+        }
+
+        // Final fallback: search by GameObject name (searches all scenes)
+        GameObject storePanelGameObject = GameObject.Find("StorePanel");
+        if (storePanelGameObject != null)
+        {
+            storeHandler = storePanelGameObject.GetComponent<StoreUI>();
             if (storeHandler != null)
             {
                 Debug.Log($"CommandHandlerRegistrar: Found StoreUI via GameObject.Find('StorePanel') on {storeHandler.gameObject.name}");
@@ -111,7 +172,7 @@ public class CommandHandlerRegistrar : MonoBehaviour
             }
         }
 
-        Debug.LogWarning("CommandHandlerRegistrar: Could not find StoreUI component in scene. Store command will not be available.");
+        Debug.LogWarning("CommandHandlerRegistrar: Could not find StoreUI component in scene. Store command will not be available. Ensure StorePanel exists in the scene (run Tools > Setup Store UI if needed).");
         return null;
     }
 

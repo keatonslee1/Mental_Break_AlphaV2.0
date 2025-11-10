@@ -33,18 +33,25 @@
    - Managed Stripping Level: `Low` or `Medium` (test if game works)
    - WebGL Memory Size: `16` (increase if you get out-of-memory errors)
 
-4. **Build:**
+4. **Setup Store UI (Required before building):**
+   - Open the main game scene (e.g., `MVPScene.unity`) that will be built
+   - Go to: `Tools > Setup Store UI`
+   - Verify that `StorePanel` appears in the Hierarchy under `DontDestroyOnLoad/Dialogue System/Canvas`
+   - **IMPORTANT**: Save the scene after setup to ensure StorePanel persists in the build
+   - If StorePanel is missing, the store command will fail in WebGL builds
+
+5. **Build:**
    - In Build Settings window, click **Build**
    - Choose output folder: Create/select `webgl-build` in the project root
    - Wait for build to complete (may take 5-15 minutes depending on project size)
 
-5. **Verify Build:**
+6. **Verify Build:**
    - Check that `webgl-build/` folder contains:
      - `index.html`
      - `Build/` folder (with .unityweb, .wasm, .data files)
      - `TemplateData/` folder
 
-6. **Test Locally** (see DEPLOYMENT.md for instructions)
+7. **Test Locally** (see DEPLOYMENT.md for instructions)
 
 ## Build Optimization Tips
 
@@ -66,6 +73,8 @@
 - **Build too large**: Optimize assets, enable compression
 - **Game doesn't run locally**: Check browser console, ensure using HTTP server (not file://)
 - **Missing files**: Ensure all scenes are added to Build Settings > Scenes In Build
+- **Store command fails**: Ensure StorePanel exists in the scene (run `Tools > Setup Store UI` and save the scene before building)
+- **Favicon 404 error**: If you see `/TemplateData/favicon-48x48.png` 404 errors, copy `TemplateData/old/favicon-48x48.png` to `TemplateData/` (non-critical, `favicon.ico` should work)
 
 ## Next Steps
 
