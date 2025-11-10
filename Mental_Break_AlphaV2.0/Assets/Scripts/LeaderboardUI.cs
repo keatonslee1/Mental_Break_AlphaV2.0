@@ -23,11 +23,43 @@ public class LeaderboardUI : MonoBehaviour
     [Tooltip("Update interval in seconds")]
     public float updateInterval = 0.1f;
 
-    [Tooltip("Font size for leaderboard text")]
-    public int fontSize = 18;
+    [Tooltip("Minimum font size for leaderboard entries")]
+    public int minFontSize = 26;
+
+    [Tooltip("Font size for leaderboard text (clamped by Min Font Size)")]
+    public int fontSize = 30;
+
+    [Tooltip("Additional font size applied to the title")]
+    public int titleFontBonus = 8;
 
     [Tooltip("Spacing between entries")]
-    public float entrySpacing = 30f;
+    public float entrySpacing = 36f;
+
+    [Tooltip("Preferred height for each leaderboard entry")]
+    public float entryPreferredHeight = 48f;
+
+    [Tooltip("Preferred height for the leaderboard title row")]
+    public float titlePreferredHeight = 56f;
+
+    [Header("Layout")]
+    [Tooltip("Top margin from the top edge of the safe area")]
+    public float topMargin = 36f;
+
+    [Tooltip("Horizontal margin from the safe area's edges")]
+    public float horizontalMargin = 32f;
+
+    [Tooltip("Proportion of the safe-area width used by the leaderboard panel")]
+    [Range(0.3f, 0.9f)]
+    public float widthFraction = 0.65f;
+
+    [Tooltip("Minimum width allowed for the leaderboard panel")]
+    public float minPanelWidth = 520f;
+
+    [Tooltip("Maximum width allowed for the leaderboard panel")]
+    public float maxPanelWidth = 900f;
+
+    [Tooltip("Padding inside the leaderboard panel (x = left/right, y = top/bottom)")]
+    public Vector2 panelPadding = new Vector2(36f, 32f);
 
     private VariableStorageBehaviour variableStorage;
     private float lastUpdateTime = 0f;
@@ -36,6 +68,10 @@ public class LeaderboardUI : MonoBehaviour
     private GameObject leaderboardPanel;
     private Canvas canvas;
     private List<GameObject> entryObjects = new List<GameObject>();
+    private VerticalLayoutGroup layoutGroup;
+    private ContentSizeFitter contentSizeFitter;
+    private Vector2 lastScreenSize = Vector2.zero;
+    private Rect lastSafeArea = Rect.zero;
 
     // Fake employee data
     private class LeaderboardEntry
@@ -84,12 +120,34 @@ public class LeaderboardUI : MonoBehaviour
 
     private void Update()
     {
+        EnsurePanelLayout();
+
         // Update leaderboard at intervals
         if (Time.time - lastUpdateTime >= updateInterval)
         {
             UpdateLeaderboard();
             lastUpdateTime = Time.time;
         }
+    }
+
+    private int GetEntryFontSize()
+    {
+        return Mathf.Max(fontSize, minFontSize);
+    }
+
+    private int GetTitleFontSize()
+    {
+        return GetEntryFontSize() + Mathf.Max(titleFontBonus, 0);
+    }
+
+    private float GetEntryHeight()
+    {
+        return Mathf.Max(entryPreferredHeight, GetEntryFontSize() + 12f);
+    }
+
+    private float GetTitleHeight()
+    {
+        return Mathf.Max(titlePreferredHeight, GetTitleFontSize() + 12f);
     }
 
     /// <summary>
@@ -147,22 +205,90 @@ public class LeaderboardUI : MonoBehaviour
         leaderboardPanel.transform.SetParent(canvas.transform, false);
 
         RectTransform panelRect = leaderboardPanel.AddComponent<RectTransform>();
-        
-        // Position at top middle
         panelRect.anchorMin = new Vector2(0.5f, 1f);
         panelRect.anchorMax = new Vector2(0.5f, 1f);
         panelRect.pivot = new Vector2(0.5f, 1f);
-        panelRect.anchoredPosition = new Vector2(0f, -20f); // 20 pixels from top
-        panelRect.sizeDelta = new Vector2(600f, 200f);
+        panelRect.anchoredPosition = Vector2.zero;
 
-        // Add background
         Image bgImage = leaderboardPanel.AddComponent<Image>();
         bgImage.color = new Color(0f, 0f, 0f, 0.7f); // Semi-transparent black
+        bgImage.raycastTarget = false;
 
-        // Add title
+        layoutGroup = leaderboardPanel.AddComponent<VerticalLayoutGroup>();
+        layoutGroup.childControlWidth = true;
+        layoutGroup.childControlHeight = true;
+        layoutGroup.childForceExpandWidth = true;
+        layoutGroup.childForceExpandHeight = false;
+        layoutGroup.childAlignment = TextAnchor.UpperCenter;
+        layoutGroup.spacing = entrySpacing;
+
+        contentSizeFitter = leaderboardPanel.AddComponent<ContentSizeFitter>();
+        contentSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        contentSizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+        // Add title as the first child; entries are added during updates
         CreateTitle("Employee of the Month");
 
-        // Create entry objects will be done in UpdateLeaderboard
+        lastScreenSize = Vector2.zero;
+        lastSafeArea = new Rect();
+        EnsurePanelLayout();
+    }
+
+    private void EnsurePanelLayout()
+    {
+        if (leaderboardPanel == null)
+        {
+            return;
+        }
+
+        if (layoutGroup != null)
+        {
+            int horizontalPadding = Mathf.RoundToInt(panelPadding.x);
+            int verticalPadding = Mathf.RoundToInt(panelPadding.y);
+
+            layoutGroup.padding.left = horizontalPadding;
+            layoutGroup.padding.right = horizontalPadding;
+            layoutGroup.padding.top = verticalPadding;
+            layoutGroup.padding.bottom = verticalPadding;
+            layoutGroup.spacing = entrySpacing;
+        }
+
+        RectTransform panelRect = leaderboardPanel.GetComponent<RectTransform>();
+        if (panelRect == null)
+        {
+            return;
+        }
+
+        Rect safeArea = Screen.safeArea;
+        Vector2 screenSize = new Vector2(Screen.width, Screen.height);
+
+        if (screenSize != lastScreenSize || safeArea != lastSafeArea)
+        {
+            float safeWidth = Mathf.Max(safeArea.width, 200f);
+            float availableWidth = Mathf.Max(safeWidth - (horizontalMargin * 2f), 200f);
+            availableWidth = Mathf.Min(availableWidth, safeWidth);
+
+            float clampedFraction = Mathf.Clamp01(widthFraction);
+            float targetWidth = safeWidth * clampedFraction;
+
+            float minWidth = Mathf.Min(minPanelWidth, availableWidth);
+            float maxWidth = Mathf.Min(maxPanelWidth, availableWidth);
+            if (maxWidth < minWidth)
+            {
+                maxWidth = minWidth;
+            }
+
+            targetWidth = Mathf.Clamp(targetWidth, minWidth, maxWidth);
+
+            panelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, targetWidth);
+
+            float safeTopPadding = Screen.height - safeArea.yMax;
+            float horizontalOffset = (safeArea.x + (safeArea.width * 0.5f)) - (Screen.width * 0.5f);
+            panelRect.anchoredPosition = new Vector2(horizontalOffset, -(safeTopPadding + topMargin));
+
+            lastScreenSize = screenSize;
+            lastSafeArea = safeArea;
+        }
     }
 
     /// <summary>
@@ -174,11 +300,18 @@ public class LeaderboardUI : MonoBehaviour
         titleObj.transform.SetParent(leaderboardPanel.transform, false);
 
         RectTransform titleRect = titleObj.AddComponent<RectTransform>();
-        titleRect.anchorMin = new Vector2(0f, 1f);
-        titleRect.anchorMax = new Vector2(1f, 1f);
-        titleRect.pivot = new Vector2(0.5f, 1f);
-        titleRect.anchoredPosition = new Vector2(0f, -10f);
-        titleRect.sizeDelta = new Vector2(0f, 30f);
+        titleRect.anchorMin = new Vector2(0f, 0.5f);
+        titleRect.anchorMax = new Vector2(1f, 0.5f);
+        titleRect.pivot = new Vector2(0.5f, 0.5f);
+        titleRect.anchoredPosition = Vector2.zero;
+        float titleHeight = GetTitleHeight();
+        titleRect.sizeDelta = new Vector2(0f, titleHeight);
+
+        LayoutElement layoutElement = titleObj.AddComponent<LayoutElement>();
+        layoutElement.preferredHeight = titleHeight;
+        layoutElement.minHeight = titleHeight;
+        layoutElement.flexibleHeight = 0f;
+        layoutElement.flexibleWidth = 1f;
 
 #if USE_TMP
         TextMeshProUGUI titleTextComponent = titleObj.AddComponent<TextMeshProUGUI>();
@@ -188,17 +321,21 @@ public class LeaderboardUI : MonoBehaviour
             titleTextComponent.font = TMPro.TMP_Settings.instance.defaultFontAsset;
         }
         titleTextComponent.text = titleText;
-        titleTextComponent.fontSize = fontSize + 4;
+        titleTextComponent.fontSize = GetTitleFontSize();
         titleTextComponent.alignment = TextAlignmentOptions.Center;
         titleTextComponent.color = Color.white;
+        titleTextComponent.enableWordWrapping = false;
 #else
         Text titleTextComponent = titleObj.AddComponent<Text>();
         titleTextComponent.text = titleText;
-        titleTextComponent.fontSize = fontSize + 4;
-        titleTextComponent.alignment = TextAnchor.UpperCenter;
+        titleTextComponent.fontSize = GetTitleFontSize();
+        titleTextComponent.alignment = TextAnchor.MiddleCenter;
         titleTextComponent.color = Color.white;
         // Use default Unity font
         titleTextComponent.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        titleTextComponent.horizontalOverflow = HorizontalWrapMode.Overflow;
+        titleTextComponent.verticalOverflow = VerticalWrapMode.Truncate;
+        titleTextComponent.raycastTarget = false;
 #endif
     }
 
@@ -265,10 +402,9 @@ public class LeaderboardUI : MonoBehaviour
         entryObjects.Clear();
 
         // Create entry objects
-        for (int i = 0; i < entries.Count; i++)
+        foreach (LeaderboardEntry entry in entries)
         {
-            LeaderboardEntry entry = entries[i];
-            GameObject entryObj = CreateEntryObject(entry, i);
+            GameObject entryObj = CreateEntryObject(entry);
             entryObjects.Add(entryObj);
         }
     }
@@ -276,17 +412,24 @@ public class LeaderboardUI : MonoBehaviour
     /// <summary>
     /// Create a single entry object
     /// </summary>
-    private GameObject CreateEntryObject(LeaderboardEntry entry, int index)
+    private GameObject CreateEntryObject(LeaderboardEntry entry)
     {
         GameObject entryObj = new GameObject($"Entry_{entry.rank}");
         entryObj.transform.SetParent(leaderboardPanel.transform, false);
 
         RectTransform entryRect = entryObj.AddComponent<RectTransform>();
-        entryRect.anchorMin = new Vector2(0f, 1f);
-        entryRect.anchorMax = new Vector2(1f, 1f);
-        entryRect.pivot = new Vector2(0.5f, 1f);
-        entryRect.anchoredPosition = new Vector2(0f, -50f - (index * entrySpacing)); // Start below title
-        entryRect.sizeDelta = new Vector2(0f, 25f);
+        entryRect.anchorMin = new Vector2(0f, 0.5f);
+        entryRect.anchorMax = new Vector2(1f, 0.5f);
+        entryRect.pivot = new Vector2(0.5f, 0.5f);
+        entryRect.anchoredPosition = Vector2.zero;
+        float entryHeight = GetEntryHeight();
+        entryRect.sizeDelta = new Vector2(0f, entryHeight);
+
+        LayoutElement layoutElement = entryObj.AddComponent<LayoutElement>();
+        layoutElement.preferredHeight = entryHeight;
+        layoutElement.minHeight = entryHeight;
+        layoutElement.flexibleHeight = 0f;
+        layoutElement.flexibleWidth = 1f;
 
         // Format: "Rank - Name - Engagement - Sanity"
         string entryText = $"{entry.rank} - {entry.name} - {entry.engagement:F0} - {entry.sanity:F0}";
@@ -299,8 +442,12 @@ public class LeaderboardUI : MonoBehaviour
             text.font = TMPro.TMP_Settings.instance.defaultFontAsset;
         }
         text.text = entryText;
-        text.fontSize = fontSize;
+        text.fontSize = GetEntryFontSize();
         text.alignment = TextAlignmentOptions.Center;
+        text.enableWordWrapping = false;
+        text.overflowMode = TextOverflowModes.Ellipsis;
+        text.margin = Vector4.zero;
+        text.raycastTarget = false;
         
         // Highlight player entry
         if (entry.name == "You")
@@ -314,10 +461,13 @@ public class LeaderboardUI : MonoBehaviour
 #else
         Text text = entryObj.AddComponent<Text>();
         text.text = entryText;
-        text.fontSize = fontSize;
+        text.fontSize = GetEntryFontSize();
         text.alignment = TextAnchor.MiddleCenter;
         // Use default Unity font
         text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        text.horizontalOverflow = HorizontalWrapMode.Overflow;
+        text.verticalOverflow = VerticalWrapMode.Truncate;
+        text.raycastTarget = false;
         
         // Highlight player entry
         if (entry.name == "You")

@@ -72,6 +72,34 @@
       }
     },
     {
+      "src": "/about",
+      "dest": "/about.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "src": "/blog",
+      "dest": "/blog.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "src": "/about.html",
+      "dest": "/about.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "src": "/blog.html",
+      "dest": "/blog.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
       "src": "/(.*\\.js\\.gz)",
       "dest": "/$1",
       "headers": {
