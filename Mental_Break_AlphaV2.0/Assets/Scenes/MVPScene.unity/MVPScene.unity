@@ -1605,8 +1605,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LeaderboardUI
   dialogueRunner: {fileID: 0}
   updateInterval: 0.1
-  fontSize: 18
-  entrySpacing: 30
+  minFontSize: 32
+  fontSize: 36
+  titleFontBonus: 8
+  entrySpacing: 0
+  entryHeightPadding: 2
+  titlePreferredHeight: 36
+  topMargin: 12
+  horizontalMargin: 32
+  widthFraction: 0.65
+  minPanelWidth: 520
+  maxPanelWidth: 900
+  panelPadding:
+    x: 36
+    y: 4
+  enforceRuntimeDefaults: 1
 --- !u!4 &768025900
 Transform:
   m_ObjectHideFlags: 0

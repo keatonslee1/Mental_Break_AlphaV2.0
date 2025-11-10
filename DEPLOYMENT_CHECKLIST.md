@@ -52,6 +52,7 @@ Use this checklist to track deployment progress.
 - [ ] Game loads at `https://mentalbreak.io`
 - [ ] No console errors in browser
 - [ ] Game functionality works correctly
+- [ ] Leaderboard, engagement, and sanity UI appear on first load without requiring a page refresh
 - [ ] Test across browsers: Chrome, Firefox, Safari, Edge
 
 ## Notes

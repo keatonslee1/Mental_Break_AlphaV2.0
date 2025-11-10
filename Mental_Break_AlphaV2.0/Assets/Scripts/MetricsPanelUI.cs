@@ -60,6 +60,7 @@ public class MetricsPanelUI : MonoBehaviour
     private readonly Color sanityColor = new Color(0f, 1f, 1f, 1f); // Cyan #00FFFF
 
     private VariableStorageBehaviour variableStorage;
+    private DialogueRuntimeWatcher runtimeWatcher;
     private float lastUpdateTime = 0f;
 
     // Layout references
@@ -81,6 +82,28 @@ public class MetricsPanelUI : MonoBehaviour
     private Text engagementText;
     private Text sanityText;
 #endif
+
+    private void OnEnable()
+    {
+        EnsureUIReady();
+
+        runtimeWatcher = DialogueRuntimeWatcher.Instance;
+        runtimeWatcher.Register(OnRuntimeReady, OnRuntimeLost);
+
+        if (!runtimeWatcher.HasRuntime)
+        {
+            ApplyLoadingState();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (runtimeWatcher != null)
+        {
+            runtimeWatcher.Unregister(OnRuntimeReady, OnRuntimeLost);
+            runtimeWatcher = null;
+        }
+    }
 
     private void Start()
     {
@@ -104,6 +127,32 @@ public class MetricsPanelUI : MonoBehaviour
         {
             EnsureContainerLayout();
         }
+
+        if (variableStorage == null)
+        {
+            ApplyLoadingState();
+        }
+        else
+        {
+            UpdateMetrics();
+        }
+    }
+
+    private void OnRuntimeReady(DialogueRunner runner, VariableStorageBehaviour storage)
+    {
+        if (runner != null)
+        {
+            dialogueRunner = runner;
+        }
+
+        variableStorage = storage;
+        UpdateMetrics();
+    }
+
+    private void OnRuntimeLost()
+    {
+        variableStorage = null;
+        ApplyLoadingState();
     }
 
     private void Update()
@@ -179,6 +228,14 @@ public class MetricsPanelUI : MonoBehaviour
         sanityText = CreateMetricText(sanityPanel, "Sanity", sanityColor);
 
         EnsureContainerLayout();
+    }
+
+    private void EnsureUIReady()
+    {
+        if (metricsRoot == null)
+        {
+            CreateUI();
+        }
     }
 
     /// <summary>
@@ -270,7 +327,11 @@ public class MetricsPanelUI : MonoBehaviour
     /// </summary>
     private void UpdateMetrics()
     {
-        if (variableStorage == null) return;
+        if (variableStorage == null)
+        {
+            ApplyLoadingState();
+            return;
+        }
 
         // Get Engagement value
         float engagement = 0f;
@@ -296,6 +357,43 @@ public class MetricsPanelUI : MonoBehaviour
         {
             sanityText.text = $"Sanity: {sanity:F0}%";
         }
+    }
+
+    private void ApplyLoadingState()
+    {
+        EnsureUIReady();
+
+        if (engagementPanel != null)
+        {
+            engagementPanel.SetActive(true);
+        }
+
+        if (sanityPanel != null)
+        {
+            sanityPanel.SetActive(true);
+        }
+
+#if USE_TMP
+        if (engagementText != null)
+        {
+            engagementText.text = "Engagement: --%";
+        }
+
+        if (sanityText != null)
+        {
+            sanityText.text = "Sanity: --%";
+        }
+#else
+        if (engagementText != null)
+        {
+            engagementText.text = "Engagement: --%";
+        }
+
+        if (sanityText != null)
+        {
+            sanityText.text = "Sanity: --%";
+        }
+#endif
     }
 
     private void ConfigureCanvasScaler(CanvasScaler scaler)
@@ -356,9 +454,8 @@ public class MetricsPanelUI : MonoBehaviour
             }
 
             float safeTopPadding = Screen.height - safeArea.yMax;
-            float safeRightPadding = Screen.width - safeArea.xMax;
-            float horizontalOffset = (safeArea.xMax - (Screen.width * 0.5f)) - (targetWidth * 0.5f);
-            rootRect.anchoredPosition = new Vector2(horizontalOffset - safeRightPadding - rightMargin, -(safeTopPadding + topMargin));
+            // Since anchor is (1f, 1f) and pivot is (1f, 1f), use simple negative offsets from top-right corner
+            rootRect.anchoredPosition = new Vector2(-rightMargin, -(safeTopPadding + topMargin));
 
             lastScreenSize = screenSize;
             lastSafeArea = safeArea;

@@ -33,8 +33,29 @@ public class MetricsDisplay : MonoBehaviour
     public Component rankValueText;
 
     private VariableStorageBehaviour variableStorage;
+    private DialogueRuntimeWatcher runtimeWatcher;
     private float updateInterval = 0.1f; // Update every 0.1 seconds
     private float lastUpdateTime = 0f;
+
+    private void OnEnable()
+    {
+        runtimeWatcher = DialogueRuntimeWatcher.Instance;
+        runtimeWatcher.Register(OnRuntimeReady, OnRuntimeLost);
+
+        if (!runtimeWatcher.HasRuntime)
+        {
+            ApplyLoadingState();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (runtimeWatcher != null)
+        {
+            runtimeWatcher.Unregister(OnRuntimeReady, OnRuntimeLost);
+            runtimeWatcher = null;
+        }
+    }
 
     private void Start()
     {
@@ -48,6 +69,32 @@ public class MetricsDisplay : MonoBehaviour
         {
             variableStorage = dialogueRunner.VariableStorage;
         }
+
+        if (variableStorage == null)
+        {
+            ApplyLoadingState();
+        }
+        else
+        {
+            UpdateMetrics();
+        }
+    }
+
+    private void OnRuntimeReady(DialogueRunner runner, VariableStorageBehaviour storage)
+    {
+        if (runner != null)
+        {
+            dialogueRunner = runner;
+        }
+
+        variableStorage = storage;
+        UpdateMetrics();
+    }
+
+    private void OnRuntimeLost()
+    {
+        variableStorage = null;
+        ApplyLoadingState();
     }
 
     private void Update()
@@ -62,7 +109,11 @@ public class MetricsDisplay : MonoBehaviour
 
     private void UpdateMetrics()
     {
-        if (variableStorage == null) return;
+        if (variableStorage == null)
+        {
+            ApplyLoadingState();
+            return;
+        }
 
         // Update Engagement
         float engagement = 0f;
@@ -87,6 +138,39 @@ public class MetricsDisplay : MonoBehaviour
             rank = rankValue;
         }
         UpdateRank(rankContainer, rankValueText, rank);
+    }
+
+    private void ApplyLoadingState()
+    {
+        SetMetricPlaceholder(engagementContainer, engagementValueText, engagementBar, "Engagement");
+        SetMetricPlaceholder(sanityContainer, sanityValueText, sanityBar, "Sanity");
+        SetRankPlaceholder();
+    }
+
+    private void SetMetricPlaceholder(GameObject container, Component textComponent, Image bar, string label)
+    {
+        if (container != null)
+        {
+            container.SetActive(true);
+        }
+
+        SetText(textComponent, $"{label}: --");
+
+        if (bar != null)
+        {
+            bar.fillAmount = 0f;
+            bar.color = Color.gray;
+        }
+    }
+
+    private void SetRankPlaceholder()
+    {
+        if (rankContainer != null)
+        {
+            rankContainer.SetActive(true);
+        }
+
+        SetText(rankValueText, "Rank: --");
     }
 
     private void UpdateMetric(GameObject container, Component textComponent, Image bar, float value, float maxValue, string label)

@@ -46,6 +46,7 @@ public class AudioCommandHandler : MonoBehaviour
             bgmSource = gameObject.AddComponent<AudioSource>();
             bgmSource.loop = true; // BGM typically loops
         }
+        bgmSource.volume = 0.5f; // Set BGM volume to half (0.5) to reduce loudness
         
         if (sfxSource == null)
         {

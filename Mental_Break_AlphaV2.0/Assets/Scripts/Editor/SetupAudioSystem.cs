@@ -77,8 +77,9 @@ public class SetupAudioSystem
         AudioSource bgmSource = audioManagerGO.AddComponent<AudioSource>();
         bgmSource.loop = true;
         bgmSource.playOnAwake = false;
+        bgmSource.volume = 0.5f; // Set BGM volume to half (0.5) to reduce loudness
         bgmSource.name = "BGM Source";
-        Debug.Log("Created BGM AudioSource (loop=true)");
+        Debug.Log("Created BGM AudioSource (loop=true, volume=0.5)");
 
         // Create and configure SFX AudioSource
         AudioSource sfxSource = audioManagerGO.AddComponent<AudioSource>();
@@ -181,9 +182,10 @@ public class SetupAudioSystem
             bgmSource = go.AddComponent<AudioSource>();
             bgmSource.loop = true;
             bgmSource.playOnAwake = false;
+            bgmSource.volume = 0.5f; // Set BGM volume to half (0.5) to reduce loudness
             bgmSource.name = "BGM Source";
             needsUpdate = true;
-            Debug.Log("Created missing BGM AudioSource");
+            Debug.Log("Created missing BGM AudioSource (volume=0.5)");
         }
         else
         {
@@ -193,6 +195,13 @@ public class SetupAudioSystem
                 bgmSource.loop = true;
                 needsUpdate = true;
                 Debug.Log("Fixed BGM AudioSource: enabled looping");
+            }
+            // Ensure volume is set correctly
+            if (bgmSource.volume != 0.5f)
+            {
+                bgmSource.volume = 0.5f;
+                needsUpdate = true;
+                Debug.Log("Fixed BGM AudioSource: set volume to 0.5");
             }
         }
 
