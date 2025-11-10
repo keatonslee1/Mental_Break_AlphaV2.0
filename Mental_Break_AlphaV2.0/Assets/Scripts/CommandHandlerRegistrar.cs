@@ -61,34 +61,58 @@ public class CommandHandlerRegistrar : MonoBehaviour
     /// </summary>
     private StoreUI ResolveStoreHandler()
     {
-        if (storeHandler != null)
+        if (storeHandler != null && storeHandler.gameObject != null)
         {
             return storeHandler;
         }
 
+        // Try multiple search strategies
 #if UNITY_2022_2_OR_NEWER
         storeHandler = FindFirstObjectByType<StoreUI>(FindObjectsInactive.Include);
         if (storeHandler != null)
         {
+            Debug.Log($"CommandHandlerRegistrar: Found StoreUI via FindFirstObjectByType (inactive included) on {storeHandler.gameObject.name}");
             return storeHandler;
         }
 #endif
 
-        // Fallback for older Unity versions
+        // Fallback for older Unity versions or if above didn't work
         var storeCandidates = FindObjectsOfType<StoreUI>(true);
-        foreach (var candidate in storeCandidates)
+        if (storeCandidates != null && storeCandidates.Length > 0)
         {
-            // Skip prefabs or assets not in a valid scene
-            if (!candidate.gameObject.scene.IsValid())
+            foreach (var candidate in storeCandidates)
             {
-                continue;
-            }
+                if (candidate == null || candidate.gameObject == null)
+                {
+                    continue;
+                }
 
-            storeHandler = candidate;
-            break;
+                // Skip prefabs or assets not in a valid scene
+                if (!candidate.gameObject.scene.IsValid())
+                {
+                    continue;
+                }
+
+                storeHandler = candidate;
+                Debug.Log($"CommandHandlerRegistrar: Found StoreUI via FindObjectsOfType on {storeHandler.gameObject.name} (active: {storeHandler.gameObject.activeSelf})");
+                return storeHandler;
+            }
         }
 
-        return storeHandler;
+        // Last resort: search by GameObject name
+        GameObject storePanel = GameObject.Find("StorePanel");
+        if (storePanel != null)
+        {
+            storeHandler = storePanel.GetComponent<StoreUI>();
+            if (storeHandler != null)
+            {
+                Debug.Log($"CommandHandlerRegistrar: Found StoreUI via GameObject.Find('StorePanel') on {storeHandler.gameObject.name}");
+                return storeHandler;
+            }
+        }
+
+        Debug.LogWarning("CommandHandlerRegistrar: Could not find StoreUI component in scene. Store command will not be available.");
+        return null;
     }
 
     private void Start()
@@ -232,18 +256,22 @@ public class CommandHandlerRegistrar : MonoBehaviour
             {
                 // Remove if already registered (safe to call)
                 try { dialogueRunner.RemoveCommandHandler("store"); } catch { }
-                dialogueRunner.AddCommandHandler("store", new System.Func<IEnumerator>(resolvedStore.OpenStore));
-                Debug.Log("CommandHandlerRegistrar: Registered 'store' command");
+                
+                // Create the delegate bound to the specific instance
+                System.Func<IEnumerator> storeCommand = resolvedStore.OpenStore;
+                dialogueRunner.AddCommandHandler("store", storeCommand);
+                
+                Debug.Log($"CommandHandlerRegistrar: Successfully registered 'store' command with StoreUI on {resolvedStore.gameObject.name}");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"CommandHandlerRegistrar: Failed to register 'store': {e.Message}");
+                Debug.LogError($"CommandHandlerRegistrar: Failed to register 'store': {e.Message}\nStack trace: {e.StackTrace}");
                 allRegistered = false;
             }
         }
         else
         {
-            Debug.LogWarning("CommandHandlerRegistrar: StoreUI not found!");
+            Debug.LogWarning("CommandHandlerRegistrar: StoreUI not found! Store command will not be available. Make sure StorePanel exists in the scene.");
             // Don't mark as failed - store is optional if UI isn't set up yet
         }
 
