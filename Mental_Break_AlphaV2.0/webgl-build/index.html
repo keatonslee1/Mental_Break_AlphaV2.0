@@ -342,7 +342,10 @@
         showBanner: unityShowBanner
       };
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      // Detect iOS devices
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      
+      if (isIOS || /Android/i.test(navigator.userAgent)) {
         const meta = document.createElement("meta");
         meta.name = "viewport";
         meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
@@ -350,6 +353,22 @@
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
         config.devicePixelRatio = 1;
+        
+        // For iOS: Configure WebGL context attributes for better compatibility
+        if (isIOS) {
+          config.webglContextAttributes = {
+            preserveDrawingBuffer: false,
+            powerPreference: "low-power", // Use low-power mode for iOS
+            antialias: false, // Disable antialiasing for better compatibility
+            depth: true,
+            stencil: false,
+            alpha: false
+          };
+          // Request WebGL1 fallback for iOS (Unity 6.2 removed WebGL1 support, but we'll try anyway)
+          // Note: This may not work if Unity 6.2 truly doesn't support WebGL1, but it's worth trying
+          config.majorVersion = 1; // Try WebGL1 first on iOS
+        }
+        
         const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
         if (!gl) {
           unityShowBanner("WebGL is not supported on this device. Please use a device with WebGL support.", "error");
