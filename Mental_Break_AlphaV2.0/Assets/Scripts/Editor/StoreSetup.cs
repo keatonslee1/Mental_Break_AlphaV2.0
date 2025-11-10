@@ -79,7 +79,7 @@ public class StoreSetup : EditorWindow
         RectTransform rectTransform = panelObj.AddComponent<RectTransform>();
         rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        rectTransform.sizeDelta = new Vector2(600, 500);
+        rectTransform.sizeDelta = new Vector2(700, 600);
         rectTransform.anchoredPosition = Vector2.zero;
 
         // Add Image component for background
@@ -91,44 +91,56 @@ public class StoreSetup : EditorWindow
 
     private static void CreateStoreUIElements(Transform panelTransform)
     {
+        // Panel is 700x600
+        // We'll use a clear vertical layout:
+        // - Top: Title (40px) at y = -20
+        // - Credits bar (60px reserved space) starting at y = -70
+        // - Item scroll area (starts at y = -140, goes to y = -200 from bottom)
+        // - Bottom: Pass button (50px) and notification (30px) = 80px reserved
+
         // Create Title Text
-        GameObject titleObj = CreateTextElement(panelTransform, "StoreTitleText", "Company Store", 24, TextAnchor.UpperCenter);
+        GameObject titleObj = CreateTextElement(panelTransform, "StoreTitleText", "Company Store", 28, TextAnchor.UpperCenter);
         RectTransform titleRect = titleObj.GetComponent<RectTransform>();
         titleRect.anchorMin = new Vector2(0, 1);
         titleRect.anchorMax = new Vector2(1, 1);
         titleRect.sizeDelta = new Vector2(-40, 40);
         titleRect.anchoredPosition = new Vector2(0, -20);
 
-        // Create Cash Text Background first (so it appears behind text)
-        GameObject cashBgObj = new GameObject("CashTextBackground");
-        cashBgObj.transform.SetParent(panelTransform, false);
-        RectTransform cashBgRect = cashBgObj.AddComponent<RectTransform>();
-        cashBgRect.anchorMin = new Vector2(0, 1);
-        cashBgRect.anchorMax = new Vector2(1, 1);
-        cashBgRect.sizeDelta = new Vector2(-20, 40);
-        cashBgRect.anchoredPosition = new Vector2(0, -65);
+        // Create Credits Display Area (reserved space at top)
+        // Background for credits
+        GameObject creditsBgObj = new GameObject("CreditsBackground");
+        creditsBgObj.transform.SetParent(panelTransform, false);
+        RectTransform creditsBgRect = creditsBgObj.AddComponent<RectTransform>();
+        creditsBgRect.anchorMin = new Vector2(0, 1);
+        creditsBgRect.anchorMax = new Vector2(1, 1);
+        creditsBgRect.sizeDelta = new Vector2(-20, 60);
+        creditsBgRect.anchoredPosition = new Vector2(0, -70);
         
-        Image cashBgImage = cashBgObj.AddComponent<Image>();
-        cashBgImage.color = new Color(0.1f, 0.1f, 0.2f, 0.8f); // Dark background for contrast
+        Image creditsBgImage = creditsBgObj.AddComponent<Image>();
+        creditsBgImage.color = new Color(0.15f, 0.15f, 0.25f, 0.9f); // Dark background for contrast
         
-        // Create Cash Text - Make it prominent and ensure it's not covered
-        GameObject cashObj = CreateTextElement(panelTransform, "CashText", "Available Credits: 0", 20, TextAnchor.UpperLeft);
+        // Credits Text
+        GameObject cashObj = CreateTextElement(panelTransform, "CashText", "Available Credits: 0", 22, TextAnchor.UpperLeft);
         RectTransform cashRect = cashObj.GetComponent<RectTransform>();
         cashRect.anchorMin = new Vector2(0, 1);
         cashRect.anchorMax = new Vector2(1, 1);
-        cashRect.sizeDelta = new Vector2(-40, 35);
-        cashRect.anchoredPosition = new Vector2(20, -70);
+        cashRect.sizeDelta = new Vector2(-40, 50);
+        cashRect.anchoredPosition = new Vector2(20, -75);
 
         // Create Item Buttons Container (Scroll View)
-        // Position it below the cash text with proper spacing
+        // Position it BELOW the credits area with clear separation
         GameObject scrollViewObj = new GameObject("ItemButtonsContainer");
         scrollViewObj.transform.SetParent(panelTransform, false);
         
         RectTransform scrollRect = scrollViewObj.AddComponent<RectTransform>();
+        // Anchor to fill space between credits (top) and pass button (bottom)
         scrollRect.anchorMin = new Vector2(0, 0);
         scrollRect.anchorMax = new Vector2(1, 1);
-        scrollRect.sizeDelta = new Vector2(-40, -180); // Increased from -150 to -180 to leave more space for cash text
-        scrollRect.anchoredPosition = new Vector2(0, 50);
+        // offsetMin = bottom-left offset, offsetMax = top-right offset
+        // Bottom: 140px for pass button + notification
+        // Top: 140px for title + credits area
+        scrollRect.offsetMin = new Vector2(20, 140); // Left: 20px, Bottom: 140px
+        scrollRect.offsetMax = new Vector2(-20, -140); // Right: -20px, Top: -140px
 
         // Add Image component for raycasting (required for ScrollRect to receive input)
         Image scrollViewImage = scrollViewObj.AddComponent<Image>();
@@ -205,23 +217,52 @@ public class StoreSetup : EditorWindow
         GameObject buttonPrefab = CreateItemButtonPrefab(contentObj.transform);
         buttonPrefab.SetActive(false); // Prefab should be inactive
 
-        // Create Notification Text
+        // Create Pass Without Buying Button (at bottom)
+        GameObject passButtonObj = new GameObject("PassWithoutBuyingButton");
+        passButtonObj.transform.SetParent(panelTransform, false);
+
+        RectTransform passRect = passButtonObj.AddComponent<RectTransform>();
+        passRect.anchorMin = new Vector2(0, 0);
+        passRect.anchorMax = new Vector2(1, 0);
+        passRect.sizeDelta = new Vector2(-40, 50);
+        passRect.anchoredPosition = new Vector2(0, 80);
+
+        Image passImage = passButtonObj.AddComponent<Image>();
+        passImage.color = new Color(0.2f, 0.25f, 0.3f, 1f);
+
+        Button passButton = passButtonObj.AddComponent<Button>();
+        ColorBlock passColors = passButton.colors;
+        passColors.normalColor = new Color(0.2f, 0.25f, 0.3f, 1f);
+        passColors.highlightedColor = new Color(0.35f, 0.4f, 0.45f, 1f);
+        passColors.pressedColor = new Color(0.15f, 0.2f, 0.25f, 1f);
+        passColors.disabledColor = new Color(0.15f, 0.15f, 0.15f, 0.6f);
+        passColors.colorMultiplier = 1f;
+        passButton.colors = passColors;
+
+        GameObject passTextObj = CreateTextElement(passButtonObj.transform, "PassText", "Pass Without Buying", 18, TextAnchor.MiddleCenter);
+        RectTransform passTextRect = passTextObj.GetComponent<RectTransform>();
+        passTextRect.anchorMin = Vector2.zero;
+        passTextRect.anchorMax = Vector2.one;
+        passTextRect.sizeDelta = Vector2.zero;
+        passTextRect.anchoredPosition = Vector2.zero;
+
+        // Create Notification Text (above pass button)
         GameObject notificationObj = CreateTextElement(panelTransform, "NotificationText", "", 14, TextAnchor.LowerCenter);
         RectTransform notificationRect = notificationObj.GetComponent<RectTransform>();
         notificationRect.anchorMin = new Vector2(0, 0);
         notificationRect.anchorMax = new Vector2(1, 0);
         notificationRect.sizeDelta = new Vector2(-40, 30);
-        notificationRect.anchoredPosition = new Vector2(0, 20);
+        notificationRect.anchoredPosition = new Vector2(0, 140);
 
-        // Create Close Button
+        // Create Close Button (X in top-right corner)
         GameObject closeButtonObj = new GameObject("CloseButton");
         closeButtonObj.transform.SetParent(panelTransform, false);
         
         RectTransform closeRect = closeButtonObj.AddComponent<RectTransform>();
         closeRect.anchorMin = new Vector2(1, 1);
         closeRect.anchorMax = new Vector2(1, 1);
-        closeRect.sizeDelta = new Vector2(30, 30);
-        closeRect.anchoredPosition = new Vector2(-15, -15);
+        closeRect.sizeDelta = new Vector2(35, 35);
+        closeRect.anchoredPosition = new Vector2(-17, -17);
 
         Image closeButtonImage = closeButtonObj.AddComponent<Image>();
         closeButtonImage.color = new Color(0.8f, 0.2f, 0.2f, 1f);
@@ -229,7 +270,7 @@ public class StoreSetup : EditorWindow
         Button closeButton = closeButtonObj.AddComponent<Button>();
 
         // Create Close Button Text (X)
-        GameObject closeTextObj = CreateTextElement(closeButtonObj.transform, "CloseText", "X", 20, TextAnchor.MiddleCenter);
+        GameObject closeTextObj = CreateTextElement(closeButtonObj.transform, "CloseText", "X", 22, TextAnchor.MiddleCenter);
         RectTransform closeTextRect = closeTextObj.GetComponent<RectTransform>();
         closeTextRect.anchorMin = Vector2.zero;
         closeTextRect.anchorMax = Vector2.one;
@@ -302,9 +343,9 @@ public class StoreSetup : EditorWindow
         buttonObj.transform.SetParent(parent, false);
 
         RectTransform rectTransform = buttonObj.AddComponent<RectTransform>();
-        rectTransform.sizeDelta = new Vector2(0, 80); // Increased height for better readability
+        rectTransform.sizeDelta = new Vector2(0, 90); // Increased height for better readability
 
-        // Create button background with border effect
+        // Create button background
         Image buttonImage = buttonObj.AddComponent<Image>();
         buttonImage.color = new Color(0.2f, 0.2f, 0.25f, 1f); // Darker background for contrast
 
@@ -381,6 +422,14 @@ public class StoreSetup : EditorWindow
             Debug.Log("Assigned CloseButton to StoreUI");
         }
 
+        // Pass Without Buying Button
+        Transform passButtonTransform = panelTransform.Find("PassWithoutBuyingButton");
+        if (passButtonTransform != null)
+        {
+            storeUI.passWithoutBuyingButton = passButtonTransform.GetComponent<Button>();
+            Debug.Log("Assigned PassWithoutBuyingButton to StoreUI");
+        }
+
         // Cash Text
         Transform cashTextTransform = panelTransform.Find("CashText");
         if (cashTextTransform != null)
@@ -425,11 +474,6 @@ public class StoreSetup : EditorWindow
             Debug.Log("Assigned NotificationText to StoreUI");
         }
 
-        // Store Items Text (fallback if no button container)
-        // This is optional - only used if itemButtonContainer is null
-        // We'll create it but leave it unassigned by default (button-based UI is preferred)
-
         Debug.Log("StoreUI component setup complete!");
     }
 }
-

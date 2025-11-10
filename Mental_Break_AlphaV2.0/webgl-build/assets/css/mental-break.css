@@ -382,6 +382,64 @@
   color: var(--mb-subtext);
 }
 
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-decoration: none;
+  color: var(--mb-text);
+  border: 1px solid rgba(76, 233, 255, 0.18);
+  background: linear-gradient(170deg, rgba(76, 233, 255, 0.07) 0%, rgba(255, 45, 210, 0.12) 100%);
+  padding: 32px;
+  border-radius: 22px;
+  box-shadow: 0 18px 38px rgba(5, 0, 21, 0.45);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.project-card:hover,
+.project-card:focus {
+  transform: translateY(-8px);
+  border-color: rgba(255, 45, 210, 0.45);
+  box-shadow: 0 28px 60px rgba(6, 0, 26, 0.6);
+}
+
+.project-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--mb-accent-2);
+  border: 1px solid rgba(76, 233, 255, 0.4);
+  background: rgba(76, 233, 255, 0.08);
+  width: fit-content;
+}
+
+.project-card h3 {
+  font-size: 1.35rem;
+  margin: 0;
+}
+
+.project-card p {
+  color: var(--mb-subtext);
+  margin: 0;
+  line-height: 1.7;
+}
+
+.project-link {
+  font-size: 0.78rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mb-accent-2);
+}
+
+.project-card:hover .project-link,
+.project-card:focus .project-link {
+  color: var(--mb-accent);
+}
+
 .blog-area .blog-post-box {
   border-radius: 18px;
   border: 1px solid rgba(116, 96, 207, 0.25);

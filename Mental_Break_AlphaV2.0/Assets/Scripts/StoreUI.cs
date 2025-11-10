@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Yarn.Unity;
+using Yarn.Unity.Addons.SpeechBubbles;
 using System.Collections.Generic;
 using System.Collections;
 
@@ -21,7 +22,7 @@ public class StoreItem
 }
 
 /// <summary>
-/// Displays the Company Store UI when rapid_feedback_cash is awarded.
+/// Completely rebuilt Company Store UI with clean layout and robust functionality.
 /// Handles purchasing items and updating Yarn variables.
 /// </summary>
 public class StoreUI : MonoBehaviour
@@ -34,20 +35,20 @@ public class StoreUI : MonoBehaviour
     [Tooltip("The store panel GameObject")]
     public GameObject storePanel;
 
-    [Tooltip("Close button for the store")]
+    [Tooltip("Close button (X) for the store")]
     public Button closeButton;
+
+    [Tooltip("Button to close the store without purchasing")]
+    public Button passWithoutBuyingButton;
 
     [Tooltip("Text showing available cash")]
     public Component cashText;
 
-    [Tooltip("Container for store item buttons (optional - if null, uses text display)")]
+    [Tooltip("Container for store item buttons")]
     public Transform itemButtonContainer;
 
-    [Tooltip("Prefab for store item buttons (if using button-based UI)")]
+    [Tooltip("Prefab for store item buttons")]
     public GameObject itemButtonPrefab;
-
-    [Tooltip("Text showing store items (used if itemButtonContainer is null)")]
-    public Component storeItemsText;
 
     [Tooltip("Optional text element for store effect notifications")]
     public Component notificationText;
@@ -75,7 +76,7 @@ public class StoreUI : MonoBehaviour
             id = "item_blue_light_filter",
             displayName = "Blue-Light Filter",
             cost = 16,
-            description = "Warm Timmy’s screens. +15 Sanity tomorrow night; -1 Engagement each node tomorrow."
+            description = "Warm Timmy's screens. +15 Sanity tomorrow night; -1 Engagement each node tomorrow."
         },
         new StoreItem
         {
@@ -114,6 +115,7 @@ public class StoreUI : MonoBehaviour
     private Coroutine notificationRoutine;
     private HashSet<string> blueLightPenalizedNodes = new HashSet<string>();
     private const string StoreNotificationVar = "$store_last_notification";
+    private readonly List<Behaviour> disabledInputComponents = new List<Behaviour>();
 
     private void Start()
     {
@@ -135,6 +137,11 @@ public class StoreUI : MonoBehaviour
         if (closeButton != null)
         {
             closeButton.onClick.AddListener(CloseStore);
+        }
+
+        if (passWithoutBuyingButton != null)
+        {
+            passWithoutBuyingButton.onClick.AddListener(CloseStore);
         }
 
         // Subscribe to node start to detect when store should appear
@@ -162,6 +169,8 @@ public class StoreUI : MonoBehaviour
         {
             dialogueRunner.onNodeStart.RemoveListener(OnNodeStarted);
         }
+
+        EnableDialogueInput();
     }
 
     private void Update()
@@ -202,6 +211,8 @@ public class StoreUI : MonoBehaviour
 
     private void ShowStore()
     {
+        DisableDialogueInput();
+
         if (storePanel != null)
         {
             storePanel.SetActive(true);
@@ -230,6 +241,8 @@ public class StoreUI : MonoBehaviour
 
     private void CloseStore()
     {
+        EnableDialogueInput();
+
         if (storePanel != null)
         {
             storePanel.SetActive(false);
@@ -266,17 +279,11 @@ public class StoreUI : MonoBehaviour
         // Update UI based on whether we're using buttons or text
         if (itemButtonContainer != null && itemButtonPrefab != null)
         {
-            Debug.Log($"StoreUI: Updating button-based store. Container: {itemButtonContainer.name}, Prefab: {itemButtonPrefab.name}, Items: {storeItems.Count}");
             UpdateButtonBasedStore(cash, currentRun, currentDay);
-        }
-        else if (storeItemsText != null)
-        {
-            Debug.Log("StoreUI: Updating text-based store (fallback)");
-            UpdateTextBasedStore(cash, currentRun, currentDay);
         }
         else
         {
-            Debug.LogError("StoreUI: Neither itemButtonContainer/itemButtonPrefab nor storeItemsText are assigned! Cannot display store items.");
+            Debug.LogError("StoreUI: itemButtonContainer or itemButtonPrefab is not assigned! Cannot display store items.");
         }
     }
 
@@ -298,135 +305,124 @@ public class StoreUI : MonoBehaviour
             return;
         }
 
-        Debug.Log($"StoreUI: Creating buttons for {storeItems.Count} items");
-
         // Create buttons for each item
         foreach (var item in storeItems)
         {
+            if (item == null || string.IsNullOrEmpty(item.id))
+            {
+                continue;
+            }
+
+            GameObject buttonObj = Instantiate(itemButtonPrefab, itemButtonContainer);
+            buttonObj.SetActive(true);
+
+            Button button = buttonObj.GetComponent<Button>();
+            if (button == null)
+            {
+                Debug.LogError($"StoreUI: Prefab for {item.displayName} missing Button component!");
+                Destroy(buttonObj);
+                continue;
+            }
+
+            // Find text component (try TMP first, then legacy Text)
+            Component textComponent = null;
+#if USE_TMP
+            textComponent = buttonObj.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+#endif
+            if (textComponent == null)
+            {
+                textComponent = buttonObj.GetComponentInChildren<Text>();
+            }
+
             bool isOwned = IsItemOwned(item);
             bool isAvailable = IsItemCurrentlyAvailable(item, currentRun, currentDay);
             bool affordable = cash >= item.cost;
 
-            GameObject buttonObj = Instantiate(itemButtonPrefab, itemButtonContainer);
-            buttonObj.SetActive(true); // Ensure button is active
-            
-            Button button = buttonObj.GetComponent<Button>();
-            if (button == null)
+            if (textComponent != null)
             {
-                button = buttonObj.GetComponentInChildren<Button>();
-            }
-
-            if (button != null)
-            {
-                // Find text component - try TextMeshPro first, then Text
-                Component textComponent = null;
-#if USE_TMP
-                textComponent = buttonObj.GetComponentInChildren<TMPro.TextMeshProUGUI>();
-#endif
-                if (textComponent == null)
-                {
-                    textComponent = buttonObj.GetComponentInChildren<UnityEngine.UI.Text>();
-                }
-                
-                if (textComponent != null)
-                {
-                    string status = BuildItemStatus(item, isOwned, isAvailable, cash, currentRun, currentDay);
-                    // Show cost prominently at the beginning
-                    string costDisplay = isOwned ? "[OWNED]" : $"[{item.cost} Credits]";
-                    string buttonText = $"{costDisplay} {item.displayName}\n{item.description}\n{status}";
-                    SetText(textComponent, buttonText);
-                }
-                else
-                {
-                    Debug.LogWarning($"StoreUI: Could not find text component in button for {item.displayName}");
-                }
-
-                // Determine if button should be enabled (for visual styling)
-                bool shouldBeInteractable = !isOwned && isAvailable && affordable;
-                
-                // Keep button interactable so it can be clicked for feedback, but visually style it as disabled
-                button.interactable = true; // Always allow clicking for feedback
-                
-                // Apply visual styling to show disabled state
-                if (!shouldBeInteractable)
-                {
-                    // Make button appear disabled visually
-                    ColorBlock colors = button.colors;
-                    colors.normalColor = new Color(0.5f, 0.5f, 0.5f, 0.7f); // Grayed out
-                    colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.7f);
-                    button.colors = colors;
-                    
-                    Debug.Log($"StoreUI: Button for {item.displayName} appears disabled. Owned: {isOwned}, Available: {isAvailable}, Affordable: {affordable}, Cash: {cash}, Cost: {item.cost}");
-                }
-
-                // Set up click handler - always allow clicking to show feedback
-                string itemId = item.id; // Capture for closure
-                
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => {
-                    Debug.Log($"StoreUI: Button clicked for {item.displayName} (ID: {itemId})");
-                    
-                    // Re-check current state (values may have changed)
-                    float currentCash = GetFloat("$rapid_feedback_cash", 0f);
-                    bool currentlyOwned = IsItemOwned(item);
-                    bool currentlyAvailable = IsItemCurrentlyAvailable(item, GetCurrentRun(), GetCurrentDay());
-                    bool currentlyAffordable = currentCash >= item.cost;
-                    
-                    // Check if purchase is valid before attempting
-                    if (currentlyOwned)
-                    {
-                        QueueNotification($"{item.displayName} is already owned.");
-                        return;
-                    }
-                    
-                    if (!currentlyAvailable)
-                    {
-                        QueueNotification($"{item.displayName} is not available.");
-                        return;
-                    }
-                    
-                    if (!currentlyAffordable)
-                    {
-                        float shortfall = item.cost - currentCash;
-                        QueueNotification($"Insufficient credits for {item.displayName}. Need {shortfall:F0} more credits. (You have {currentCash:F0})");
-                        return;
-                    }
-                    
-                    // All checks passed, proceed with purchase
-                    PurchaseItem(itemId);
-                });
-
-                // Ensure button can receive raycasts
-                CanvasGroup canvasGroup = buttonObj.GetComponent<CanvasGroup>();
-                if (canvasGroup == null)
-                {
-                    canvasGroup = buttonObj.AddComponent<CanvasGroup>();
-                }
-                canvasGroup.blocksRaycasts = true;
-                canvasGroup.interactable = true; // Always allow interaction
-
-                itemButtons[item.id] = button;
+                string status = BuildItemStatus(item, isOwned, isAvailable, cash, currentRun, currentDay);
+                // Show cost prominently at the beginning
+                string costDisplay = isOwned ? "[OWNED]" : $"[{item.cost} Credits]";
+                string buttonText = $"{costDisplay} {item.displayName}\n{item.description}\n{status}";
+                SetText(textComponent, buttonText);
             }
             else
             {
-                Debug.LogError($"StoreUI: Could not find Button component in prefab for {item.displayName}");
+                Debug.LogWarning($"StoreUI: Could not find text component in button for {item.displayName}");
             }
-        }
-    }
 
-    private void UpdateTextBasedStore(float cash, int currentRun, int currentDay)
-    {
-        string storeText = "Company Store\n\n";
-        
-        foreach (var item in storeItems)
-        {
-            bool isOwned = IsItemOwned(item);
-            bool isAvailable = IsItemCurrentlyAvailable(item, currentRun, currentDay);
-            string status = BuildItemStatus(item, isOwned, isAvailable, cash, currentRun, currentDay);
-            storeText += $"- {item.displayName} [{status}]\n  {item.description}\n";
-        }
+            // Determine if button should be enabled (for visual styling)
+            bool shouldBeInteractable = !isOwned && isAvailable && affordable;
 
-        SetText(storeItemsText, storeText);
+            // Keep button interactable so it can be clicked for feedback, but visually style it as disabled
+            button.interactable = true; // Always allow clicking for feedback
+
+            // Apply visual styling to show disabled state
+            if (!shouldBeInteractable)
+            {
+                // Make button appear disabled visually
+                ColorBlock colors = button.colors;
+                colors.normalColor = new Color(0.5f, 0.5f, 0.5f, 0.7f); // Grayed out
+                colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.7f);
+                button.colors = colors;
+            }
+            else
+            {
+                // Reset to normal colors
+                ColorBlock colors = button.colors;
+                colors.normalColor = new Color(0.2f, 0.2f, 0.25f, 1f);
+                colors.disabledColor = new Color(0.15f, 0.15f, 0.15f, 0.5f);
+                button.colors = colors;
+            }
+
+            // Set up click handler - always allow clicking to show feedback
+            string itemId = item.id; // Capture for closure
+
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => {
+                Debug.Log($"StoreUI: Button clicked for {item.displayName} (ID: {itemId})");
+
+                // Re-check current state (values may have changed)
+                float currentCash = GetFloat("$rapid_feedback_cash", 0f);
+                bool currentlyOwned = IsItemOwned(item);
+                bool currentlyAvailable = IsItemCurrentlyAvailable(item, GetCurrentRun(), GetCurrentDay());
+                bool currentlyAffordable = currentCash >= item.cost;
+
+                // Check if purchase is valid before attempting
+                if (currentlyOwned)
+                {
+                    QueueNotification($"{item.displayName} is already owned.");
+                    return;
+                }
+
+                if (!currentlyAvailable)
+                {
+                    QueueNotification($"{item.displayName} is not available.");
+                    return;
+                }
+
+                if (!currentlyAffordable)
+                {
+                    float shortfall = item.cost - currentCash;
+                    QueueNotification($"Insufficient credits for {item.displayName}. Need {shortfall:F0} more credits. (You have {currentCash:F0})");
+                    return;
+                }
+
+                // All checks passed, proceed with purchase
+                PurchaseItem(itemId);
+            });
+
+            // Ensure button can receive raycasts
+            CanvasGroup canvasGroup = buttonObj.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = buttonObj.AddComponent<CanvasGroup>();
+            }
+            canvasGroup.blocksRaycasts = true;
+            canvasGroup.interactable = true; // Always allow interaction
+
+            itemButtons[item.id] = button;
+        }
     }
 
     /// <summary>
@@ -573,12 +569,12 @@ public class StoreUI : MonoBehaviour
         return false;
     }
 
-    private void SetBool(string variableName, bool value)
+    private void SetFloat(string variableName, float value)
     {
         variableStorage?.SetValue(variableName, value);
     }
 
-    private void SetFloat(string variableName, float value)
+    private void SetBool(string variableName, bool value)
     {
         variableStorage?.SetValue(variableName, value);
     }
@@ -709,34 +705,10 @@ public class StoreUI : MonoBehaviour
         int targetDay = currentDay + 1;
         blueLightPenalizedNodes.Clear();
 
-        if (targetDay > 4)
-        {
-            targetDay = 1;
-            targetRun += 1;
-        }
-
         SetFloat("$store_blue_filter_target_run", targetRun);
         SetFloat("$store_blue_filter_target_day", targetDay);
         SetFloat("$store_blue_filter_penalties_applied", 0f);
         SetBool("$store_blue_filter_bonus_applied", false);
-    }
-
-    private void ScheduleCorporateBond(int currentRun, int currentDay, int cost)
-    {
-        SetBool("$store_corporate_bond_active", true);
-        SetFloat("$store_corporate_bond_principal", cost);
-
-        int targetRun = currentRun;
-        int targetDay = currentDay + 1;
-
-        if (targetDay > 4)
-        {
-            targetDay = 1;
-            targetRun += 1;
-        }
-
-        SetFloat("$store_corporate_bond_mature_run", targetRun);
-        SetFloat("$store_corporate_bond_mature_day", targetDay);
     }
 
     private void ProcessBlackoutCurtains()
@@ -748,7 +720,7 @@ public class StoreUI : MonoBehaviour
 
         AdjustEngagement(-6f);
         SetBool("$store_blackout_pending", false);
-        QueueNotification("Blackout Curtains: Engagement drops by 6 while Timmy rests.");
+        QueueNotification("Blackout Curtains: Engagement drops by 6 as Timmy adjusts to the darkness.");
     }
 
     private void ProcessBlueLightFilter(int currentRun, int currentDay, string nodeName)
@@ -761,22 +733,17 @@ public class StoreUI : MonoBehaviour
         int targetRun = Mathf.RoundToInt(GetFloat("$store_blue_filter_target_run", currentRun));
         int targetDay = Mathf.RoundToInt(GetFloat("$store_blue_filter_target_day", currentDay));
 
-        // Not yet time to apply the effect.
-        if (currentRun < targetRun || (currentRun == targetRun && currentDay < targetDay))
+        // Apply sanity bonus on the target day
+        if (currentRun == targetRun && currentDay == targetDay && !GetBool("$store_blue_filter_bonus_applied"))
         {
-            return;
+            AdjustSanity(15f);
+            SetBool("$store_blue_filter_bonus_applied", true);
+            QueueNotification("Blue-Light Filter: Timmy sleeps better. +15 Sanity.");
         }
 
-        // Apply the scheduled bonuses/penalties on the target day.
+        // Apply engagement penalties on the target day (each node)
         if (currentRun == targetRun && currentDay == targetDay)
         {
-            if (!GetBool("$store_blue_filter_bonus_applied"))
-            {
-                AdjustSanity(15f);
-                SetBool("$store_blue_filter_bonus_applied", true);
-                QueueNotification("Blue-Light Filter: Timmy sleeps deeply (+15 sanity).");
-            }
-
             if (!string.IsNullOrEmpty(nodeName) && !blueLightPenalizedNodes.Contains(nodeName))
             {
                 blueLightPenalizedNodes.Add(nodeName);
@@ -849,6 +816,16 @@ public class StoreUI : MonoBehaviour
         }
     }
 
+    private void ScheduleCorporateBond(int currentRun, int currentDay, int principal)
+    {
+        SetBool("$store_corporate_bond_active", true);
+        SetFloat("$store_corporate_bond_principal", principal);
+        int targetRun = currentRun;
+        int targetDay = currentDay + 1;
+        SetFloat("$store_corporate_bond_mature_run", targetRun);
+        SetFloat("$store_corporate_bond_mature_day", targetDay);
+    }
+
     private void QueueNotification(string message)
     {
         if (string.IsNullOrWhiteSpace(message))
@@ -912,5 +889,46 @@ public class StoreUI : MonoBehaviour
         {
             regularText.text = text;
         }
+    }
+
+    private void DisableDialogueInput()
+    {
+        EnableDialogueInput(); // Clear any previous disabled components
+
+        foreach (var advancer in FindObjectsOfType<LineAdvancer>(true))
+        {
+            if (advancer != null && advancer.enabled)
+            {
+                advancer.enabled = false;
+                disabledInputComponents.Add(advancer);
+            }
+        }
+
+        foreach (var bubbleInput in FindObjectsOfType<BubbleInput>(true))
+        {
+            if (bubbleInput != null && bubbleInput.enabled)
+            {
+                bubbleInput.enabled = false;
+                disabledInputComponents.Add(bubbleInput);
+            }
+        }
+    }
+
+    private void EnableDialogueInput()
+    {
+        if (disabledInputComponents.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var behaviour in disabledInputComponents)
+        {
+            if (behaviour != null)
+            {
+                behaviour.enabled = true;
+            }
+        }
+
+        disabledInputComponents.Clear();
     }
 }
