@@ -979,6 +979,28 @@
   color: var(--mb-subtext);
 }
 
+/* Project cards equal height */
+.projects-area .row.g-4 {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.projects-area .col-lg-4,
+.projects-area .col-md-6 {
+  display: flex;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.project-card p {
+  flex-grow: 1;
+}
+
 @media (max-width: 991px) {
   .mb-hero-area {
     padding-top: 120px;

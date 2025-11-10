@@ -21,17 +21,39 @@ public class MetricsPanelUI : MonoBehaviour
     [Tooltip("Update interval in seconds")]
     public float updateInterval = 0.1f;
 
-    [Tooltip("Font size for metric text")]
-    public int fontSize = 24;
+    [Tooltip("Minimum font size for metric text")]
+    public int minFontSize = 26;
+
+    [Tooltip("Font size for metric text (clamped by Min Font Size)")]
+    public int fontSize = 32;
 
     [Tooltip("Spacing between metrics")]
-    public float metricSpacing = 40f;
+    public float metricSpacing = 48f;
 
-    [Tooltip("Distance from right edge")]
-    public float rightMargin = 20f;
+    [Tooltip("Preferred height for each metric panel")]
+    public float panelPreferredHeight = 68f;
 
-    [Tooltip("Distance from top edge")]
-    public float topMargin = 20f;
+    [Tooltip("Minimum width for each metric panel")]
+    public float panelMinWidth = 280f;
+
+    [Tooltip("Maximum width for each metric panel")]
+    public float panelMaxWidth = 420f;
+
+    [Tooltip("Fraction of the safe-area width used by the metric panels")]
+    [Range(0.15f, 0.5f)]
+    public float widthFraction = 0.28f;
+
+    [Tooltip("Distance from the safe area's right edge")]
+    public float rightMargin = 32f;
+
+    [Tooltip("Distance from the safe area's top edge")]
+    public float topMargin = 36f;
+
+    [Tooltip("Padding inside each metric panel (x = left/right, y = top/bottom)")]
+    public Vector2 panelPadding = new Vector2(28f, 20f);
+
+    [Tooltip("Background color used for metric panels")]
+    public Color panelBackgroundColor = new Color(0f, 0f, 0f, 0.6f);
 
     // Colors
     private readonly Color engagementColor = new Color(1f, 0f, 1f, 1f); // Fuchsia #FF00FF
@@ -39,6 +61,13 @@ public class MetricsPanelUI : MonoBehaviour
 
     private VariableStorageBehaviour variableStorage;
     private float lastUpdateTime = 0f;
+
+    // Layout references
+    private GameObject metricsRoot;
+    private VerticalLayoutGroup rootLayoutGroup;
+    private ContentSizeFitter rootFitter;
+    private Vector2 lastScreenSize = Vector2.zero;
+    private Rect lastSafeArea = new Rect();
 
     // UI References
     private GameObject engagementPanel;
@@ -67,14 +96,20 @@ public class MetricsPanelUI : MonoBehaviour
         }
 
         // Create UI elements if they don't already exist
-        if (engagementPanel == null || sanityPanel == null)
+        if (metricsRoot == null)
         {
             CreateUI();
+        }
+        else
+        {
+            EnsureContainerLayout();
         }
     }
 
     private void Update()
     {
+        EnsureContainerLayout();
+
         // Update metrics at intervals
         if (Time.time - lastUpdateTime >= updateInterval)
         {
@@ -95,51 +130,83 @@ public class MetricsPanelUI : MonoBehaviour
             GameObject canvasObj = new GameObject("MetricsCanvas");
             canvas = canvasObj.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasObj.AddComponent<CanvasScaler>();
+            CanvasScaler canvasScaler = canvasObj.AddComponent<CanvasScaler>();
             canvasObj.AddComponent<GraphicRaycaster>();
+            ConfigureCanvasScaler(canvasScaler);
         }
         else
         {
             // Use existing canvas, ensure it has required components
-            if (canvas.GetComponent<CanvasScaler>() == null)
+            CanvasScaler canvasScaler = canvas.GetComponent<CanvasScaler>();
+            if (canvasScaler == null)
             {
-                canvas.gameObject.AddComponent<CanvasScaler>();
+                canvasScaler = canvas.gameObject.AddComponent<CanvasScaler>();
             }
+            ConfigureCanvasScaler(canvasScaler);
             if (canvas.GetComponent<GraphicRaycaster>() == null)
             {
                 canvas.gameObject.AddComponent<GraphicRaycaster>();
             }
         }
 
+        metricsRoot = new GameObject("MetricsPanelRoot");
+        metricsRoot.transform.SetParent(canvas.transform, false);
+
+        RectTransform rootRect = metricsRoot.AddComponent<RectTransform>();
+        rootRect.anchorMin = new Vector2(1f, 1f);
+        rootRect.anchorMax = new Vector2(1f, 1f);
+        rootRect.pivot = new Vector2(1f, 1f);
+        rootRect.anchoredPosition = Vector2.zero;
+
+        rootLayoutGroup = metricsRoot.AddComponent<VerticalLayoutGroup>();
+        rootLayoutGroup.childControlWidth = true;
+        rootLayoutGroup.childControlHeight = true;
+        rootLayoutGroup.childForceExpandWidth = true;
+        rootLayoutGroup.childForceExpandHeight = false;
+        rootLayoutGroup.childAlignment = TextAnchor.UpperRight;
+        rootLayoutGroup.spacing = metricSpacing;
+
+        rootFitter = metricsRoot.AddComponent<ContentSizeFitter>();
+        rootFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        rootFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
         // Create Engagement panel
-        engagementPanel = CreateMetricPanel("EngagementPanel", 0);
+        engagementPanel = CreateMetricPanel("EngagementPanel");
         engagementText = CreateMetricText(engagementPanel, "Engagement", engagementColor);
 
         // Create Sanity panel
-        sanityPanel = CreateMetricPanel("SanityPanel", 1);
+        sanityPanel = CreateMetricPanel("SanityPanel");
         sanityText = CreateMetricText(sanityPanel, "Sanity", sanityColor);
+
+        EnsureContainerLayout();
     }
 
     /// <summary>
     /// Create a metric panel
     /// </summary>
-    private GameObject CreateMetricPanel(string name, int index)
+    private GameObject CreateMetricPanel(string name)
     {
         GameObject panel = new GameObject(name);
-        panel.transform.SetParent(canvas.transform, false);
+        panel.transform.SetParent(metricsRoot.transform, false);
 
         RectTransform rect = panel.AddComponent<RectTransform>();
-        
-        // Position at top right
-        rect.anchorMin = new Vector2(1f, 1f);
-        rect.anchorMax = new Vector2(1f, 1f);
-        rect.pivot = new Vector2(1f, 1f);
-        rect.anchoredPosition = new Vector2(-rightMargin, -topMargin - (index * metricSpacing));
-        rect.sizeDelta = new Vector2(200f, 30f);
+        rect.anchorMin = new Vector2(0f, 0.5f);
+        rect.anchorMax = new Vector2(1f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        float panelHeight = GetPanelHeight();
+        rect.sizeDelta = new Vector2(0f, panelHeight);
+
+        LayoutElement layoutElement = panel.AddComponent<LayoutElement>();
+        layoutElement.preferredHeight = panelHeight;
+        layoutElement.minHeight = panelHeight;
+        layoutElement.flexibleHeight = 0f;
+        layoutElement.flexibleWidth = 1f;
 
         // Add semi-transparent background
         Image bgImage = panel.AddComponent<Image>();
-        bgImage.color = new Color(0f, 0f, 0f, 0.5f);
+        bgImage.color = panelBackgroundColor;
+        bgImage.raycastTarget = false;
 
         return panel;
     }
