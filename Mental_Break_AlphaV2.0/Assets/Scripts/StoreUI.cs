@@ -49,6 +49,8 @@ public class StoreUI : MonoBehaviour
     private Coroutine notificationRoutine;
     private bool isStoreOpen = false;
 
+    private bool commandRegistered = false;
+
     private void Start()
     {
         // Find DialogueRunner if not assigned
@@ -79,6 +81,8 @@ public class StoreUI : MonoBehaviour
             storePanel.SetActive(false);
         }
 
+        RegisterStoreCommand();
+
         // Setup button listeners
         if (closeButton != null)
         {
@@ -89,6 +93,57 @@ public class StoreUI : MonoBehaviour
         {
             passWithoutBuyingButton.onClick.AddListener(CloseStore);
         }
+    }
+
+    private void OnDestroy()
+    {
+        UnregisterStoreCommand();
+    }
+
+    private void RegisterStoreCommand()
+    {
+        if (dialogueRunner == null || commandRegistered)
+        {
+            return;
+        }
+
+        try
+        {
+            dialogueRunner.RemoveCommandHandler("store");
+        }
+        catch
+        {
+            // ignore
+        }
+
+        try
+        {
+            dialogueRunner.AddCommandHandler("store", new System.Func<IEnumerator>(OpenStore));
+            commandRegistered = true;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"StoreUI: Failed to register 'store' command: {ex.Message}");
+        }
+    }
+
+    private void UnregisterStoreCommand()
+    {
+        if (dialogueRunner == null || !commandRegistered)
+        {
+            return;
+        }
+
+        try
+        {
+            dialogueRunner.RemoveCommandHandler("store");
+        }
+        catch
+        {
+            // ignore
+        }
+
+        commandRegistered = false;
     }
 
     /// <summary>

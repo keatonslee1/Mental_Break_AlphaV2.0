@@ -56,13 +56,6 @@ public class CommandHandlerRegistrar : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        // Register commands in OnEnable() to ensure they're registered before Start() methods run
-        // This ensures commands are available when GameManager.Start() calls StartDialogue()
-        RegisterCommands();
-    }
-
     /// <summary>
     /// Attempt to locate the StoreUI component, including on inactive objects.
     /// </summary>
@@ -103,6 +96,43 @@ public class CommandHandlerRegistrar : MonoBehaviour
         // Double-check registration in Start() in case OnEnable() didn't run (component added at runtime)
         // This is safe because RemoveCommandHandler is safe to call even if not registered
         RegisterCommands();
+
+        // In WebGL, SceneManagers can be stripped; ensure the store handler exists and registers (again) after start.
+        StartCoroutine(DeferredStoreRegistration());
+    }
+
+    private System.Collections.IEnumerator DeferredStoreRegistration()
+    {
+        // Wait until end of frame to ensure StoreUI canvas objects have instantiated.
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        if (storeHandler == null || !storeHandler.gameObject.scene.IsValid())
+        {
+            storeHandler = ResolveStoreHandler();
+        }
+
+        if (storeHandler == null)
+        {
+            Debug.LogWarning("CommandHandlerRegistrar: Deferred store registration skipped; StoreUI still missing.");
+            yield break;
+        }
+
+        try
+        {
+            dialogueRunner.RemoveCommandHandler("store");
+        }
+        catch { }
+
+        try
+        {
+            dialogueRunner.AddCommandHandler("store", new System.Func<System.Collections.IEnumerator>(storeHandler.OpenStore));
+            Debug.Log("CommandHandlerRegistrar: Deferred 'store' command registration succeeded.");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"CommandHandlerRegistrar: Deferred 'store' registration failed: {e.Message}");
+        }
     }
 
     /// <summary>
