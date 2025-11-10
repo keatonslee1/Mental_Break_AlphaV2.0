@@ -52,7 +52,7 @@ public class CommandHandlerRegistrar : MonoBehaviour
 
         if (storeHandler == null)
         {
-            storeHandler = FindFirstObjectByType<StoreUI>();
+            storeHandler = ResolveStoreHandler();
         }
     }
 
@@ -61,6 +61,41 @@ public class CommandHandlerRegistrar : MonoBehaviour
         // Register commands in OnEnable() to ensure they're registered before Start() methods run
         // This ensures commands are available when GameManager.Start() calls StartDialogue()
         RegisterCommands();
+    }
+
+    /// <summary>
+    /// Attempt to locate the StoreUI component, including on inactive objects.
+    /// </summary>
+    private StoreUI ResolveStoreHandler()
+    {
+        if (storeHandler != null)
+        {
+            return storeHandler;
+        }
+
+#if UNITY_2022_2_OR_NEWER
+        storeHandler = FindFirstObjectByType<StoreUI>(FindObjectsInactive.Include);
+        if (storeHandler != null)
+        {
+            return storeHandler;
+        }
+#endif
+
+        // Fallback for older Unity versions
+        var storeCandidates = FindObjectsOfType<StoreUI>(true);
+        foreach (var candidate in storeCandidates)
+        {
+            // Skip prefabs or assets not in a valid scene
+            if (!candidate.gameObject.scene.IsValid())
+            {
+                continue;
+            }
+
+            storeHandler = candidate;
+            break;
+        }
+
+        return storeHandler;
     }
 
     private void Start()
@@ -160,13 +195,14 @@ public class CommandHandlerRegistrar : MonoBehaviour
 
         // Register StoreUI method via bound delegate
         // Note: OpenStore returns IEnumerator, so we use Func<IEnumerator> instead of Action
-        if (storeHandler != null)
+        var resolvedStore = ResolveStoreHandler();
+        if (resolvedStore != null)
         {
             try
             {
                 // Remove if already registered (safe to call)
                 try { dialogueRunner.RemoveCommandHandler("store"); } catch { }
-                dialogueRunner.AddCommandHandler("store", new System.Func<IEnumerator>(storeHandler.OpenStore));
+                dialogueRunner.AddCommandHandler("store", new System.Func<IEnumerator>(resolvedStore.OpenStore));
                 Debug.Log("CommandHandlerRegistrar: Registered 'store' command");
             }
             catch (System.Exception e)
