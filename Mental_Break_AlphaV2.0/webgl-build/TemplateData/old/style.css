@@ -1,0 +1,190 @@
+/* Dark theme base */
+body {
+  padding: 0;
+  margin: 0;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-family: arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Page Header */
+#page-header {
+  text-align: center;
+  padding: 20px 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#game-title {
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+#game-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #cccccc;
+}
+
+#discord-link {
+  color: #5865f2;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+#discord-link:hover {
+  color: #7289da;
+  text-decoration: underline;
+}
+
+/* Unity Container */
+#unity-container {
+  position: absolute;
+  margin-top: 120px;
+}
+
+#unity-container.unity-desktop {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#unity-container.unity-mobile {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  margin-top: 0;
+}
+
+#unity-canvas {
+  background: #231F20;
+}
+
+.unity-mobile #unity-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+#unity-loading-bar {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+}
+
+#unity-logo {
+  width: 154px;
+  height: 130px;
+  background: url('unity-logo-dark.png') no-repeat center;
+}
+
+#unity-progress-bar-empty {
+  width: 141px;
+  height: 18px;
+  margin-top: 10px;
+  margin-left: 6.5px;
+  background: url('progress-bar-empty-dark.png') no-repeat center;
+}
+
+#unity-progress-bar-full {
+  width: 0%;
+  height: 18px;
+  margin-top: 10px;
+  background: url('progress-bar-full-dark.png') no-repeat center;
+}
+
+#unity-footer {
+  position: relative;
+}
+
+.unity-mobile #unity-footer {
+  display: none;
+}
+
+#unity-logo-title-footer {
+  float: left;
+  width: 102px;
+  height: 38px;
+  background: url('unity-logo-title-footer.png') no-repeat center;
+}
+
+#unity-build-title {
+  float: right;
+  margin-right: 10px;
+  line-height: 38px;
+  font-family: arial;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+#unity-fullscreen-button {
+  cursor: pointer;
+  float: right;
+  width: 38px;
+  height: 38px;
+  background: url('fullscreen-button.png') no-repeat center;
+}
+
+#unity-warning {
+  position: absolute;
+  left: 50%;
+  top: 5%;
+  transform: translate(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 10px;
+  display: none;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+/* Game Controls */
+#game-controls {
+  text-align: center;
+  padding: 15px 10px;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #cccccc;
+  font-family: arial, sans-serif;
+}
+
+#game-controls p {
+  margin: 0;
+}
+
+.unity-mobile #game-controls {
+  display: none;
+}
+
+/* Page Footer */
+#page-footer {
+  text-align: center;
+  padding: 15px 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
+  font-size: 12px;
+  color: #aaaaaa;
+}
+
+#page-footer p {
+  margin: 5px 0;
+}
+
+#linktree-link {
+  color: #43e97b;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+#linktree-link:hover {
+  color: #38d9a9;
+  text-decoration: underline;
+}
