@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "echo 'Unity build must be done manually in Unity Editor. See BUILD_INSTRUCTIONS.md'",
-  "outputDirectory": "Mental_Break_AlphaV2.0/webgl-build",
+  "buildCommand": "",
+  "outputDirectory": ".",
   "routes": [
     {
       "src": "/Build/(.*\\.wasm)",
@@ -137,3 +137,4 @@
     }
   ]
 }
+
