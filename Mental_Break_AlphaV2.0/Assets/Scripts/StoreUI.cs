@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Yarn.Unity;
-using Yarn.Unity.Addons.SpeechBubbles;
 using System.Collections.Generic;
 using System.Collections;
 
@@ -10,35 +9,26 @@ using TMPro;
 #endif
 
 /// <summary>
-/// Store item definition
-/// </summary>
-[System.Serializable]
-public class StoreItem
-{
-    public string id; // Yarn variable name (e.g., "item_mental_break")
-    public string displayName;
-    public int cost;
-    public string description;
-}
-
-/// <summary>
-/// Completely rebuilt Company Store UI with clean layout and robust functionality.
-/// Handles purchasing items and updating Yarn variables.
+/// Store UI - handles display and user interaction only.
+/// Business logic is delegated to StoreManager.
 /// </summary>
 public class StoreUI : MonoBehaviour
 {
     [Header("References")]
-    [Tooltip("The DialogueRunner to monitor for cash awards")]
+    [Tooltip("The DialogueRunner to get variable storage")]
     public DialogueRunner dialogueRunner;
+
+    [Tooltip("The StoreManager component")]
+    public StoreManager storeManager;
 
     [Header("UI Elements")]
     [Tooltip("The store panel GameObject")]
     public GameObject storePanel;
 
-    [Tooltip("Close button (X) for the store")]
+    [Tooltip("Close button for the store")]
     public Button closeButton;
 
-    [Tooltip("Button to close the store without purchasing")]
+    [Tooltip("Button to close store without purchasing")]
     public Button passWithoutBuyingButton;
 
     [Tooltip("Text showing available cash")]
@@ -50,90 +40,46 @@ public class StoreUI : MonoBehaviour
     [Tooltip("Prefab for store item buttons")]
     public GameObject itemButtonPrefab;
 
-    [Tooltip("Optional text element for store effect notifications")]
+    [Tooltip("Optional text element for store notifications")]
     public Component notificationText;
 
-    [Header("Store Configuration")]
-    [Tooltip("List of available store items")]
-    public List<StoreItem> storeItems = new List<StoreItem>
-    {
-        new StoreItem
-        {
-            id = "item_mental_break",
-            displayName = "Mental Break",
-            cost = 10,
-            description = "Give Timmy a breather. +10 Sanity immediately."
-        },
-        new StoreItem
-        {
-            id = "item_blackout_curtains",
-            displayName = "Blackout Curtains",
-            cost = 14,
-            description = "Send Timmy blackout curtains. +14 Sanity now; -6 Engagement on the next node."
-        },
-        new StoreItem
-        {
-            id = "item_blue_light_filter",
-            displayName = "Blue-Light Filter",
-            cost = 16,
-            description = "Warm Timmy's screens. +15 Sanity tomorrow night; -1 Engagement each node tomorrow."
-        },
-        new StoreItem
-        {
-            id = "item_screen_protector",
-            displayName = "Screen Protector",
-            cost = 12,
-            description = "Be less interesting to supervisors. Adds heat damping for the rest of the run."
-        },
-        new StoreItem
-        {
-            id = "item_priority_shipping",
-            displayName = "Priority Shipping Label",
-            cost = 18,
-            description = "Parcel gets waved through. Unlock a dual escape during the mailroom scene."
-        },
-        new StoreItem
-        {
-            id = "item_bow_for_alice",
-            displayName = "Bow for Alice",
-            cost = 11,
-            description = "Cute accessory. +1 Engagement each time you choose a pro-engagement option."
-        },
-        new StoreItem
-        {
-            id = "item_corporate_bond",
-            displayName = "Corporate Bond",
-            cost = 10,
-            description = "Earn 10% interest in one day. Not available going into Run 4."
-        }
-    };
-
-    private VariableStorageBehaviour variableStorage;
-    private float lastCashValue = 0f;
     private Dictionary<string, Button> itemButtons = new Dictionary<string, Button>();
-    private Dictionary<string, StoreItem> storeItemLookup = new Dictionary<string, StoreItem>();
+    private List<LineAdvancer> disabledLineAdvancers = new List<LineAdvancer>();
+    private List<MonoBehaviour> disabledInputComponents = new List<MonoBehaviour>();
     private Coroutine notificationRoutine;
-    private HashSet<string> blueLightPenalizedNodes = new HashSet<string>();
-    private const string StoreNotificationVar = "$store_last_notification";
-    private readonly List<Behaviour> disabledInputComponents = new List<Behaviour>();
+    private bool isStoreOpen = false;
 
     private void Start()
     {
+        // Find DialogueRunner if not assigned
         if (dialogueRunner == null)
         {
             dialogueRunner = FindAnyObjectByType<DialogueRunner>();
         }
 
-        if (dialogueRunner != null)
+        // Find StoreManager if not assigned
+        if (storeManager == null)
         {
-            variableStorage = dialogueRunner.VariableStorage;
+            storeManager = GetComponent<StoreManager>();
+            if (storeManager == null)
+            {
+                storeManager = FindAnyObjectByType<StoreManager>();
+            }
         }
 
+        // Initialize StoreManager with variable storage
+        if (storeManager != null && dialogueRunner != null)
+        {
+            storeManager.Initialize(dialogueRunner.VariableStorage);
+        }
+
+        // Hide store panel initially
         if (storePanel != null)
         {
             storePanel.SetActive(false);
         }
 
+        // Setup button listeners
         if (closeButton != null)
         {
             closeButton.onClick.AddListener(CloseStore);
@@ -143,80 +89,42 @@ public class StoreUI : MonoBehaviour
         {
             passWithoutBuyingButton.onClick.AddListener(CloseStore);
         }
-
-        // Subscribe to node start to detect when store should appear
-        if (dialogueRunner != null && dialogueRunner.onNodeStart != null)
-        {
-            dialogueRunner.onNodeStart.AddListener(OnNodeStarted);
-        }
-
-        // Cache quick lookup for store items
-        storeItemLookup.Clear();
-        foreach (var item in storeItems)
-        {
-            if (item != null && !string.IsNullOrEmpty(item.id))
-            {
-                storeItemLookup[item.id] = item;
-            }
-        }
-
-        InitializeStoreState();
     }
 
-    private void OnDestroy()
+    /// <summary>
+    /// Handles <<store>> command from Yarn scripts to open the store UI
+    /// This command will wait until the store is closed before continuing dialogue
+    /// Returns IEnumerator so Yarn Spinner waits for the store to close
+    /// </summary>
+    [YarnCommand("store")]
+    public IEnumerator OpenStore()
     {
-        if (dialogueRunner != null && dialogueRunner.onNodeStart != null)
+        ShowStore();
+        
+        // Wait until store is closed
+        while (isStoreOpen)
         {
-            dialogueRunner.onNodeStart.RemoveListener(OnNodeStarted);
+            yield return null;
         }
-
+        
+        // Re-enable dialogue input (dialogue will continue automatically after command completes)
         EnableDialogueInput();
     }
 
-    private void Update()
+    /// <summary>
+    /// Show the store UI
+    /// </summary>
+    public void ShowStore()
     {
-        // Check if cash value changed (indicates store should open)
-        if (variableStorage != null)
-        {
-            float currentCash = 0f;
-            if (variableStorage.TryGetValue<float>("$rapid_feedback_cash", out var cashValue))
-            {
-                currentCash = cashValue;
-            }
-
-            // If cash increased, show store
-            if (currentCash > lastCashValue && lastCashValue > 0)
-            {
-                ShowStore();
-            }
-
-            lastCashValue = currentCash;
-        }
-    }
-
-    private void OnNodeStarted(string nodeName)
-    {
-        if (variableStorage == null) return;
-
-        int currentRun = GetCurrentRun();
-        int currentDay = GetCurrentDay();
-
-        ProcessBlackoutCurtains();
-        ProcessBlueLightFilter(currentRun, currentDay, nodeName);
-        ProcessCorporateBond(currentRun, currentDay);
-        ProcessBowForAliceBonus();
-
-        RefreshEngagementBaseline();
-    }
-
-    private void ShowStore()
-    {
-        DisableDialogueInput();
-
+        isStoreOpen = true;
+        
         if (storePanel != null)
         {
             storePanel.SetActive(true);
         }
+
+        // Disable dialogue input components to prevent advancing dialogue while store is open
+        DisableDialogueInput();
 
         // Ensure Canvas has GraphicRaycaster for UI interaction
         Canvas canvas = storePanel?.GetComponentInParent<Canvas>();
@@ -236,58 +144,72 @@ public class StoreUI : MonoBehaviour
             }
         }
 
+        // Ensure scroll view has proper masking
+        EnsureScrollViewMasking();
+
         UpdateStoreDisplay();
     }
 
-    private void CloseStore()
+    /// <summary>
+    /// Close the store UI
+    /// </summary>
+    public void CloseStore()
     {
-        EnableDialogueInput();
+        isStoreOpen = false;
 
         if (storePanel != null)
         {
             storePanel.SetActive(false);
         }
+
+        // Clear any notifications
+        if (notificationRoutine != null)
+        {
+            StopCoroutine(notificationRoutine);
+            notificationRoutine = null;
+        }
+        if (notificationText != null)
+        {
+            SetText(notificationText, string.Empty);
+        }
     }
 
     /// <summary>
-    /// Handles <<store>> command from Yarn scripts to open the store UI
-    /// Usage in Yarn: <<store>>
+    /// Update the store display with current items and cash
     /// </summary>
-    [YarnCommand("store")]
-    public void OpenStore()
-    {
-        ShowStore();
-    }
-
     private void UpdateStoreDisplay()
     {
-        if (variableStorage == null)
+        if (storeManager == null)
         {
-            Debug.LogError("StoreUI: VariableStorage is null!");
+            Debug.LogError("StoreUI: StoreManager is null!");
             return;
         }
 
-        float cash = GetFloat("$rapid_feedback_cash", 0f);
-        int currentRun = GetCurrentRun();
-        int currentDay = GetCurrentDay();
+        float cash = storeManager.GetCash();
+        int currentRun = storeManager.GetCurrentRun();
+        int currentDay = storeManager.GetCurrentDay();
 
+        // Update cash display
         if (cashText != null)
         {
             SetText(cashText, $"Available Credits: {cash:F0}");
         }
 
-        // Update UI based on whether we're using buttons or text
+        // Update item buttons
         if (itemButtonContainer != null && itemButtonPrefab != null)
         {
-            UpdateButtonBasedStore(cash, currentRun, currentDay);
+            UpdateItemButtons(cash, currentRun, currentDay);
         }
         else
         {
-            Debug.LogError("StoreUI: itemButtonContainer or itemButtonPrefab is not assigned! Cannot display store items.");
+            Debug.LogError("StoreUI: itemButtonContainer or itemButtonPrefab not assigned!");
         }
     }
 
-    private void UpdateButtonBasedStore(float cash, int currentRun, int currentDay)
+    /// <summary>
+    /// Create/update buttons for all store items
+    /// </summary>
+    private void UpdateItemButtons(float cash, int currentRun, int currentDay)
     {
         // Clear existing buttons
         foreach (var button in itemButtons.Values)
@@ -299,19 +221,19 @@ public class StoreUI : MonoBehaviour
         }
         itemButtons.Clear();
 
-        if (storeItems == null || storeItems.Count == 0)
+        List<StoreItem> items = storeManager.GetStoreItems();
+        if (items == null || items.Count == 0)
         {
-            Debug.LogError("StoreUI: storeItems list is empty! No items to display.");
+            Debug.LogError("StoreUI: No store items found!");
             return;
         }
 
         // Create buttons for each item
-        foreach (var item in storeItems)
+        foreach (var item in items)
         {
-            if (item == null || string.IsNullOrEmpty(item.id))
-            {
-                continue;
-            }
+            bool isOwned = storeManager.IsItemOwned(item.id);
+            bool isAvailable = storeManager.IsItemAvailable(item.id);
+            bool affordable = storeManager.CanAfford(item.id);
 
             GameObject buttonObj = Instantiate(itemButtonPrefab, itemButtonContainer);
             buttonObj.SetActive(true);
@@ -319,513 +241,195 @@ public class StoreUI : MonoBehaviour
             Button button = buttonObj.GetComponent<Button>();
             if (button == null)
             {
-                Debug.LogError($"StoreUI: Prefab for {item.displayName} missing Button component!");
-                Destroy(buttonObj);
-                continue;
+                button = buttonObj.GetComponentInChildren<Button>();
             }
 
-            // Find text component (try TMP first, then legacy Text)
-            Component textComponent = null;
+            if (button != null)
+            {
+                // Find text component
+                Component textComponent = null;
 #if USE_TMP
-            textComponent = buttonObj.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+                textComponent = buttonObj.GetComponentInChildren<TMPro.TextMeshProUGUI>();
 #endif
-            if (textComponent == null)
-            {
-                textComponent = buttonObj.GetComponentInChildren<Text>();
-            }
+                if (textComponent == null)
+                {
+                    textComponent = buttonObj.GetComponentInChildren<UnityEngine.UI.Text>();
+                }
 
-            bool isOwned = IsItemOwned(item);
-            bool isAvailable = IsItemCurrentlyAvailable(item, currentRun, currentDay);
-            bool affordable = cash >= item.cost;
+                if (textComponent != null)
+                {
+                    // Format: "Item title - Credit cost (conditional: you need x more credits)"
+                    // Then description on next line
+                    string titleLine;
+                    if (isOwned)
+                    {
+                        titleLine = $"{item.displayName} - [OWNED]";
+                    }
+                    else if (!affordable && isAvailable)
+                    {
+                        float shortfall = item.cost - cash;
+                        titleLine = $"{item.displayName} - {item.cost} Credits (you need {shortfall:F0} more credits)";
+                    }
+                    else
+                    {
+                        titleLine = $"{item.displayName} - {item.cost} Credits";
+                    }
+                    
+                    string buttonText = $"{titleLine}\n{item.description}";
+                    SetText(textComponent, buttonText);
+                }
 
-            if (textComponent != null)
-            {
-                string status = BuildItemStatus(item, isOwned, isAvailable, cash, currentRun, currentDay);
-                // Show cost prominently at the beginning
-                string costDisplay = isOwned ? "[OWNED]" : $"[{item.cost} Credits]";
-                string buttonText = $"{costDisplay} {item.displayName}\n{item.description}\n{status}";
-                SetText(textComponent, buttonText);
+                // Visual styling for disabled state
+                bool shouldBeInteractable = !isOwned && isAvailable && affordable;
+                button.interactable = true; // Always allow clicking for feedback
+
+                if (!shouldBeInteractable)
+                {
+                    ColorBlock colors = button.colors;
+                    colors.normalColor = new Color(0.5f, 0.5f, 0.5f, 0.7f);
+                    colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.7f);
+                    button.colors = colors;
+                }
+
+                // Set up click handler
+                string itemId = item.id;
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => OnItemButtonClicked(itemId));
+
+                // Ensure button can receive raycasts
+                CanvasGroup canvasGroup = buttonObj.GetComponent<CanvasGroup>();
+                if (canvasGroup == null)
+                {
+                    canvasGroup = buttonObj.AddComponent<CanvasGroup>();
+                }
+                canvasGroup.blocksRaycasts = true;
+                canvasGroup.interactable = true;
+
+                itemButtons[item.id] = button;
             }
             else
             {
-                Debug.LogWarning($"StoreUI: Could not find text component in button for {item.displayName}");
+                Debug.LogError($"StoreUI: Could not find Button component in prefab for {item.displayName}");
             }
-
-            // Determine if button should be enabled (for visual styling)
-            bool shouldBeInteractable = !isOwned && isAvailable && affordable;
-
-            // Keep button interactable so it can be clicked for feedback, but visually style it as disabled
-            button.interactable = true; // Always allow clicking for feedback
-
-            // Apply visual styling to show disabled state
-            if (!shouldBeInteractable)
-            {
-                // Make button appear disabled visually
-                ColorBlock colors = button.colors;
-                colors.normalColor = new Color(0.5f, 0.5f, 0.5f, 0.7f); // Grayed out
-                colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.7f);
-                button.colors = colors;
-            }
-            else
-            {
-                // Reset to normal colors
-                ColorBlock colors = button.colors;
-                colors.normalColor = new Color(0.2f, 0.2f, 0.25f, 1f);
-                colors.disabledColor = new Color(0.15f, 0.15f, 0.15f, 0.5f);
-                button.colors = colors;
-            }
-
-            // Set up click handler - always allow clicking to show feedback
-            string itemId = item.id; // Capture for closure
-
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => {
-                Debug.Log($"StoreUI: Button clicked for {item.displayName} (ID: {itemId})");
-
-                // Re-check current state (values may have changed)
-                float currentCash = GetFloat("$rapid_feedback_cash", 0f);
-                bool currentlyOwned = IsItemOwned(item);
-                bool currentlyAvailable = IsItemCurrentlyAvailable(item, GetCurrentRun(), GetCurrentDay());
-                bool currentlyAffordable = currentCash >= item.cost;
-
-                // Check if purchase is valid before attempting
-                if (currentlyOwned)
-                {
-                    QueueNotification($"{item.displayName} is already owned.");
-                    return;
-                }
-
-                if (!currentlyAvailable)
-                {
-                    QueueNotification($"{item.displayName} is not available.");
-                    return;
-                }
-
-                if (!currentlyAffordable)
-                {
-                    float shortfall = item.cost - currentCash;
-                    QueueNotification($"Insufficient credits for {item.displayName}. Need {shortfall:F0} more credits. (You have {currentCash:F0})");
-                    return;
-                }
-
-                // All checks passed, proceed with purchase
-                PurchaseItem(itemId);
-            });
-
-            // Ensure button can receive raycasts
-            CanvasGroup canvasGroup = buttonObj.GetComponent<CanvasGroup>();
-            if (canvasGroup == null)
-            {
-                canvasGroup = buttonObj.AddComponent<CanvasGroup>();
-            }
-            canvasGroup.blocksRaycasts = true;
-            canvasGroup.interactable = true; // Always allow interaction
-
-            itemButtons[item.id] = button;
         }
     }
 
     /// <summary>
-    /// Purchase an item from the store
+    /// Handle item button click
     /// </summary>
-    public void PurchaseItem(string itemId)
+    private void OnItemButtonClicked(string itemId)
     {
-        if (variableStorage == null)
+        if (storeManager == null)
         {
-            Debug.LogError("Cannot purchase item: VariableStorage not available!");
+            Debug.LogError("StoreUI: StoreManager is null!");
             return;
         }
 
-        // Find the item
-        StoreItem item = storeItems.Find(i => i.id == itemId);
-        if (item == null)
+        // Attempt purchase
+        bool success = storeManager.PurchaseItem(itemId, out string errorMessage);
+
+        if (success)
         {
-            Debug.LogError($"Cannot purchase item: Item '{itemId}' not found!");
-            return;
+            StoreItem item = storeManager.GetStoreItems().Find(i => i.id == itemId);
+            QueueNotification($"Purchased {item.displayName}!");
+            UpdateStoreDisplay(); // Refresh display
+            
+            // Close store after successful purchase
+            StartCoroutine(CloseStoreAfterDelay(0.5f));
         }
-
-        int currentRun = GetCurrentRun();
-        int currentDay = GetCurrentDay();
-
-        // Check if already owned
-        bool isOwned = IsItemOwned(item);
-
-        if (isOwned)
+        else
         {
-            Debug.Log($"Item '{item.displayName}' is already owned.");
-            return;
+            // Show error in notification area
+            QueueNotification(errorMessage);
         }
-
-        if (!IsItemCurrentlyAvailable(item, currentRun, currentDay))
-        {
-            Debug.Log($"Item '{item.displayName}' is currently unavailable.");
-            return;
-        }
-
-        // Check if player has enough cash
-        float cash = GetFloat("$rapid_feedback_cash", 0f);
-
-        if (cash < item.cost)
-        {
-            Debug.Log($"Insufficient funds to purchase '{item.displayName}'. Need {item.cost}, have {cash}.");
-            return;
-        }
-
-        // Deduct cost and set ownership flag
-        variableStorage.SetValue("$rapid_feedback_cash", cash - item.cost);
-        variableStorage.SetValue($"${item.id}", true);
-
-        Debug.Log($"Purchased '{item.displayName}' for {item.cost} credits.");
-
-        // Apply item effects
-        ApplyItemEffects(item, currentRun, currentDay);
-        RefreshEngagementBaseline();
-
-        // Update display
-        UpdateStoreDisplay();
     }
 
     /// <summary>
-    /// Apply game effects when an item is purchased
+    /// Build status string for an item
     /// </summary>
-    private void ApplyItemEffects(StoreItem item, int currentRun, int currentDay)
+    private string BuildItemStatus(StoreItem item, bool isOwned, bool isAvailable, bool affordable, float cash)
     {
-        if (variableStorage == null || item == null) return;
-
-        switch (item.id)
-        {
-            case "item_mental_break":
-                AdjustSanity(10f);
-                Debug.Log("Mental Break: +10 Sanity applied immediately.");
-                break;
-
-            case "item_blackout_curtains":
-                AdjustSanity(14f);
-                SetBool("$store_blackout_pending", true);
-                Debug.Log("Blackout Curtains: +14 Sanity applied; engagement penalty scheduled for the next node.");
-                break;
-
-            case "item_blue_light_filter":
-                ScheduleBlueLightEffects(currentRun, currentDay);
-                Debug.Log("Blue-Light Filter: Scheduled sanity bonus and engagement penalties for tomorrow.");
-                break;
-
-            case "item_screen_protector":
-                SetFloat("$store_screen_protector_heat_modifier", -1f);
-                Debug.Log("Screen Protector: Heat modifier set to -1 for the rest of the run.");
-                break;
-
-            case "item_priority_shipping":
-                Debug.Log("Priority Shipping Label: Mailroom dual-escape unlock flagged.");
-                break;
-
-            case "item_bow_for_alice":
-                Debug.Log("Bow for Alice: Engagement bonus tracking enabled.");
-                break;
-
-            case "item_corporate_bond":
-                ScheduleCorporateBond(currentRun, currentDay, item.cost);
-                Debug.Log("Corporate Bond: Payout scheduled for the next in-run day.");
-                break;
-        }
-    }
-
-    private void InitializeStoreState()
-    {
-        if (variableStorage == null) return;
-
-        // Ensure we have a baseline for engagement delta tracking.
-        if (!variableStorage.TryGetValue<float>("$store_prev_engagement", out _))
-        {
-            float engagement = GetFloat("$engagement", 0f);
-            variableStorage.SetValue("$store_prev_engagement", engagement);
-        }
-    }
-
-    private void RefreshEngagementBaseline()
-    {
-        if (variableStorage == null) return;
-        float engagement = GetFloat("$engagement", 0f);
-        variableStorage.SetValue("$store_prev_engagement", engagement);
-    }
-
-    private float GetFloat(string variableName, float defaultValue = 0f)
-    {
-        if (variableStorage != null && variableStorage.TryGetValue<float>(variableName, out var value))
-        {
-            return value;
-        }
-
-        return defaultValue;
-    }
-
-    private bool GetBool(string variableName)
-    {
-        if (variableStorage != null && variableStorage.TryGetValue<bool>(variableName, out var value))
-        {
-            return value;
-        }
-
-        return false;
-    }
-
-    private void SetFloat(string variableName, float value)
-    {
-        variableStorage?.SetValue(variableName, value);
-    }
-
-    private void SetBool(string variableName, bool value)
-    {
-        variableStorage?.SetValue(variableName, value);
-    }
-
-    private int GetCurrentRun()
-    {
-        return Mathf.Max(1, Mathf.RoundToInt(GetFloat("$current_run", 1f)));
-    }
-
-    private int GetCurrentDay()
-    {
-        return Mathf.Max(1, Mathf.RoundToInt(GetFloat("$current_day", 1f)));
-    }
-
-    private bool IsItemOwned(StoreItem item)
-    {
-        if (item == null) return false;
-        return GetBool($"${item.id}");
-    }
-
-    private bool IsItemCurrentlyAvailable(StoreItem item, int currentRun, int currentDay)
-    {
-        if (item == null) return false;
-
-        // Already owned items cannot be repurchased.
-        if (IsItemOwned(item))
-        {
-            return false;
-        }
-
-        // Corporate Bond unavailable when entering Run 4 or if an active bond is already pending.
-        if (item.id == "item_corporate_bond")
-        {
-            if (currentRun >= 4)
-            {
-                return false;
-            }
-
-            if (GetBool("$store_corporate_bond_active"))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private string BuildItemStatus(StoreItem item, bool isOwned, bool isAvailable, float cash, int currentRun, int currentDay)
-    {
-        if (item == null)
-        {
-            return "Unavailable";
-        }
-
         if (isOwned)
         {
-            switch (item.id)
-            {
-                case "item_blackout_curtains":
-                    return GetBool("$store_blackout_pending") ? "Owned (penalty pending)" : "Owned";
-                case "item_blue_light_filter":
-                    if (GetBool("$store_blue_filter_active"))
-                    {
-                        int targetRun = Mathf.RoundToInt(GetFloat("$store_blue_filter_target_run", currentRun));
-                        int targetDay = Mathf.RoundToInt(GetFloat("$store_blue_filter_target_day", currentDay));
-                        return $"Owned (effects target R{targetRun}D{targetDay})";
-                    }
-                    return "Owned";
-                case "item_screen_protector":
-                    return "Owned (heat damping active)";
-                case "item_priority_shipping":
-                    return "Owned (mailroom unlock)";
-                case "item_bow_for_alice":
-                    return "Owned (engagement bonus active)";
-                case "item_corporate_bond":
-                    if (GetBool("$store_corporate_bond_active"))
-                    {
-                        int targetRun = Mathf.RoundToInt(GetFloat("$store_corporate_bond_mature_run", currentRun));
-                        int targetDay = Mathf.RoundToInt(GetFloat("$store_corporate_bond_mature_day", currentDay));
-                        return $"Owned (matures R{targetRun}D{targetDay})";
-                    }
-                    return "Owned (payout collected)";
-                default:
-                    return "Owned";
-            }
+            return "Owned";
         }
 
         if (!isAvailable)
         {
-            if (item.id == "item_corporate_bond" && currentRun >= 4)
-            {
-                return "Unavailable in Run 4";
-            }
-
-            if (item.id == "item_corporate_bond" && GetBool("$store_corporate_bond_active"))
-            {
-                return "Unavailable (bond pending)";
-            }
-
             return "Unavailable";
         }
 
-        if (cash < item.cost)
+        if (!affordable)
         {
-            float shortfall = Mathf.Max(0f, item.cost - cash);
-            return $"Cost: {item.cost} (Need {shortfall:F0} more)";
+            float shortfall = item.cost - cash;
+            return $"Need {shortfall:F0} more credits";
         }
 
-        return $"Cost: {item.cost} (Available)";
+        return "Available";
     }
 
-    private void AdjustSanity(float delta)
+    /// <summary>
+    /// Disable dialogue input components
+    /// </summary>
+    private void DisableDialogueInput()
     {
-        float sanity = GetFloat("$sanity", 0f);
-        SetFloat("$sanity", sanity + delta);
-    }
+        disabledLineAdvancers.Clear();
+        disabledInputComponents.Clear();
 
-    private void AdjustEngagement(float delta)
-    {
-        float engagement = GetFloat("$engagement", 0f);
-        SetFloat("$engagement", engagement + delta);
-    }
-
-    private void ScheduleBlueLightEffects(int currentRun, int currentDay)
-    {
-        SetBool("$store_blue_filter_active", true);
-        int targetRun = currentRun;
-        int targetDay = currentDay + 1;
-        blueLightPenalizedNodes.Clear();
-
-        SetFloat("$store_blue_filter_target_run", targetRun);
-        SetFloat("$store_blue_filter_target_day", targetDay);
-        SetFloat("$store_blue_filter_penalties_applied", 0f);
-        SetBool("$store_blue_filter_bonus_applied", false);
-    }
-
-    private void ProcessBlackoutCurtains()
-    {
-        if (!GetBool("$store_blackout_pending"))
+        // Find and disable all LineAdvancer components
+        LineAdvancer[] lineAdvancers = FindObjectsByType<LineAdvancer>(FindObjectsSortMode.None);
+        foreach (LineAdvancer advancer in lineAdvancers)
         {
-            return;
-        }
-
-        AdjustEngagement(-6f);
-        SetBool("$store_blackout_pending", false);
-        QueueNotification("Blackout Curtains: Engagement drops by 6 as Timmy adjusts to the darkness.");
-    }
-
-    private void ProcessBlueLightFilter(int currentRun, int currentDay, string nodeName)
-    {
-        if (!GetBool("$store_blue_filter_active"))
-        {
-            return;
-        }
-
-        int targetRun = Mathf.RoundToInt(GetFloat("$store_blue_filter_target_run", currentRun));
-        int targetDay = Mathf.RoundToInt(GetFloat("$store_blue_filter_target_day", currentDay));
-
-        // Apply sanity bonus on the target day
-        if (currentRun == targetRun && currentDay == targetDay && !GetBool("$store_blue_filter_bonus_applied"))
-        {
-            AdjustSanity(15f);
-            SetBool("$store_blue_filter_bonus_applied", true);
-            QueueNotification("Blue-Light Filter: Timmy sleeps better. +15 Sanity.");
-        }
-
-        // Apply engagement penalties on the target day (each node)
-        if (currentRun == targetRun && currentDay == targetDay)
-        {
-            if (!string.IsNullOrEmpty(nodeName) && !blueLightPenalizedNodes.Contains(nodeName))
+            if (advancer != null && advancer.enabled)
             {
-                blueLightPenalizedNodes.Add(nodeName);
-                float applied = GetFloat("$store_blue_filter_penalties_applied", 0f) + 1f;
-                SetFloat("$store_blue_filter_penalties_applied", applied);
-                AdjustEngagement(-1f);
-                QueueNotification("Blue-Light Filter: Engagement dips by 1 while Timmy powers down.");
+                disabledLineAdvancers.Add(advancer);
+                advancer.enabled = false;
             }
-
-            return;
         }
 
-        // Past the scheduled day: clear the effect.
-        SetBool("$store_blue_filter_active", false);
-        blueLightPenalizedNodes.Clear();
-        QueueNotification("Blue-Light Filter effect has ended.");
+        // Find and disable BubbleInput components
+        MonoBehaviour[] allBehaviours = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
+        foreach (MonoBehaviour behaviour in allBehaviours)
+        {
+            if (behaviour != null && behaviour.enabled)
+            {
+                string typeName = behaviour.GetType().Name;
+                if (typeName == "BubbleInput")
+                {
+                    disabledInputComponents.Add(behaviour);
+                    behaviour.enabled = false;
+                }
+            }
+        }
     }
 
-    private void ProcessCorporateBond(int currentRun, int currentDay)
+    /// <summary>
+    /// Re-enable dialogue input components
+    /// </summary>
+    private void EnableDialogueInput()
     {
-        if (!GetBool("$store_corporate_bond_active"))
+        foreach (LineAdvancer advancer in disabledLineAdvancers)
         {
-            return;
+            if (advancer != null)
+            {
+                advancer.enabled = true;
+            }
         }
+        disabledLineAdvancers.Clear();
 
-        int targetRun = Mathf.RoundToInt(GetFloat("$store_corporate_bond_mature_run", currentRun));
-        int targetDay = Mathf.RoundToInt(GetFloat("$store_corporate_bond_mature_day", currentDay));
-
-        bool shouldPayout = currentRun > targetRun || (currentRun == targetRun && currentDay >= targetDay);
-        if (!shouldPayout)
+        foreach (MonoBehaviour component in disabledInputComponents)
         {
-            return;
+            if (component != null)
+            {
+                component.enabled = true;
+            }
         }
-
-        float principal = GetFloat("$store_corporate_bond_principal", 0f);
-        if (principal <= 0f)
-        {
-            SetBool("$store_corporate_bond_active", false);
-            return;
-        }
-
-        int payout = Mathf.RoundToInt(principal * 1.1f);
-        float currentCash = GetFloat("$rapid_feedback_cash", 0f);
-        SetFloat("$rapid_feedback_cash", currentCash + payout);
-
-        SetBool("$store_corporate_bond_active", false);
-        SetFloat("$store_corporate_bond_principal", 0f);
-        SetFloat("$store_corporate_bond_mature_run", 0f);
-        SetFloat("$store_corporate_bond_mature_day", 0f);
-
-        QueueNotification($"Corporate Bond matured: +{payout} credits.");
+        disabledInputComponents.Clear();
     }
 
-    private void ProcessBowForAliceBonus()
-    {
-        if (!GetBool("$item_bow_for_alice"))
-        {
-            return;
-        }
-
-        float previousEngagement = GetFloat("$store_prev_engagement", GetFloat("$engagement", 0f));
-        float currentEngagement = GetFloat("$engagement", 0f);
-        float delta = currentEngagement - previousEngagement;
-
-        // Bow for Alice: +1 engagement per pro-engagement choice (any engagement increase)
-        if (delta > 0.05f)
-        {
-            AdjustEngagement(1f);
-            QueueNotification("Bow for Alice: Engagement nudges up by 1.");
-        }
-    }
-
-    private void ScheduleCorporateBond(int currentRun, int currentDay, int principal)
-    {
-        SetBool("$store_corporate_bond_active", true);
-        SetFloat("$store_corporate_bond_principal", principal);
-        int targetRun = currentRun;
-        int targetDay = currentDay + 1;
-        SetFloat("$store_corporate_bond_mature_run", targetRun);
-        SetFloat("$store_corporate_bond_mature_day", targetDay);
-    }
-
+    /// <summary>
+    /// Show a notification message
+    /// </summary>
     private void QueueNotification(string message)
     {
         if (string.IsNullOrWhiteSpace(message))
@@ -834,7 +438,6 @@ public class StoreUI : MonoBehaviour
         }
 
         Debug.Log($"[StoreUI] {message}");
-        SetString(StoreNotificationVar, message);
 
         if (notificationText != null)
         {
@@ -859,21 +462,6 @@ public class StoreUI : MonoBehaviour
         notificationRoutine = null;
     }
 
-    private void SetString(string variableName, string value)
-    {
-        variableStorage?.SetValue(variableName, value ?? string.Empty);
-    }
-
-    private string GetString(string variableName, string defaultValue = "")
-    {
-        if (variableStorage != null && variableStorage.TryGetValue<string>(variableName, out var value))
-        {
-            return value;
-        }
-
-        return defaultValue;
-    }
-
     private void SetText(Component textComponent, string text)
     {
         if (textComponent == null) return;
@@ -891,44 +479,34 @@ public class StoreUI : MonoBehaviour
         }
     }
 
-    private void DisableDialogueInput()
+    /// <summary>
+    /// Ensure scroll view has RectMask2D for proper clipping
+    /// </summary>
+    private void EnsureScrollViewMasking()
     {
-        EnableDialogueInput(); // Clear any previous disabled components
+        if (itemButtonContainer == null) return;
 
-        foreach (var advancer in FindObjectsOfType<LineAdvancer>(true))
-        {
-            if (advancer != null && advancer.enabled)
-            {
-                advancer.enabled = false;
-                disabledInputComponents.Add(advancer);
-            }
-        }
+        // Find the scroll view (parent of Content)
+        Transform scrollViewTransform = itemButtonContainer.parent;
+        if (scrollViewTransform == null) return;
 
-        foreach (var bubbleInput in FindObjectsOfType<BubbleInput>(true))
+        // Add RectMask2D if missing
+        RectMask2D mask = scrollViewTransform.GetComponent<RectMask2D>();
+        if (mask == null)
         {
-            if (bubbleInput != null && bubbleInput.enabled)
-            {
-                bubbleInput.enabled = false;
-                disabledInputComponents.Add(bubbleInput);
-            }
+            mask = scrollViewTransform.gameObject.AddComponent<RectMask2D>();
+            Debug.Log("StoreUI: Added RectMask2D to scroll view for proper clipping");
         }
     }
 
-    private void EnableDialogueInput()
+    /// <summary>
+    /// Close store after a short delay
+    /// </summary>
+    private IEnumerator CloseStoreAfterDelay(float delay)
     {
-        if (disabledInputComponents.Count == 0)
-        {
-            return;
-        }
-
-        foreach (var behaviour in disabledInputComponents)
-        {
-            if (behaviour != null)
-            {
-                behaviour.enabled = true;
-            }
-        }
-
-        disabledInputComponents.Clear();
+        yield return new WaitForSeconds(delay);
+        CloseStore();
     }
+
 }
+

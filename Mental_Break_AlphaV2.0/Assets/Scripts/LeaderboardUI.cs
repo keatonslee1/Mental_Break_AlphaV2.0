@@ -290,8 +290,8 @@ public class LeaderboardUI : MonoBehaviour
 
         // Generate 3 fake entries with high engagement, low sanity (deterministic values)
         fakeEntries.Add(new LeaderboardEntry(1, "Sarah Chen", 92f, 45f));
-        fakeEntries.Add(new LeaderboardEntry(2, "Marcus Rodriguez", 88f, 38f));
-        fakeEntries.Add(new LeaderboardEntry(3, "Jessica Kim", 87f, 42f));
+        fakeEntries.Add(new LeaderboardEntry(2, "Marcus Smith", 88f, 38f));
+        fakeEntries.Add(new LeaderboardEntry(3, "Calan Fields", 87f, 42f));
 
         // Sort by engagement descending
         fakeEntries = fakeEntries.OrderByDescending(e => e.engagement).ToList();
@@ -549,49 +549,105 @@ public class LeaderboardUI : MonoBehaviour
         entryRect.pivot = new Vector2(0.5f, 0.5f);
         entryRect.anchoredPosition = Vector2.zero;
 
+        // Create horizontal layout for columns
+        HorizontalLayoutGroup horizontalLayout = entryObj.AddComponent<HorizontalLayoutGroup>();
+        horizontalLayout.childControlWidth = false;
+        horizontalLayout.childControlHeight = true;
+        horizontalLayout.childForceExpandWidth = false;
+        horizontalLayout.childForceExpandHeight = true;
+        horizontalLayout.spacing = 16f; // Space between columns
+        horizontalLayout.childAlignment = TextAnchor.MiddleLeft;
+        horizontalLayout.padding.left = 0;
+        horizontalLayout.padding.right = 0;
+        horizontalLayout.padding.top = 0;
+        horizontalLayout.padding.bottom = 0;
+
         LayoutElement layoutElement = entryObj.AddComponent<LayoutElement>();
         layoutElement.flexibleHeight = 0f;
         layoutElement.flexibleWidth = 1f;
 
-        // Format: "Rank - Name - Engagement - Sanity"
-        string entryText = $"{entry.rank} - {entry.name} - {entry.engagement:F0} - {entry.sanity:F0}";
+        Color textColor = entry.name == "You" ? Color.yellow : Color.white;
 
-        TextMeshProUGUI text = entryObj.AddComponent<TextMeshProUGUI>();
-        // Load default font if available
+        // Column 1: Rank (left-aligned, minimal width)
+        GameObject rankObj = new GameObject("Rank");
+        rankObj.transform.SetParent(entryObj.transform, false);
+        RectTransform rankRect = rankObj.AddComponent<RectTransform>();
+        LayoutElement rankLayout = rankObj.AddComponent<LayoutElement>();
+        rankLayout.preferredWidth = 35f;
+        rankLayout.flexibleWidth = 0f;
+        TextMeshProUGUI rankText = rankObj.AddComponent<TextMeshProUGUI>();
         if (TMP_Settings.instance != null && TMP_Settings.defaultFontAsset != null)
         {
-            text.font = TMP_Settings.defaultFontAsset;
+            rankText.font = TMP_Settings.defaultFontAsset;
         }
-        text.text = entryText;
-        text.fontSize = GetEntryFontSize();
-        text.alignment = TextAlignmentOptions.Center;
-        text.textWrappingMode = TextWrappingModes.NoWrap;
-        text.overflowMode = TextOverflowModes.Overflow;
-        text.margin = Vector4.zero;
-        text.richText = true;
-        text.raycastTarget = false;
-        RectTransform textRect = text.rectTransform;
-        textRect.anchorMin = Vector2.zero;
-        textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = Vector2.zero;
-        textRect.offsetMax = Vector2.zero;
+        rankText.text = entry.rank.ToString();
+        rankText.fontSize = GetEntryFontSize();
+        rankText.alignment = TextAlignmentOptions.MidlineLeft;
+        rankText.color = textColor;
+        rankText.raycastTarget = false;
 
-        // Calculate the tightest possible height using TextMeshPro metrics
-        Vector2 preferred = text.GetPreferredValues(entryText, float.PositiveInfinity, float.PositiveInfinity);
-        float entryHeight = Mathf.Max(GetEntryHeight(), Mathf.Ceil(preferred.y));
+        // Column 2: Name (left-aligned, flexible width)
+        GameObject nameObj = new GameObject("Name");
+        nameObj.transform.SetParent(entryObj.transform, false);
+        RectTransform nameRect = nameObj.AddComponent<RectTransform>();
+        LayoutElement nameLayout = nameObj.AddComponent<LayoutElement>();
+        nameLayout.preferredWidth = 300f;
+        nameLayout.minWidth = 250f;
+        nameLayout.flexibleWidth = 1f;
+        TextMeshProUGUI nameText = nameObj.AddComponent<TextMeshProUGUI>();
+        if (TMP_Settings.instance != null && TMP_Settings.defaultFontAsset != null)
+        {
+            nameText.font = TMP_Settings.defaultFontAsset;
+        }
+        nameText.text = entry.name;
+        nameText.fontSize = GetEntryFontSize();
+        nameText.alignment = TextAlignmentOptions.MidlineLeft;
+        nameText.textWrappingMode = TextWrappingModes.NoWrap;
+        nameText.overflowMode = TextOverflowModes.Overflow;
+        nameText.color = textColor;
+        nameText.raycastTarget = false;
+
+        // Column 3: Engagement (right-aligned, fixed width)
+        GameObject engagementObj = new GameObject("Engagement");
+        engagementObj.transform.SetParent(entryObj.transform, false);
+        RectTransform engagementRect = engagementObj.AddComponent<RectTransform>();
+        LayoutElement engagementLayout = engagementObj.AddComponent<LayoutElement>();
+        engagementLayout.preferredWidth = 100f;
+        engagementLayout.flexibleWidth = 0f;
+        TextMeshProUGUI engagementText = engagementObj.AddComponent<TextMeshProUGUI>();
+        if (TMP_Settings.instance != null && TMP_Settings.defaultFontAsset != null)
+        {
+            engagementText.font = TMP_Settings.defaultFontAsset;
+        }
+        engagementText.text = entry.engagement.ToString("F0");
+        engagementText.fontSize = GetEntryFontSize();
+        engagementText.alignment = TextAlignmentOptions.MidlineRight;
+        engagementText.color = textColor;
+        engagementText.raycastTarget = false;
+
+        // Column 4: Sanity (right-aligned, fixed width)
+        GameObject sanityObj = new GameObject("Sanity");
+        sanityObj.transform.SetParent(entryObj.transform, false);
+        RectTransform sanityRect = sanityObj.AddComponent<RectTransform>();
+        LayoutElement sanityLayout = sanityObj.AddComponent<LayoutElement>();
+        sanityLayout.preferredWidth = 100f;
+        sanityLayout.flexibleWidth = 0f;
+        TextMeshProUGUI sanityText = sanityObj.AddComponent<TextMeshProUGUI>();
+        if (TMP_Settings.instance != null && TMP_Settings.defaultFontAsset != null)
+        {
+            sanityText.font = TMP_Settings.defaultFontAsset;
+        }
+        sanityText.text = entry.sanity.ToString("F0");
+        sanityText.fontSize = GetEntryFontSize();
+        sanityText.alignment = TextAlignmentOptions.MidlineRight;
+        sanityText.color = textColor;
+        sanityText.raycastTarget = false;
+
+        // Calculate entry height
+        float entryHeight = GetEntryHeight();
         entryRect.sizeDelta = new Vector2(0f, entryHeight);
         layoutElement.preferredHeight = entryHeight;
-        layoutElement.minHeight = entryHeight; // lock height to prevent layout expansion
-
-        // Highlight player entry
-        if (entry.name == "You")
-        {
-            text.color = Color.yellow;
-        }
-        else
-        {
-            text.color = Color.white;
-        }
+        layoutElement.minHeight = entryHeight;
 
         return entryObj;
     }

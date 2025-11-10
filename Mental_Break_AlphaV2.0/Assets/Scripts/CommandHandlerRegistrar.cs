@@ -1,6 +1,7 @@
 using UnityEngine;
 using Yarn.Unity;
 using System.Reflection;
+using System.Collections;
 
 /// <summary>
 /// Ensures command handlers are properly registered with the DialogueRunner.
@@ -86,13 +87,6 @@ public class CommandHandlerRegistrar : MonoBehaviour
             Debug.LogWarning("CommandHandlerRegistrar: DialogueRunner.YarnProject is null. Commands may not work correctly.");
         }
 
-        // Ensure clean slate: remove if already registered (safe to call)
-        try { dialogueRunner.RemoveCommandHandler("bg"); } catch { }
-        try { dialogueRunner.RemoveCommandHandler("bgm"); } catch { }
-        try { dialogueRunner.RemoveCommandHandler("sfx"); } catch { }
-        try { dialogueRunner.RemoveCommandHandler("checkpoint"); } catch { }
-        try { dialogueRunner.RemoveCommandHandler("store"); } catch { }
-
         bool allRegistered = true;
 
         // Register BackgroundCommandHandler method via bound delegate
@@ -100,6 +94,8 @@ public class CommandHandlerRegistrar : MonoBehaviour
         {
             try
             {
+                // Remove if already registered (safe to call)
+                try { dialogueRunner.RemoveCommandHandler("bg"); } catch { }
                 dialogueRunner.AddCommandHandler("bg", new System.Action<string>(backgroundHandler.ChangeBackground));
                 Debug.Log("CommandHandlerRegistrar: Registered 'bg' command");
             }
@@ -120,6 +116,9 @@ public class CommandHandlerRegistrar : MonoBehaviour
         {
             try
             {
+                // Remove if already registered (safe to call)
+                try { dialogueRunner.RemoveCommandHandler("bgm"); } catch { }
+                try { dialogueRunner.RemoveCommandHandler("sfx"); } catch { }
                 dialogueRunner.AddCommandHandler("bgm", new System.Action<string>(audioHandler.PlayBGM));
                 dialogueRunner.AddCommandHandler("sfx", new System.Action<string>(audioHandler.PlaySFX));
                 Debug.Log("CommandHandlerRegistrar: Registered 'bgm' and 'sfx' commands");
@@ -142,6 +141,8 @@ public class CommandHandlerRegistrar : MonoBehaviour
         {
             try
             {
+                // Remove if already registered (safe to call)
+                try { dialogueRunner.RemoveCommandHandler("checkpoint"); } catch { }
                 dialogueRunner.AddCommandHandler("checkpoint", new System.Action<string>(checkpointHandler.Checkpoint));
                 Debug.Log("CommandHandlerRegistrar: Registered 'checkpoint' command");
             }
@@ -158,11 +159,14 @@ public class CommandHandlerRegistrar : MonoBehaviour
         }
 
         // Register StoreUI method via bound delegate
+        // Note: OpenStore returns IEnumerator, so we use Func<IEnumerator> instead of Action
         if (storeHandler != null)
         {
             try
             {
-                dialogueRunner.AddCommandHandler("store", new System.Action(storeHandler.OpenStore));
+                // Remove if already registered (safe to call)
+                try { dialogueRunner.RemoveCommandHandler("store"); } catch { }
+                dialogueRunner.AddCommandHandler("store", new System.Func<IEnumerator>(storeHandler.OpenStore));
                 Debug.Log("CommandHandlerRegistrar: Registered 'store' command");
             }
             catch (System.Exception e)

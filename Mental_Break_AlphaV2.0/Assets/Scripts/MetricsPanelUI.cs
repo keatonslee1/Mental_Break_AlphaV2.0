@@ -53,7 +53,7 @@ public class MetricsPanelUI : MonoBehaviour
     public Vector2 panelPadding = new Vector2(28f, 20f);
 
     [Tooltip("Background color used for metric panels")]
-    public Color panelBackgroundColor = new Color(0f, 0f, 0f, 0.6f);
+    public Color panelBackgroundColor = new Color(0f, 0f, 0f, 1f);
 
     // Colors
     private readonly Color engagementColor = new Color(1f, 0f, 1f, 1f); // Fuchsia #FF00FF
@@ -272,7 +272,7 @@ public class MetricsPanelUI : MonoBehaviour
         panelLayout.childForceExpandHeight = true;
         panelLayout.childAlignment = TextAnchor.MiddleRight;
 
-        // Add semi-transparent background
+        // Add opaque background
         Image bgImage = panel.AddComponent<Image>();
         bgImage.color = panelBackgroundColor;
         bgImage.raycastTarget = false;

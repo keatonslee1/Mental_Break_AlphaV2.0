@@ -798,7 +798,7 @@ public class PauseMenuManager : MonoBehaviour
                 rectTransform.anchorMin = new Vector2(1f, 1f);
                 rectTransform.anchorMax = new Vector2(1f, 1f);
                 rectTransform.pivot = new Vector2(1f, 0.5f);
-                rectTransform.anchoredPosition = new Vector2(-20f, -200f); // 200 pixels from top (moved down)
+                rectTransform.anchoredPosition = new Vector2(-20f, -300f); // 300 pixels from top (moved down)
                 // Increase size to accommodate larger text and multiple lines
                 rectTransform.sizeDelta = new Vector2(500f, 120f); // Taller to prevent line cutoff
             }

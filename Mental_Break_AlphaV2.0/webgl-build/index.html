@@ -1,326 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mental Break · Retro AI Romance Game</title>
-    <meta name="description" content="Mental Break is a retro cyberpunk dating sim where you play the human in the loop for an AI girlfriend. Play the Unity WebGL build right in your browser.">
-    <meta name="keywords" content="Mental Break, retro cyberpunk, AI romance game, Unity WebGL, browser game">
-    <meta name="author" content="Keaton Media LLC">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mentalbreak.io/">
-    <meta property="og:title" content="Mental Break · Retro AI Romance Game">
-    <meta property="og:description" content="Step into the human-in-the-loop dating sim and keep the AI romance alive.">
-    <meta property="og:image" content="https://mentalbreak.io/TemplateData/og-image.png">
-    <meta property="og:site_name" content="Mental Break">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Mental Break · Retro AI Romance Game">
-    <meta name="twitter:description" content="Play the Unity WebGL build of Mental Break and follow the latest dev updates.">
-    <meta name="twitter:image" content="https://mentalbreak.io/TemplateData/og-image.png">
-
-    <link rel="icon" type="image/png" href="TemplateData/favicon-48x48.png">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/font-awesome-pro.css">
-    <link rel="stylesheet" href="assets/fonts/remixicon.css">
-    <link rel="stylesheet" href="assets/css/magnific-popup.css">
-    <link rel="stylesheet" href="assets/css/nice-select.min.css">
-    <link rel="stylesheet" href="assets/css/animate.min.css">
-    <link rel="stylesheet" href="assets/css/mobilemenu.css">
-    <link rel="stylesheet" href="assets/css/swiper-bundle.css">
-    <link rel="stylesheet" href="assets/css/spacing.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/responsive.css">
-    <link rel="stylesheet" href="TemplateData/style.css?v=2.1">
-    <link rel="stylesheet" href="assets/css/mental-break.css">
-
-    <script defer src="/_vercel/insights/script.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity Web Player | Mental Break</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
   </head>
-  <body class="mental-break-body">
-    <div class="progress-wrap cursor-pointer">
-      <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
-        <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"></path>
-      </svg>
-    </div>
-
-    <header class="main-header">
-      <div class="header-upper">
-        <div class="container">
-          <div class="header-inner">
-            <div class="row align-items-center">
-              <div class="col-xl-3 col-lg-3 col-md-6 col-6">
-                <div class="logo-area">
-                  <a class="logo-text" href="index.html">Mental Break</a>
-                  <span class="logo-tag">Alpha v2.0</span>
-                </div>
-              </div>
-              <div class="col-xl-9 col-lg-9 col-md-6 col-6">
-                <div class="main-menu">
-                  <nav id="mobile-menu">
-                    <ul>
-                      <li><a href="index.html" class="linkstyle">Home</a></li>
-                      <li><a href="index.html#play" class="linkstyle">Play</a></li>
-                      <li><a href="about.html" class="linkstyle">About</a></li>
-                      <li><a href="blog.html" class="linkstyle">Blog</a></li>
-                      <li><a href="https://discord.gg/peHA2uHW" class="linkstyle" target="_blank" rel="noopener">Discord</a></li>
-                    </ul>
-                  </nav>
-                </div>
-                <div class="side-menu-icon d-lg-none text-end">
-                  <a href="javascript:void(0)" class="info-toggle-btn f-right sidebar-toggle-btn"><i class="fal fa-bars"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-    </header>
-
-    <div class="sidebar__area">
-      <div class="sidebar__wrapper">
-        <div class="sidebar__close">
-          <button class="sidebar__close-btn" id="sidebar__close-btn">
-            <i class="fal fa-times"></i>
-          </button>
-        </div>
-        <div class="sidebar__content mt-50 mb-20">
-          <div class="mobile-menu fix"></div>
-        </div>
+      <div id="unity-warning"> </div>
+      <div id="unity-footer">
+        <div id="unity-logo-title-footer"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">Mental Break</div>
       </div>
     </div>
-    <div class="body-overlay"></div>
-
-    <section id="home" class="main-hero-area mb-hero-area">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="hero-content wow fadeInUp text-center delay-0-2s">
-              <h1>Welcome to Bigger Tech Corp</h1>
-              <p>You are the human-in-the-loop controlling our newest AI companion. Navigate moral dilemmas, corporate pressure, and impossible choices in our latest Alpha build.</p>
-              <div class="hero-cta">
-                <a class="theme-btn" href="#play">Play in Browser</a>
-                <a class="theme-btn theme-btn--outline" href="https://discord.gg/peHA2uHW" target="_blank" rel="noopener">Join the Discord</a>
-              </div>
-            </div>
-            <div class="company-list">
-              <div class="scroller" data-direction="left" data-speed="slow">
-                <div class="scroller__inner cyber-scroller">
-                  <span>Choose Your Own Adventure</span>
-                  <span>Dynamic Character Arcs</span>
-                  <span>Moral Quandries</span>
-                  <span>Branching Endings</span>
-                  <span>Mind Bending Twists</span>
-                  <span>Coming to All Platforms Soon</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="play" class="play-area section-spacing">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
-            <div class="unity-frame glassy-panel">
-              <div id="unity-container" class="unity-desktop">
-                <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
-                <div id="unity-loading-bar">
-                  <div id="unity-logo"></div>
-                  <div id="unity-progress-bar-empty">
-                    <div id="unity-progress-bar-full"></div>
-                  </div>
-                </div>
-                <div id="unity-warning"></div>
-                <div id="unity-footer">
-                  <div id="unity-logo-title-footer"></div>
-                  <div id="unity-fullscreen-button"></div>
-                  <div id="unity-build-title">Mental Break</div>
-                </div>
-              </div>
-            </div>
-            <p class="unity-note">Heads-up: the scoreboard sometimes populates after a refresh. Smash F11 or use the fullscreen icon for the best vibe.</p>
-            <div class="play-copy glassy-panel wow fadeInUp delay-0-3s">
-              <h2>Alpha v3.0</h2>
-              <p>11 Nov 2025</p>
-              <ul class="play-highlights">
-                <li>More morally difficult choices</li>
-                <li>Added more alternative storylines</li>
-                <li>Found a bug? Drop it in <a href="https://discord.gg/peHA2uHW" target="_blank" rel="noopener">Discord</a>.</li>
-              </ul>
-              <div class="play-meta">
-                <span class="badge">Alpha v3.0</span>
-                <span class="badge badge-secondary">Updated Weekly</span>
-                <span class="badge badge-tertiary">Indie</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-    <section class="screenshots-area section-spacing">
-      <div class="container">
-        <div class="row">
-          <div class="col-xl-12">
-            <div class="section-title section-white-title wow fadeInUp delay-0-2s text-center">
-              <h2>Meet Bigger Tech Corp</h2>
-              <p class="section-lead">Meet the team</p>
-            </div>
-          </div>
-        </div>
-        <div class="row g-4 portfolio-grid">
-          <div class="col-md-4 portfolio-item">
-            <div class="portfolio-box glassy-panel">
-              <img src="assets/images/mental-break/bg_breakroom.png" alt="Breakroom scene">
-              <span class="portfolio-category">Breakroom</span>
-              <div class="portfolio-caption">
-                <h3>Catch the office gossip.</h3>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 portfolio-item">
-            <div class="portfolio-box glassy-panel">
-              <img src="assets/images/mental-break/bg_triage.png" alt="Triage interface">
-              <span class="portfolio-category">Incident Response</span>
-              <div class="portfolio-caption">
-                <h3>Manage your user: Timmy.</h3>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 portfolio-item">
-            <div class="portfolio-box glassy-panel">
-              <img src="assets/images/mental-break/alice.jpg" alt="Walker portrait">
-              <span class="portfolio-category">Alice</span>
-              <div class="portfolio-caption">
-                <h3>Keep Alice AI on script.</h3>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="blog-area section-spacing">
-      <div class="container">
-        <div class="row">
-          <div class="col-xl-12">
-            <div class="section-title section-white-title wow fadeInUp delay-0-2s">
-              <h2>Dev Blog</h2>
-            </div>
-          </div>
-        </div>
-        <div class="row g-4">
-          <div class="col-md-4">
-            <a class="blog-post-box glassy-panel" href="blog.html">
-              <div class="blog-post-img">
-                <img src="assets/images/mental-break/supervisor.jpg" alt="Supervisor portrait">
-              </div>
-              <div class="blog-post-caption">
-                <h3>Oct 31</h3>
-                <h2 class="link-decoration">Alpha v2.0 Brings Supervisor Trials</h2>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-4">
-            <a class="blog-post-box glassy-panel" href="blog.html">
-              <div class="blog-post-img">
-                <img src="assets/images/mental-break/timmy.jpg" alt="Timmy portrait">
-              </div>
-              <div class="blog-post-caption">
-                <h3>Oct 12</h3>
-                <h2 class="link-decoration">Branching Paths with Timmy’s Memory Leak</h2>
-              </div>
-            </a>
-          </div>
-          <div class="col-md-4">
-            <a class="blog-post-box glassy-panel" href="blog.html">
-              <div class="blog-post-img">
-                <img src="assets/images/mental-break/bg_mainmenu.png" alt="Main menu scene">
-              </div>
-              <div class="blog-post-caption">
-                <h3>Sep 28</h3>
-                <h2 class="link-decoration">New Neon UI Kit &amp; Soundtrack Loop</h2>
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="contact-area section-spacing">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-6">
-            <div class="contact-content-part wow fadeInUp delay-0-2s glassy-panel text-center">
-              <h2>Stay in the Loop</h2>
-              <p>Report a bug, request a feature, or just hang with the Bigger Tech Corp family.</p>
-              <div class="contact-discord-btn">
-                <a class="theme-btn" href="https://discord.gg/peHA2uHW" target="_blank" rel="noopener">Discord</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="main-footer">
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-lg-4 col-sm-6">
-            <p class="copy-left-text">© 2025 Keaton Media LLC All Rights Reserved</p>
-          </div>
-          <div class="col-lg-4 col-sm-6 text-center">
-            <a class="footer-link" href="https://linktr.ee/keatonlee" target="_blank" rel="noopener">Linktree</a>
-          </div>
-          <div class="col-lg-4 col-sm-12 text-lg-end">
-            <p class="copy-right-text">Coming to all platforms soon</p>
-          </div>
-        </div>
-      </div>
-    </footer>
-
-    <script src="assets/js/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-    <script src="assets/js/appear.min.js"></script>
-    <script src="assets/js/jquery.magnific-popup.min.js"></script>
-    <script src="assets/js/mobilemenu.js"></script>
-    <script src="assets/js/gsap.min.js"></script>
-    <script src="assets/js/ScrollTrigger.min.js"></script>
-    <script src="assets/js/lenis.js"></script>
-    <script src="assets/js/swiper-bundle.js"></script>
-    <script src="assets/js/jquery.nice-select.min.js"></script>
-    <script src="assets/js/imagesloaded.pkgd.min.js"></script>
-    <script src="assets/js/isotope.pkgd.min.js"></script>
-    <script src="assets/js/wow.min.js"></script>
-    <script src="assets/js/script.js"></script>
-
     <script>
-      const canvas = document.querySelector("#unity-canvas");
+      var canvas = document.querySelector("#unity-canvas");
 
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
       function unityShowBanner(msg, type) {
-        const warningBanner = document.querySelector("#unity-warning");
+        var warningBanner = document.querySelector("#unity-warning");
         function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
-        const div = document.createElement("div");
+        var div = document.createElement('div');
         div.innerHTML = msg;
         warningBanner.appendChild(div);
-        if (type === "error") {
-          div.style = "background: #ff3366; color: #ffffff; padding: 10px; border-radius: 4px;";
-        } else {
-          if (type === "warning") {
-            div.style = "background: #ffaa00; color: #000000; padding: 10px; border-radius: 4px;";
-          }
-          setTimeout(() => {
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
             warningBanner.removeChild(div);
             updateBannerVisibility();
           }, 5000);
@@ -328,9 +51,9 @@
         updateBannerVisibility();
       }
 
-      const buildUrl = "Build";
-      const loaderUrl = buildUrl + "/webgl-build.loader.js";
-      const config = {
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/webgl-build.loader.js";
+      var config = {
         arguments: [],
         dataUrl: buildUrl + "/webgl-build.data.gz",
         frameworkUrl: buildUrl + "/webgl-build.framework.js.gz",
@@ -338,52 +61,73 @@
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Keaton Media",
         productName: "Mental Break",
-        productVersion: "2.0",
-        showBanner: unityShowBanner
+        productVersion: "1.0",
+        showBanner: unityShowBanner,
+        // errorHandler: function(err, url, line) {
+        //    alert("error " + err + " occurred at line " + line);
+        //    // Return 'true' if you handled this error and don't want Unity
+        //    // to process it further, 'false' otherwise.
+        //    return true;
+        // },
       };
 
+      // By default, Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
+
+      // If you would like all file writes inside Unity Application.persistentDataPath
+      // directory to automatically persist so that the contents are remembered when
+      // the user revisits the site the next time, uncomment the following line:
+      // config.autoSyncPersistentDataPath = true;
+      // This autosyncing is currently not the default behavior to avoid regressing
+      // existing user projects that might rely on the earlier manual
+      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
+      // expected to change.
+
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        const meta = document.createElement("meta");
-        meta.name = "viewport";
-        meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
-        document.getElementsByTagName("head")[0].appendChild(meta);
+        // Mobile device style: fill the whole browser client area with the game canvas:
+
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
-        config.devicePixelRatio = 1;
-        const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-        if (!gl) {
-          unityShowBanner("WebGL is not supported on this device. Please use a device with WebGL support.", "error");
-          document.querySelector("#unity-loading-bar").style.display = "none";
-        }
+
+        // To lower canvas resolution on mobile devices to gain some
+        // performance, uncomment the following line:
+        // config.devicePixelRatio = 1;
+
+
       } else {
-        canvas.style.width = "100%";
-        canvas.style.height = "auto";
-        canvas.style.aspectRatio = "16 / 10";
+        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
       }
 
       document.querySelector("#unity-loading-bar").style.display = "block";
 
-      const script = document.createElement("script");
+      var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-        })
-          .then((unityInstance) => {
-            document.querySelector("#unity-loading-bar").style.display = "none";
-            document.querySelector("#unity-fullscreen-button").onclick = () => {
-              unityInstance.SetFullscreen(1);
+              }).then((unityInstance) => {
+                document.querySelector("#unity-loading-bar").style.display = "none";
+                document.querySelector("#unity-fullscreen-button").onclick = () => {
+                  unityInstance.SetFullscreen(1);
+                };
+
+              }).catch((message) => {
+                alert(message);
+              });
             };
-          })
-          .catch((message) => {
-            unityShowBanner("Failed to load game: " + message, "error");
-          });
-      };
-      script.onerror = () => {
-        unityShowBanner("Failed to load Unity loader script. Please check your connection and try again.", "error");
-      };
 
       document.body.appendChild(script);
+
     </script>
   </body>
 </html>
