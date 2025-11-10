@@ -66,6 +66,30 @@
       }
     },
     {
+      "src": "/Build/(.*\\.framework\\.js\\.unityweb)",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/Build/(.*\\.wasm\\.unityweb)",
+      "headers": {
+        "Content-Type": "application/wasm",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/Build/(.*\\.data\\.unityweb)",
+      "headers": {
+        "Content-Type": "application/octet-stream",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
       "src": "/(.*\\.unityweb)",
       "headers": {
         "Content-Type": "application/octet-stream",

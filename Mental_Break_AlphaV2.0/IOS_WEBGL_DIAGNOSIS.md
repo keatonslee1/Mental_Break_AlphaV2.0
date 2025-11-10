@@ -151,6 +151,56 @@ After each Unity rebuild, you must reapply these patches:
 - **Performance Impact:** WebGL1 has fewer features than WebGL2, which may affect rendering quality or performance.
 - **Manual Maintenance:** Patches must be reapplied after each Unity rebuild.
 
+## Gzip Compression Configuration
+
+The project uses **Gzip compression** (Unity's `.unityweb` format) to reduce file sizes for iOS compatibility. This requires specific configuration:
+
+### Build Output Files
+
+When Unity builds with **Gzip compression** enabled, it creates:
+- `webgl-build.data.unityweb` (compressed data file)
+- `webgl-build.framework.js.unityweb` (compressed framework)
+- `webgl-build.wasm.unityweb` (compressed WebAssembly)
+- `webgl-build.loader.js` (uncompressed - must remain uncompressed)
+
+### Required Configuration
+
+**1. `index.html` must reference `.unityweb` files:**
+```javascript
+const config = {
+  dataUrl: buildUrl + "/webgl-build.data.unityweb",
+  frameworkUrl: buildUrl + "/webgl-build.framework.js.unityweb",
+  codeUrl: buildUrl + "/webgl-build.wasm.unityweb",
+  // ... other config
+};
+```
+
+**2. `vercel.json` must serve `.unityweb` files with correct headers:**
+- `.framework.js.unityweb` → `Content-Type: application/javascript` + `Content-Encoding: gzip`
+- `.wasm.unityweb` → `Content-Type: application/wasm` + `Content-Encoding: gzip`
+- `.data.unityweb` → `Content-Type: application/octet-stream` + `Content-Encoding: gzip`
+
+**3. After each Unity rebuild with compression:**
+- Verify `index.html` references `.unityweb` files (not `.js`, `.wasm`, `.data`)
+- Ensure `vercel.json` has the correct `.unityweb` routes
+- Reapply iOS WebGL fallback patches to `webgl-build.loader.js` if needed
+
+### Switching Between Compression Modes
+
+**To use Gzip compression (recommended for iOS):**
+1. Unity: **Player Settings > Web > Publishing Settings > Compression Format** → **Gzip**
+2. Build WebGL player
+3. Verify files have `.unityweb` extensions
+4. Ensure `index.html` references `.unityweb` files
+5. Deploy
+
+**To use uncompressed (for debugging):**
+1. Unity: **Player Settings > Web > Publishing Settings > Compression Format** → **Disabled**
+2. Build WebGL player
+3. Verify files have `.js`, `.wasm`, `.data` extensions (no `.unityweb`)
+4. Update `index.html` to reference uncompressed filenames
+5. Deploy
+
 ## Testing Checklist
 
 After implementing the fix:
