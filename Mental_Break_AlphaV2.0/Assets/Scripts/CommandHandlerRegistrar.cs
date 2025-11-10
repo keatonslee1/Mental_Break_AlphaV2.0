@@ -22,6 +22,9 @@ public class CommandHandlerRegistrar : MonoBehaviour
     [Tooltip("CheckpointCommandHandler component")]
     public CheckpointCommandHandler checkpointHandler;
 
+    [Tooltip("StoreUI component")]
+    public StoreUI storeHandler;
+
     private void Awake()
     {
         // Find DialogueRunner if not assigned
@@ -44,6 +47,11 @@ public class CommandHandlerRegistrar : MonoBehaviour
         if (checkpointHandler == null)
         {
             checkpointHandler = FindFirstObjectByType<CheckpointCommandHandler>();
+        }
+
+        if (storeHandler == null)
+        {
+            storeHandler = FindFirstObjectByType<StoreUI>();
         }
     }
 
@@ -83,6 +91,7 @@ public class CommandHandlerRegistrar : MonoBehaviour
         try { dialogueRunner.RemoveCommandHandler("bgm"); } catch { }
         try { dialogueRunner.RemoveCommandHandler("sfx"); } catch { }
         try { dialogueRunner.RemoveCommandHandler("checkpoint"); } catch { }
+        try { dialogueRunner.RemoveCommandHandler("store"); } catch { }
 
         bool allRegistered = true;
 
@@ -146,6 +155,26 @@ public class CommandHandlerRegistrar : MonoBehaviour
         {
             Debug.LogWarning("CommandHandlerRegistrar: CheckpointCommandHandler not found!");
             // Don't mark as failed - checkpoint is optional for backwards compatibility
+        }
+
+        // Register StoreUI method via bound delegate
+        if (storeHandler != null)
+        {
+            try
+            {
+                dialogueRunner.AddCommandHandler("store", new System.Action(storeHandler.OpenStore));
+                Debug.Log("CommandHandlerRegistrar: Registered 'store' command");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"CommandHandlerRegistrar: Failed to register 'store': {e.Message}");
+                allRegistered = false;
+            }
+        }
+        else
+        {
+            Debug.LogWarning("CommandHandlerRegistrar: StoreUI not found!");
+            // Don't mark as failed - store is optional if UI isn't set up yet
         }
 
         if (allRegistered)

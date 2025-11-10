@@ -207,6 +207,24 @@ public class StoreUI : MonoBehaviour
             storePanel.SetActive(true);
         }
 
+        // Ensure Canvas has GraphicRaycaster for UI interaction
+        Canvas canvas = storePanel?.GetComponentInParent<Canvas>();
+        if (canvas != null)
+        {
+            GraphicRaycaster raycaster = canvas.GetComponent<GraphicRaycaster>();
+            if (raycaster == null)
+            {
+                Debug.LogWarning("StoreUI: Canvas missing GraphicRaycaster! Adding it now.");
+                canvas.gameObject.AddComponent<GraphicRaycaster>();
+            }
+
+            // Ensure EventSystem exists
+            if (UnityEngine.EventSystems.EventSystem.current == null)
+            {
+                Debug.LogWarning("StoreUI: No EventSystem found! UI interactions may not work.");
+            }
+        }
+
         UpdateStoreDisplay();
     }
 
@@ -218,9 +236,23 @@ public class StoreUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles <<store>> command from Yarn scripts to open the store UI
+    /// Usage in Yarn: <<store>>
+    /// </summary>
+    [YarnCommand("store")]
+    public void OpenStore()
+    {
+        ShowStore();
+    }
+
     private void UpdateStoreDisplay()
     {
-        if (variableStorage == null) return;
+        if (variableStorage == null)
+        {
+            Debug.LogError("StoreUI: VariableStorage is null!");
+            return;
+        }
 
         float cash = GetFloat("$rapid_feedback_cash", 0f);
         int currentRun = GetCurrentRun();
@@ -234,11 +266,17 @@ public class StoreUI : MonoBehaviour
         // Update UI based on whether we're using buttons or text
         if (itemButtonContainer != null && itemButtonPrefab != null)
         {
+            Debug.Log($"StoreUI: Updating button-based store. Container: {itemButtonContainer.name}, Prefab: {itemButtonPrefab.name}, Items: {storeItems.Count}");
             UpdateButtonBasedStore(cash, currentRun, currentDay);
         }
         else if (storeItemsText != null)
         {
+            Debug.Log("StoreUI: Updating text-based store (fallback)");
             UpdateTextBasedStore(cash, currentRun, currentDay);
+        }
+        else
+        {
+            Debug.LogError("StoreUI: Neither itemButtonContainer/itemButtonPrefab nor storeItemsText are assigned! Cannot display store items.");
         }
     }
 
@@ -254,6 +292,14 @@ public class StoreUI : MonoBehaviour
         }
         itemButtons.Clear();
 
+        if (storeItems == null || storeItems.Count == 0)
+        {
+            Debug.LogError("StoreUI: storeItems list is empty! No items to display.");
+            return;
+        }
+
+        Debug.Log($"StoreUI: Creating buttons for {storeItems.Count} items");
+
         // Create buttons for each item
         foreach (var item in storeItems)
         {
@@ -262,6 +308,8 @@ public class StoreUI : MonoBehaviour
             bool affordable = cash >= item.cost;
 
             GameObject buttonObj = Instantiate(itemButtonPrefab, itemButtonContainer);
+            buttonObj.SetActive(true); // Ensure button is active
+            
             Button button = buttonObj.GetComponent<Button>();
             if (button == null)
             {
@@ -270,24 +318,98 @@ public class StoreUI : MonoBehaviour
 
             if (button != null)
             {
-                // Set button text
-                Component textComponent = buttonObj.GetComponentInChildren<Component>();
+                // Find text component - try TextMeshPro first, then Text
+                Component textComponent = null;
+#if USE_TMP
+                textComponent = buttonObj.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+#endif
+                if (textComponent == null)
+                {
+                    textComponent = buttonObj.GetComponentInChildren<UnityEngine.UI.Text>();
+                }
+                
                 if (textComponent != null)
                 {
                     string status = BuildItemStatus(item, isOwned, isAvailable, cash, currentRun, currentDay);
-                    string buttonText = $"{item.displayName}\n{item.description}\n{status}";
+                    // Show cost prominently at the beginning
+                    string costDisplay = isOwned ? "[OWNED]" : $"[{item.cost} Credits]";
+                    string buttonText = $"{costDisplay} {item.displayName}\n{item.description}\n{status}";
                     SetText(textComponent, buttonText);
                 }
+                else
+                {
+                    Debug.LogWarning($"StoreUI: Could not find text component in button for {item.displayName}");
+                }
 
-                // Enable/disable based on affordability and availability
-                button.interactable = !isOwned && isAvailable && affordable;
+                // Determine if button should be enabled (for visual styling)
+                bool shouldBeInteractable = !isOwned && isAvailable && affordable;
+                
+                // Keep button interactable so it can be clicked for feedback, but visually style it as disabled
+                button.interactable = true; // Always allow clicking for feedback
+                
+                // Apply visual styling to show disabled state
+                if (!shouldBeInteractable)
+                {
+                    // Make button appear disabled visually
+                    ColorBlock colors = button.colors;
+                    colors.normalColor = new Color(0.5f, 0.5f, 0.5f, 0.7f); // Grayed out
+                    colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.7f);
+                    button.colors = colors;
+                    
+                    Debug.Log($"StoreUI: Button for {item.displayName} appears disabled. Owned: {isOwned}, Available: {isAvailable}, Affordable: {affordable}, Cash: {cash}, Cost: {item.cost}");
+                }
 
-                // Set up click handler
+                // Set up click handler - always allow clicking to show feedback
                 string itemId = item.id; // Capture for closure
+                
                 button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => PurchaseItem(itemId));
+                button.onClick.AddListener(() => {
+                    Debug.Log($"StoreUI: Button clicked for {item.displayName} (ID: {itemId})");
+                    
+                    // Re-check current state (values may have changed)
+                    float currentCash = GetFloat("$rapid_feedback_cash", 0f);
+                    bool currentlyOwned = IsItemOwned(item);
+                    bool currentlyAvailable = IsItemCurrentlyAvailable(item, GetCurrentRun(), GetCurrentDay());
+                    bool currentlyAffordable = currentCash >= item.cost;
+                    
+                    // Check if purchase is valid before attempting
+                    if (currentlyOwned)
+                    {
+                        QueueNotification($"{item.displayName} is already owned.");
+                        return;
+                    }
+                    
+                    if (!currentlyAvailable)
+                    {
+                        QueueNotification($"{item.displayName} is not available.");
+                        return;
+                    }
+                    
+                    if (!currentlyAffordable)
+                    {
+                        float shortfall = item.cost - currentCash;
+                        QueueNotification($"Insufficient credits for {item.displayName}. Need {shortfall:F0} more credits. (You have {currentCash:F0})");
+                        return;
+                    }
+                    
+                    // All checks passed, proceed with purchase
+                    PurchaseItem(itemId);
+                });
+
+                // Ensure button can receive raycasts
+                CanvasGroup canvasGroup = buttonObj.GetComponent<CanvasGroup>();
+                if (canvasGroup == null)
+                {
+                    canvasGroup = buttonObj.AddComponent<CanvasGroup>();
+                }
+                canvasGroup.blocksRaycasts = true;
+                canvasGroup.interactable = true; // Always allow interaction
 
                 itemButtons[item.id] = button;
+            }
+            else
+            {
+                Debug.LogError($"StoreUI: Could not find Button component in prefab for {item.displayName}");
             }
         }
     }
@@ -305,16 +427,6 @@ public class StoreUI : MonoBehaviour
         }
 
         SetText(storeItemsText, storeText);
-    }
-
-    /// <summary>
-    /// Handles <<store>> command from Yarn scripts to open the store UI
-    /// Usage in Yarn: <<store>>
-    /// </summary>
-    [YarnCommand("store")]
-    public void OpenStore()
-    {
-        ShowStore();
     }
 
     /// <summary>

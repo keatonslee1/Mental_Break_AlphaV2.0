@@ -16,7 +16,7 @@ public class LoadMenuSetup : EditorWindow
     public static void SetupLoadMenu()
     {
         // Find or create Canvas
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = FindFirstObjectByType<Canvas>();
         if (canvas == null)
         {
             GameObject canvasObj = new GameObject("Canvas");
@@ -26,7 +26,7 @@ public class LoadMenuSetup : EditorWindow
             canvasObj.AddComponent<GraphicRaycaster>();
             
             // Create EventSystem if it doesn't exist
-            if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+            if (FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
             {
                 GameObject eventSystemObj = new GameObject("EventSystem");
                 eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();

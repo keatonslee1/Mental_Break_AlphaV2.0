@@ -16,7 +16,7 @@ public class PauseMenuSetup : EditorWindow
     public static void SetupPauseMenu()
     {
         // Find or create Canvas
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = FindFirstObjectByType<Canvas>();
         if (canvas == null)
         {
             GameObject canvasObj = new GameObject("Canvas");
@@ -26,7 +26,7 @@ public class PauseMenuSetup : EditorWindow
             canvasObj.AddComponent<GraphicRaycaster>();
             
             // Create EventSystem if it doesn't exist
-            if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+            if (FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
             {
                 GameObject eventSystemObj = new GameObject("EventSystem");
                 eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
@@ -238,7 +238,7 @@ public class PauseMenuSetup : EditorWindow
     private static void SetupPauseMenuManager(GameObject hintTextObj, GameObject panelObj)
     {
         // Find existing PauseMenuManager
-        PauseMenuManager manager = FindObjectOfType<PauseMenuManager>();
+        PauseMenuManager manager = FindFirstObjectByType<PauseMenuManager>();
         if (manager == null)
         {
             // Create new GameObject for PauseMenuManager

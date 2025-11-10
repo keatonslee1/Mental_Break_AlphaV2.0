@@ -36,23 +36,10 @@ title: SHOP_Visit
 tags: #scene #shop
 ---
 <<bg bg_companystore>>
-The Company Store hums to life as the rapid-feedback kiosk dispenses your credits. Neon placards highlight today's stock:
-- Mental Break — "Give Timmy a breather." +10 Sanity.
-- Blackout Curtains — "Better sleep." +14 Sanity now; -6 Engagement on the very next node.
-- Blue-Light Filter — "Warmer tones tonight." +15 Sanity tomorrow night; -1 Engagement each node tomorrow.
-- Screen Protector — "Be less interesting to supervisors." Grants persistent heat reduction.
-- Priority Shipping Label — "Parcel waved through." Unlocks a dual escape during the mailroom sequence.
-- Bow for Alice — "Cute accessory." +1 Engagement each time you pick a pro-engagement choice.
-- Corporate Bond — "10% yield in one day." Pays out next day; unavailable in Run 4.
-
-A holographic attendant gestures toward the terminals. Browse or bank your credits?
--> Browse the shelves
-    <<store>>
-    You close out the terminal, feeling the weight of your choices settle into the HUD.
-    <<jump SHOP_After>>
--> Save the credits for later
-    You step away, credits still glowing in your account.
-    <<jump SHOP_After>>
+The Company Store hums to life as the rapid-feedback kiosk dispenses your credits. A holographic attendant gestures toward the terminals.
+<<store>>
+You browse the available items and make your selections.
+<<jump SHOP_After>>
 
 ===
 
