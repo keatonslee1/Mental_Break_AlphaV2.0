@@ -385,22 +385,33 @@
         mobileUnityMessage.classList.remove("is-hidden");
         mobileUnityMessage.classList.add("show");
       }
-      if (loadingBar) {
-        loadingBar.style.display = "none";
-      }
+
+      const meta = document.createElement("meta");
+      meta.name = "viewport";
+      meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+      document.getElementsByTagName("head")[0].appendChild(meta);
+
       if (unityContainer) {
-        unityContainer.style.display = "none";
+        unityContainer.className = "unity-mobile";
       }
+      canvas.className = "unity-mobile";
+      config.devicePixelRatio = 1;
 
-      // Surface the dedicated launcher page instead of instantiating Unity inline on mobile.
-      // Mobile browsers require a user gesture to enter fullscreen, so we wait for the CTA tap
-      // to open mobile-play.html where the player sits alone in the viewport.
-      return;
+      if (isIOS) {
+        config.webglContextAttributes = {
+          powerPreference: "low-power",
+          antialias: false,
+          depth: true,
+          stencil: false,
+          alpha: false,
+          preserveDrawingBuffer: false
+        };
+      }
+    } else {
+      canvas.style.width = "100%";
+      canvas.style.height = "auto";
+      canvas.style.aspectRatio = "16 / 10";
     }
-
-    canvas.style.width = "100%";
-    canvas.style.height = "auto";
-    canvas.style.aspectRatio = "16 / 10";
 
     canvas.addEventListener("webglcontextlost", (event) => {
       event.preventDefault();
