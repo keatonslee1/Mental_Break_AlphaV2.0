@@ -96,6 +96,23 @@
   z-index: 1;
 }
 
+.single-page-hero-area .hero-content {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.single-hero-eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mb-accent-2);
+  margin-bottom: 16px;
+}
+
 .hero-wordmark {
   width: 320px;
   max-width: 92%;
@@ -135,7 +152,17 @@
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: none;
-  margin: 0 auto 12px;
+  margin: 0 auto 124px;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.single-page-hero-area .hero-content p {
+  padding: 0;
+}
+
+.single-page-hero-area .hero-content p.hero-deck {
+  max-width: 860px;
 }
 
 .hero-cta {
@@ -711,6 +738,12 @@
 
 .mission-area p {
   color: var(--mb-subtext);
+}
+
+.contact-area .projects-area,
+.contact-area .mission-area,
+.contact-area .cta-area {
+  background: transparent;
 }
 
 .mission-facts {
