@@ -1103,6 +1103,11 @@
   .mobile-unity-message {
     display: block;
   }
+
+  /* Unity 6 Web: keep template footer chrome off on mobile landing pages */
+  #unity-footer {
+    display: none !important;
+  }
 }
 
 @media (max-width: 767px) {

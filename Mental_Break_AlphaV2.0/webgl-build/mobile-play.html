@@ -143,6 +143,8 @@
     </main>
 
     <script>
+      // Unity 6.2 mobile launcher: this standalone page keeps the player full viewport.
+      // See https://docs.unity3d.com/6000.0/Documentation/Manual/web-platform.html for current web guidance.
       const canvas = document.querySelector("#unity-canvas");
       const progressBarFull = document.querySelector("#unity-progress-bar-full");
       const loadingBar = document.querySelector("#unity-loading-bar");
@@ -205,30 +207,38 @@
         if (loadingBar) loadingBar.style.display = "none";
       }
 
+      if (loadingBar) {
+        loadingBar.style.display = "block";
+      }
+
       document.body.addEventListener("touchmove", (event) => {
         if (document.activeElement === document.body) {
           event.preventDefault();
         }
       }, { passive: false });
 
-      const script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, showLoading)
-          .then(() => {
-            hideLoading();
-          })
-          .catch((message) => {
-            hideLoading();
-            console.error("[Unity Web] Failed to load game", message);
-            const reason = typeof message === "string" ? message : message?.message || "Unknown error";
-            unityShowBanner("Failed to load game: " + reason, "error");
-          });
-      };
-      script.onerror = () => {
-        unityShowBanner("Failed to load Unity loader script. Please check your connection and try again.", "error");
-      };
-      document.body.appendChild(script);
+      let loaderInjected = false;
+      if (!loaderInjected) {
+        loaderInjected = true;
+        const script = document.createElement("script");
+        script.src = loaderUrl;
+        script.onload = () => {
+          createUnityInstance(canvas, config, showLoading)
+            .then(() => {
+              hideLoading();
+            })
+            .catch((message) => {
+              hideLoading();
+              console.error("[Unity Web] Failed to load game", message);
+              const reason = typeof message === "string" ? message : message?.message || "Unknown error";
+              unityShowBanner("Failed to load game: " + reason, "error");
+            });
+        };
+        script.onerror = () => {
+          unityShowBanner("Failed to load Unity loader script. Please check your connection and try again.", "error");
+        };
+        document.body.appendChild(script);
+      }
     </script>
   </body>
 </html>

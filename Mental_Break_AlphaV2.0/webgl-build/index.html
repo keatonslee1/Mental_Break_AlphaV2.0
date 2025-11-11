@@ -357,7 +357,7 @@
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Keaton Media",
         productName: "Mental Break",
-        productVersion: "3.0",
+        productVersion: "3.1",
         showBanner: unityShowBanner
       };
 
@@ -372,30 +372,22 @@
           mobileUnityMessage.classList.remove("is-hidden");
           mobileUnityMessage.classList.add("show");
         }
-        if (unityContainer) {
-          unityContainer.classList.add("unity-hidden");
-        }
         if (loadingBar) {
           loadingBar.style.display = "none";
         }
+        if (unityContainer) {
+          unityContainer.style.display = "none";
+        }
 
-        // Mobile/iOS guidance (Unity Web 6): rely on Unity's own context creation but bias it toward
-        // low power GPUs. Do NOT call canvas.getContext manually or set config.majorVersion—the
-        // engine chooses the appropriate graphics backend (WebGPU/WebGL2) based on Player Settings.
-        const meta = document.createElement("meta");
-        meta.name = "viewport";
-        meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
-        document.getElementsByTagName("head")[0].appendChild(meta);
-
-        console.info("[Unity Web] Mobile visitors are directed to mobile-play.html for a larger viewport experience.");
-        // We do not load the embedded player on mobile to avoid inconsistent fullscreen behaviour.
-        // The dedicated mobile page requests fullscreen with a user gesture where the API is available.
+        // Surface the dedicated launcher page instead of instantiating Unity inline on mobile.
+        // Mobile browsers require a user gesture to enter fullscreen, so we wait for the CTA tap
+        // to open mobile-play.html where the player sits alone in the viewport.
         return;
-      } else {
-        canvas.style.width = "100%";
-        canvas.style.height = "auto";
-        canvas.style.aspectRatio = "16 / 10";
       }
+
+      canvas.style.width = "100%";
+      canvas.style.height = "auto";
+      canvas.style.aspectRatio = "16 / 10";
 
       canvas.addEventListener("webglcontextlost", (event) => {
         event.preventDefault();
