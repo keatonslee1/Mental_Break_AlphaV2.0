@@ -172,6 +172,24 @@
   flex-wrap: wrap;
 }
 
+.mobile-only-btn {
+  display: none;
+}
+
+.mobile-unity-message {
+  display: none;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.mobile-unity-message__cta {
+  margin-top: 10px;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
 .theme-btn {
   background: var(--mb-accent);
   border: 1px solid transparent;
@@ -240,6 +258,10 @@
   top: auto !important;
   left: auto !important;
   transform: none !important;
+}
+
+#unity-container.unity-hidden {
+  display: none !important;
 }
 
 #unity-container.unity-desktop {
@@ -1072,6 +1094,14 @@
 
   .timeline-card {
     min-height: auto;
+  }
+
+  .mobile-only-btn {
+    display: inline-flex;
+  }
+
+  .mobile-unity-message {
+    display: block;
   }
 }
 

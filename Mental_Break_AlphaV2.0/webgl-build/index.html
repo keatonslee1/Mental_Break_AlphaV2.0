@@ -107,6 +107,7 @@
               <div class="hero-cta">
                 <a class="theme-btn" href="#play">Play in Browser</a>
                 <a class="theme-btn theme-btn--outline" href="https://discord.gg/peHA2uHW" target="_blank" rel="noopener">Join the Discord</a>
+                <a id="mobile-hero-play" class="theme-btn mobile-only-btn is-hidden" href="mobile-play.html">Launch Mobile Version</a>
               </div>
             </div>
             <div class="company-list">
@@ -131,6 +132,11 @@
         <div class="row">
           <div class="col-12">
             <div class="unity-frame glassy-panel">
+              <div id="mobile-unity-message" class="mobile-unity-message glassy-panel is-hidden">
+                <h3>Play on Your Phone</h3>
+                <p>We launch the Unity build on a dedicated page so your browser can give it the largest possible viewport on mobile.</p>
+                <a class="theme-btn mobile-unity-message__cta" href="mobile-play.html">Open Mobile Version</a>
+              </div>
               <div id="unity-container" class="unity-desktop">
                 <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
                 <div id="unity-loading-bar">
@@ -311,6 +317,11 @@
       // with the guidance documented in docs/UNITY_WEB_BUILD.md when updating Unity versions.
       const canvas = document.querySelector("#unity-canvas");
       const unityContainer = document.querySelector("#unity-container");
+      const loadingBar = document.querySelector("#unity-loading-bar");
+      const progressBarFull = document.querySelector("#unity-progress-bar-full");
+      const fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      const mobileHeroButton = document.querySelector("#mobile-hero-play");
+      const mobileUnityMessage = document.querySelector("#mobile-unity-message");
 
       function unityShowBanner(msg, type) {
         const warningBanner = document.querySelector("#unity-warning");
@@ -354,6 +365,20 @@
       const isMobile = isIOS || /Android/i.test(navigator.userAgent);
 
       if (isMobile) {
+        if (mobileHeroButton) {
+          mobileHeroButton.classList.remove("is-hidden");
+        }
+        if (mobileUnityMessage) {
+          mobileUnityMessage.classList.remove("is-hidden");
+          mobileUnityMessage.classList.add("show");
+        }
+        if (unityContainer) {
+          unityContainer.classList.add("unity-hidden");
+        }
+        if (loadingBar) {
+          loadingBar.style.display = "none";
+        }
+
         // Mobile/iOS guidance (Unity Web 6): rely on Unity's own context creation but bias it toward
         // low power GPUs. Do NOT call canvas.getContext manually or set config.majorVersion—the
         // engine chooses the appropriate graphics backend (WebGPU/WebGL2) based on Player Settings.
@@ -362,24 +387,10 @@
         meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
         document.getElementsByTagName("head")[0].appendChild(meta);
 
-        if (unityContainer) {
-          unityContainer.className = "unity-mobile";
-        }
-        canvas.className = "unity-mobile";
-        config.devicePixelRatio = 1;
-
-        if (isIOS) {
-          // Safari on iOS rejects high-performance contexts. Unity 6 will crash if we request one,
-          // so keep these attributes conservative and aligned with ProjectSettings.webGLPowerPreference = 1.
-          config.webglContextAttributes = {
-            powerPreference: "low-power",
-            antialias: false,
-            depth: true,
-            stencil: false,
-            alpha: false,
-            preserveDrawingBuffer: false
-          };
-        }
+        console.info("[Unity Web] Mobile visitors are directed to mobile-play.html for a larger viewport experience.");
+        // We do not load the embedded player on mobile to avoid inconsistent fullscreen behaviour.
+        // The dedicated mobile page requests fullscreen with a user gesture where the API is available.
+        return;
       } else {
         canvas.style.width = "100%";
         canvas.style.height = "auto";
@@ -399,21 +410,32 @@
         unityShowBanner("WebGL context restored.", "warning");
       });
 
-      document.querySelector("#unity-loading-bar").style.display = "block";
+      if (loadingBar) {
+        loadingBar.style.display = "block";
+      }
 
       const script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
-          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+          if (progressBarFull) {
+            progressBarFull.style.width = 100 * progress + "%";
+          }
         })
           .then((unityInstance) => {
-            document.querySelector("#unity-loading-bar").style.display = "none";
-            document.querySelector("#unity-fullscreen-button").onclick = () => {
-              unityInstance.SetFullscreen(1);
-            };
+            if (loadingBar) {
+              loadingBar.style.display = "none";
+            }
+            if (fullscreenButton) {
+              fullscreenButton.onclick = () => {
+                unityInstance.SetFullscreen(1);
+              };
+            }
           })
           .catch((message) => {
+            if (loadingBar) {
+              loadingBar.style.display = "none";
+            }
             console.error("[Unity Web] Failed to load game", message);
             const reason = typeof message === "string" ? message : message?.message || "Unknown error";
             unityShowBanner("Failed to load game: " + reason, "error");

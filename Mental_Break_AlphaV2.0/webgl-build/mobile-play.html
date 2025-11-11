@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mental Break · Mobile Play</title>
+    <meta name="description" content="Launch the Mental Break Unity build in a fullscreen-style view tailored for mobile browsers.">
+
+    <link rel="icon" type="image/png" href="TemplateData/favicon-48x48.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="TemplateData/style.css?v=2.1">
+    <link rel="stylesheet" href="assets/css/mental-break.css?v=20251111a">
+
+    <style>
+      body.mobile-play {
+        margin: 0;
+        background: #030012;
+        color: #f0f3ff;
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .mobile-play__topbar {
+        position: sticky;
+        top: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        background: rgba(6, 0, 20, 0.82);
+        border-bottom: 1px solid rgba(116, 96, 207, 0.35);
+        z-index: 5;
+        backdrop-filter: blur(18px);
+      }
+
+      .mobile-play__logo {
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #4ce9ff;
+        font-size: 0.95rem;
+        text-decoration: none;
+      }
+
+      .mobile-play__back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 45, 210, 0.45);
+        color: #ff9f3d;
+        font-size: 0.9rem;
+        text-decoration: none;
+        background: rgba(18, 4, 42, 0.8);
+      }
+
+      .mobile-play__back:focus,
+      .mobile-play__back:hover {
+        background: rgba(255, 45, 210, 0.2);
+        color: #4ce9ff;
+      }
+
+      .mobile-play__content {
+        flex: 1;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #unity-container {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0a0014;
+      }
+
+      #unity-canvas {
+        width: 100vw;
+        height: 100vh;
+        touch-action: none;
+        background: #0a0014;
+      }
+
+      #unity-footer {
+        display: none;
+      }
+
+      #mobile-return-banner {
+        position: absolute;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%);
+        padding: 10px 16px;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        background: rgba(6, 0, 20, 0.72);
+        border: 1px solid rgba(255, 45, 210, 0.35);
+        color: #f0f3ff;
+        pointer-events: none;
+        opacity: 0.85;
+      }
+
+      @media (min-width: 769px) {
+        #mobile-return-banner {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="mobile-play">
+    <header class="mobile-play__topbar">
+      <a class="mobile-play__logo" href="index.html">Mental Break</a>
+      <a class="mobile-play__back" href="index.html">
+        <span aria-hidden="true">⟵</span>
+        <span>Back to Site</span>
+      </a>
+    </header>
+
+    <main class="mobile-play__content">
+      <div id="unity-container" class="unity-mobile">
+        <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+        <div id="unity-loading-bar">
+          <div id="unity-logo"></div>
+          <div id="unity-progress-bar-empty">
+            <div id="unity-progress-bar-full"></div>
+          </div>
+        </div>
+        <div id="unity-warning"></div>
+        <div id="unity-footer"></div>
+      </div>
+      <div id="mobile-return-banner">Tap the ⟵ button to exit</div>
+    </main>
+
+    <script>
+      const canvas = document.querySelector("#unity-canvas");
+      const progressBarFull = document.querySelector("#unity-progress-bar-full");
+      const loadingBar = document.querySelector("#unity-loading-bar");
+
+      function unityShowBanner(msg, type) {
+        const warningBanner = document.querySelector("#unity-warning");
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+        }
+        const div = document.createElement("div");
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type === "error") {
+          div.style = "background: #ff3366; color: #ffffff; padding: 10px; border-radius: 4px;";
+        } else {
+          if (type === "warning") {
+            div.style = "background: #ffaa00; color: #000000; padding: 10px; border-radius: 4px;";
+          }
+          setTimeout(() => {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      const buildUrl = "Build";
+      const loaderUrl = buildUrl + "/webgl-build.loader.js";
+      const config = {
+        arguments: [],
+        dataUrl: buildUrl + "/webgl-build.data.unityweb",
+        frameworkUrl: buildUrl + "/webgl-build.framework.js.unityweb",
+        codeUrl: buildUrl + "/webgl-build.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Keaton Media",
+        productName: "Mental Break",
+        productVersion: "3.1",
+        showBanner: unityShowBanner,
+        devicePixelRatio: 1
+      };
+
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isIOS) {
+        config.webglContextAttributes = {
+          powerPreference: "low-power",
+          antialias: false,
+          depth: true,
+          stencil: false,
+          alpha: false,
+          preserveDrawingBuffer: false
+        };
+      }
+
+      function showLoading(progress) {
+        if (loadingBar) loadingBar.style.display = "block";
+        if (progressBarFull) progressBarFull.style.width = `${progress * 100}%`;
+      }
+
+      function hideLoading() {
+        if (loadingBar) loadingBar.style.display = "none";
+      }
+
+      document.body.addEventListener("touchmove", (event) => {
+        if (document.activeElement === document.body) {
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      const script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, showLoading)
+          .then(() => {
+            hideLoading();
+          })
+          .catch((message) => {
+            hideLoading();
+            console.error("[Unity Web] Failed to load game", message);
+            const reason = typeof message === "string" ? message : message?.message || "Unknown error";
+            unityShowBanner("Failed to load game: " + reason, "error");
+          });
+      };
+      script.onerror = () => {
+        unityShowBanner("Failed to load Unity loader script. Please check your connection and try again.", "error");
+      };
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>
