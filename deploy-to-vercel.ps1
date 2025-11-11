@@ -16,7 +16,7 @@ if (Test-Path "webgl-build") {
     $buildPath = "Mental_Break_AlphaV2.0/webgl-build"
 } else {
     Write-Host "ERROR: webgl-build/ directory not found!" -ForegroundColor Red
-    Write-Host "Please build Unity WebGL project first. See BUILD_INSTRUCTIONS.md" -ForegroundColor Yellow
+    Write-Host "Please build Unity WebGL project first. See docs/BUILD.md" -ForegroundColor Yellow
     exit 1
 }
 

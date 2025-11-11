@@ -9,7 +9,7 @@ echo "Deploying Mental Break to Vercel..."
 # Check if webgl-build exists
 if [ ! -d "webgl-build" ]; then
     echo "ERROR: webgl-build/ directory not found!"
-    echo "Please build Unity WebGL project first. See BUILD_INSTRUCTIONS.md"
+    echo "Please build Unity WebGL project first. See docs/BUILD.md"
     exit 1
 fi
 
