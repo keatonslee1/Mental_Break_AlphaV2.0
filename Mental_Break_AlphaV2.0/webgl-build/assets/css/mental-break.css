@@ -113,12 +113,29 @@
   color: var(--mb-text);
 }
 
-.hero-content p {
+.hero-headline {
+  letter-spacing: 0.18em;
+}
+
+.hero-deck {
+  margin-top: 0;
+}
+
+.hero-content p:not(.hero-subline) {
   color: var(--mb-subtext);
   max-width: 680px;
   margin: 0 auto 30px;
   font-size: 1.05rem;
   line-height: 1.7;
+}
+
+.hero-subline {
+  color: var(--mb-accent-2);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: none;
+  margin: 0 auto 12px;
 }
 
 .hero-cta {
