@@ -129,7 +129,7 @@
   line-height: 1.7;
 }
 
-.hero-subline {
+.hero-content p.hero-subline {
   color: var(--mb-accent-2);
   font-size: 1rem;
   font-weight: 600;

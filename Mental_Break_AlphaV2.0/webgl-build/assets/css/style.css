@@ -1268,7 +1268,7 @@ html {
     color: var(--text-color);
 }
 
-.hero-content p {
+.hero-content p:not(.hero-subline) {
     color: var(--text-color);
     font-size: 20px;
     margin-bottom: 30px;
