@@ -305,6 +305,10 @@
     <script src="assets/js/script.js"></script>
 
     <script>
+      // Unity 6 ("Unity Web") build notes:
+      // This template relies on Unity's WebGL2 flow. Do not reintroduce the legacy WebGL1 fallback
+      // that older builds used—Unity 6 dropped WebGL1 support entirely. Keep this section in sync
+      // with the guidance documented in docs/UNITY_WEB_BUILD.md when updating Unity versions.
       const canvas = document.querySelector("#unity-canvas");
       const unityContainer = document.querySelector("#unity-container");
 
@@ -332,6 +336,8 @@
 
       const buildUrl = "Build";
       const loaderUrl = buildUrl + "/webgl-build.loader.js";
+      // Unity 6 expects these *.unityweb artifacts (gzip compressed). If compression settings change,
+      // update docs/UNITY_WEB_BUILD.md and vercel.json alongside these URLs.
       const config = {
         arguments: [],
         dataUrl: buildUrl + "/webgl-build.data.unityweb",
@@ -348,6 +354,9 @@
       const isMobile = isIOS || /Android/i.test(navigator.userAgent);
 
       if (isMobile) {
+        // Mobile/iOS guidance (Unity Web 6): rely on Unity's own context creation but bias it toward
+        // low power GPUs. Do NOT call canvas.getContext manually or set config.majorVersion—the
+        // engine chooses the appropriate graphics backend (WebGPU/WebGL2) based on Player Settings.
         const meta = document.createElement("meta");
         meta.name = "viewport";
         meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
@@ -360,6 +369,8 @@
         config.devicePixelRatio = 1;
 
         if (isIOS) {
+          // Safari on iOS rejects high-performance contexts. Unity 6 will crash if we request one,
+          // so keep these attributes conservative and aligned with ProjectSettings.webGLPowerPreference = 1.
           config.webglContextAttributes = {
             powerPreference: "low-power",
             antialias: false,
@@ -377,6 +388,8 @@
 
       canvas.addEventListener("webglcontextlost", (event) => {
         event.preventDefault();
+        // Unity Web 6 handles context restoration internally, but we surface a banner so QA notices
+        // the loss instead of chasing "GL.contexts" errors that plagued the pre-Unity 6 template.
         console.warn("[Unity Web] WebGL context lost", event);
         unityShowBanner("WebGL context was lost. The game paused; reload if it does not resume.", "warning");
       });
