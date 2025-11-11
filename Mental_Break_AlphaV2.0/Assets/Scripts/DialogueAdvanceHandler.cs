@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using Yarn.Unity;
 
 #if ENABLE_INPUT_SYSTEM
@@ -10,13 +11,13 @@ using UnityEngine.InputSystem;
 
 #if USE_TMP
 using TMPro;
-#else
-using UnityEngine.UI;
 #endif
 
 /// <summary>
-/// Handles Enter key and click-to-advance functionality for dialogue progression.
-/// Adds Enter key support and click detection on the dialogue text box to advance dialogue.
+/// Handles Enter key and click/tap-to-advance functionality for dialogue progression.
+/// Adds Enter key support and click/tap detection on the dialogue text box to advance dialogue.
+/// Unity 6 Web: IPointerClickHandler automatically handles both mouse clicks and touch taps on mobile browsers
+/// through Unity's EventSystem, so no special touch input handling is required.
 /// </summary>
 public class DialogueAdvanceHandler : MonoBehaviour, IPointerClickHandler
 {
@@ -113,6 +114,8 @@ public class DialogueAdvanceHandler : MonoBehaviour, IPointerClickHandler
 
         // Check which input system is active
         CheckInputSystem();
+
+        EnsureClickAdvanceConfiguration();
     }
 
     private void CheckInputSystem()
@@ -192,7 +195,9 @@ public class DialogueAdvanceHandler : MonoBehaviour, IPointerClickHandler
     }
 
     /// <summary>
-    /// Handles click events on the dialogue text box
+    /// Handles click/tap events on the dialogue text box.
+    /// Unity 6 Web: IPointerClickHandler works for both mouse clicks and touch taps on mobile browsers.
+    /// The EventSystem automatically routes touch input to pointer events, so no special touch handling is needed.
     /// </summary>
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -207,18 +212,18 @@ public class DialogueAdvanceHandler : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        // Only process clicks if we're showing dialogue (not options)
+        // Only process clicks/taps if we're showing dialogue (not options)
+        // Options have their own click handlers, so we should not advance when they're visible
         if (IsShowingOptions())
         {
             return;
         }
 
-        // Check if we're currently showing a line using improved detection
-        if (!IsShowingDialogueLineImproved())
-        {
-            return;
-        }
-
+        // Simplified check: if dialogue is running and no options are showing, allow advance.
+        // The previous IsShowingDialogueLineImproved() check was too restrictive and could fail
+        // when reflection couldn't access internal Yarn Spinner state, blocking legitimate taps/clicks.
+        // Unity 6 Web: This simpler approach works reliably for clicks/taps anywhere on the dialogue box.
+        
         // Advance dialogue
         dialogueRunner.RequestNextLine();
     }
@@ -297,6 +302,42 @@ public class DialogueAdvanceHandler : MonoBehaviour, IPointerClickHandler
         }
 
         return true;
+    }
+
+    private void EnsureClickAdvanceConfiguration()
+    {
+        // Unity 6 Web: even if the prefab disables click-to-advance, we force enable it here so
+        // mouse/touch taps always advance dialogue on WebGL/mobile browsers.
+        if (!enableClickToAdvance)
+        {
+            enableClickToAdvance = true;
+            Debug.Log("DialogueAdvanceHandler: enableClickToAdvance was disabled; re-enabling to support tap-to-progress across mouse and touch.");
+        }
+
+        if (!enableClickToAdvance)
+        {
+            return;
+        }
+
+        EnsureGraphicRaycastTarget(gameObject);
+
+        if (dialogueText != null)
+        {
+            EnsureGraphicRaycastTarget(dialogueText.gameObject);
+        }
+    }
+
+    private static void EnsureGraphicRaycastTarget(GameObject target)
+    {
+        if (target.TryGetComponent<Graphic>(out var graphic))
+        {
+            graphic.raycastTarget = true;
+            return;
+        }
+
+        var image = target.AddComponent<Image>();
+        image.color = new Color(0f, 0f, 0f, 0f);
+        image.raycastTarget = true;
     }
 }
 
