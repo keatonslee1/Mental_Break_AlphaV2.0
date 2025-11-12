@@ -165,6 +165,8 @@
       const progressBarFull = document.querySelector("#unity-progress-bar-full");
       const loadingBar = document.querySelector("#unity-loading-bar");
 
+      let debugState = {};
+
       const debugOverlay = (() => {
         const panel = document.createElement("div");
         panel.id = "unity-debug-overlay";
@@ -173,43 +175,71 @@
         return panel;
       })();
 
-      function updateDebugOverlay(info = {}) {
+      function updateDebugOverlay(update = {}) {
         if (!debugOverlay) return;
+
+        debugState = { ...debugState, ...update };
 
         const fmt = (value, fallback = "—") =>
           value === undefined || value === null || Number.isNaN(value) ? fallback : value;
 
         const lines = ["Unity metrics"];
 
-        if (info.viewport) {
-          lines.push(`Viewport (css): ${fmt(Math.round(info.viewport.width))}×${fmt(Math.round(info.viewport.height))}`);
+        if (debugState.viewport) {
+          lines.push(
+            `Viewport (css): ${fmt(Math.round(debugState.viewport.width))}×${fmt(
+              Math.round(debugState.viewport.height)
+            )}`
+          );
         }
-        if (info.boxLandscape) {
-          lines.push(`Landscape box: ${fmt(Math.round(info.boxLandscape.width))}×${fmt(Math.round(info.boxLandscape.height))}`);
+        if (debugState.boxLandscape) {
+          lines.push(
+            `Landscape box: ${fmt(Math.round(debugState.boxLandscape.width))}×${fmt(
+              Math.round(debugState.boxLandscape.height)
+            )}`
+          );
         }
-        if (info.unity) {
-          lines.push(`Unity target (landscape): ${fmt(Math.round(info.unity.width))}×${fmt(Math.round(info.unity.height))}`);
+        if (debugState.unity) {
+          lines.push(
+            `Unity target (landscape): ${fmt(Math.round(debugState.unity.width))}×${fmt(
+              Math.round(debugState.unity.height)
+            )}`
+          );
         }
-        if (info.canvasCss) {
-          lines.push(`Canvas CSS: ${fmt(info.canvasCss.width)}×${fmt(info.canvasCss.height)}`);
+        if (debugState.canvasCss) {
+          lines.push(
+            `Canvas CSS: ${fmt(debugState.canvasCss.width)}×${fmt(debugState.canvasCss.height)}`
+          );
         }
-        if (info.canvasPixels) {
-          lines.push(`Canvas pixels: ${fmt(info.canvasPixels.width)}×${fmt(info.canvasPixels.height)}`);
+        if (debugState.canvasPixels) {
+          lines.push(
+            `Canvas pixels: ${fmt(debugState.canvasPixels.width)}×${fmt(
+              debugState.canvasPixels.height
+            )}`
+          );
         }
-        if (info.moduleCanvas) {
-          lines.push(`Module canvas: ${fmt(info.moduleCanvas.width)}×${fmt(info.moduleCanvas.height)}`);
+        if (debugState.moduleCanvas) {
+          lines.push(
+            `Module canvas: ${fmt(debugState.moduleCanvas.width)}×${fmt(
+              debugState.moduleCanvas.height
+            )}`
+          );
         }
-        if (info.drawingBuffer) {
-          lines.push(`GL drawing buffer: ${fmt(info.drawingBuffer.width)}×${fmt(info.drawingBuffer.height)}`);
+        if (debugState.drawingBuffer) {
+          lines.push(
+            `GL drawing buffer: ${fmt(debugState.drawingBuffer.width)}×${fmt(
+              debugState.drawingBuffer.height
+            )}`
+          );
         }
-        if (info.devicePixelRatio !== undefined) {
-          lines.push(`devicePixelRatio: ${fmt(info.devicePixelRatio)}`);
+        if (debugState.devicePixelRatio !== undefined) {
+          lines.push(`devicePixelRatio: ${fmt(debugState.devicePixelRatio)}`);
         }
-        if (info.rotation !== undefined) {
-          lines.push(`Wrapper rotation: ${fmt(info.rotation)}°`);
+        if (debugState.rotation !== undefined) {
+          lines.push(`Wrapper rotation: ${fmt(debugState.rotation)}°`);
         }
-        if (info.notes) {
-          lines.push(`Notes: ${info.notes}`);
+        if (debugState.notes) {
+          lines.push(`Notes: ${debugState.notes}`);
         }
 
         debugOverlay.textContent = lines.join("\n");
@@ -298,8 +328,8 @@
 
         // Rotation wrapper settings
         let wrapperRotation = isLandscape ? 0 : -90;
-        let wrapperWidth = isLandscape ? viewport.width : viewport.height;   // before rotation
-        let wrapperHeight = isLandscape ? viewport.height : viewport.width;  // before rotation
+        let wrapperWidth = unityWidth;
+        let wrapperHeight = unityHeight;
         
         // Set wrapper rotation and dimensions
         // Center the wrapper using translate(-50%, -50%) combined with rotation
@@ -474,6 +504,18 @@
               
               // Store instance globally for resize events
               window.unityInstance = unityInstance;
+
+              try {
+                const moduleKeys = Object.keys(unityInstance.Module || {});
+                const interesting = moduleKeys.filter((k) =>
+                  /canvas|resolution|size|screen|display/i.test(k)
+                );
+                updateDebugOverlay({
+                  notes: `Module keys: ${interesting.slice(0, 25).join(", ") || "(none)"}`
+                });
+              } catch (err) {
+                console.warn("Debug overlay module key scan failed", err);
+              }
             })
             .catch((message) => {
               hideLoading();
