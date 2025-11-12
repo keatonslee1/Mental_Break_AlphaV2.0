@@ -86,13 +86,10 @@
       }
 
       #unity-rotation-wrapper {
-        position: absolute;
-        top: 50%;
-        left: 50%;
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        transform-origin: center center;
       }
 
       #unity-canvas {
@@ -194,14 +191,14 @@
         }
         if (debugState.boxLandscape) {
           lines.push(
-            `Landscape box: ${fmt(Math.round(debugState.boxLandscape.width))}×${fmt(
+            `Build native (landscape): ${fmt(Math.round(debugState.boxLandscape.width))}×${fmt(
               Math.round(debugState.boxLandscape.height)
             )}`
           );
         }
         if (debugState.unity) {
           lines.push(
-            `Unity target (landscape): ${fmt(Math.round(debugState.unity.width))}×${fmt(
+            `Unity canvas (css): ${fmt(Math.round(debugState.unity.width))}×${fmt(
               Math.round(debugState.unity.height)
             )}`
           );
@@ -236,7 +233,12 @@
           lines.push(`devicePixelRatio: ${fmt(debugState.devicePixelRatio)}`);
         }
         if (debugState.rotation !== undefined) {
-          lines.push(`Wrapper rotation: ${fmt(debugState.rotation)}°`);
+          lines.push(`Canvas rotation: ${fmt(debugState.rotation)}°`);
+        }
+        if (debugState.scale !== undefined) {
+          const scaleDisplay =
+            typeof debugState.scale === "number" ? debugState.scale.toFixed(2) : fmt(debugState.scale);
+          lines.push(`Scale vs 600px width: ${scaleDisplay}`);
         }
         if (debugState.notes) {
           lines.push(`Notes: ${debugState.notes}`);
@@ -285,8 +287,10 @@
         };
       }
 
-      const UNITY_NATIVE_WIDTH = 960; // engine's landscape width
-      const UNITY_NATIVE_HEIGHT = 600; // engine's landscape height
+      const UNITY_LANDSCAPE_WIDTH = 960;
+      const UNITY_LANDSCAPE_HEIGHT = 600;
+      const PORTRAIT_BASE_WIDTH = UNITY_LANDSCAPE_HEIGHT; // 600
+      const PORTRAIT_BASE_HEIGHT = UNITY_LANDSCAPE_WIDTH; // 960
 
       function resizeForMobileCanvas(unityInstance = null) {
         const viewport = getAvailableViewport();
@@ -301,30 +305,28 @@
         const availableWidth = viewport.width;
         const availableHeight = viewport.height;
 
-        // Render into a portrait buffer (swap native width/height) so the rotated output fills the phone
-        const portraitWidth = UNITY_NATIVE_HEIGHT; // 600
-        const portraitHeight = UNITY_NATIVE_WIDTH; // 960
+        const portraitAspect = PORTRAIT_BASE_WIDTH / PORTRAIT_BASE_HEIGHT; // ~0.625
+        let targetWidth = availableWidth;
+        let targetHeight = targetWidth / portraitAspect;
 
-        if (rotationWrapper) {
-          rotationWrapper.style.width = `${portraitWidth}px`;
-          rotationWrapper.style.height = `${portraitHeight}px`;
+        if (targetHeight > availableHeight) {
+          targetHeight = availableHeight;
+          targetWidth = targetHeight * portraitAspect;
         }
 
-        canvas.style.width = `${portraitWidth}px`;
-        canvas.style.height = `${portraitHeight}px`;
-        canvas.width = Math.floor(portraitWidth * devicePixelRatio);
-        canvas.height = Math.floor(portraitHeight * devicePixelRatio);
-
-        // After rotating -90°, the displayed width corresponds to portraitHeight (960)
-        // and the displayed height corresponds to portraitWidth (600)
-        const scaleX = availableWidth / portraitHeight;
-        const scaleY = availableHeight / portraitWidth;
-        const scale = Math.max(scaleX, scaleY);
-
-        const wrapperRotation = -90;
         if (rotationWrapper) {
-          rotationWrapper.style.transform = `translate(-50%, -50%) rotate(${wrapperRotation}deg) scale(${scale})`;
+          rotationWrapper.style.width = `${targetWidth}px`;
+          rotationWrapper.style.height = `${targetHeight}px`;
+          rotationWrapper.style.transform = "none";
         }
+
+        canvas.style.width = `${targetWidth}px`;
+        canvas.style.height = `${targetHeight}px`;
+
+        const pixelWidth = Math.floor(targetWidth * devicePixelRatio);
+        const pixelHeight = Math.floor(targetHeight * devicePixelRatio);
+        canvas.width = Math.max(pixelWidth, 1);
+        canvas.height = Math.max(pixelHeight, 1);
 
         const moduleCanvas = unityInstance?.Module?.canvas;
         const glContext = unityInstance?.Module?.GLctx || unityInstance?.Module?.ctx;
@@ -337,8 +339,8 @@
 
         updateDebugOverlay({
           viewport,
-          boxLandscape: { width: UNITY_NATIVE_WIDTH, height: UNITY_NATIVE_HEIGHT },
-          unity: { width: portraitWidth, height: portraitHeight },
+          boxLandscape: { width: UNITY_LANDSCAPE_WIDTH, height: UNITY_LANDSCAPE_HEIGHT },
+          unity: { width: targetWidth, height: targetHeight },
           canvasCss: { width: canvas.style.width, height: canvas.style.height },
           canvasPixels: { width: canvas.width, height: canvas.height },
           moduleCanvas: moduleCanvas
@@ -346,8 +348,8 @@
             : null,
           drawingBuffer,
           devicePixelRatio,
-          rotation: wrapperRotation,
-          scale
+          rotation: 0,
+          scale: targetWidth / PORTRAIT_BASE_WIDTH
         });
       }
 
