@@ -1,425 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mental Break · Mobile Play</title>
-    <meta name="description" content="Launch the Mental Break Unity build in a fullscreen-style view tailored for mobile browsers.">
 
-    <link rel="icon" type="image/png" href="TemplateData/favicon-48x48.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="TemplateData/style.css?v=2.1">
-    <link rel="stylesheet" href="assets/css/mental-break.css?v=20251111a">
+    <link rel="icon" type="image/png" href="TemplateData/favicon-48x48.png" />
+    <link rel="stylesheet" href="TemplateData/style.css?v=2.1" />
 
     <style>
-      body.mobile-play {
+      html,
+      body {
         margin: 0;
-        background: #030012;
-        color: #f0f3ff;
-        font-family: "Inter", sans-serif;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
+        height: 100%;
+        background: #000;
       }
 
-      .mobile-play__topbar {
-        position: sticky;
-        top: 0;
+      body {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        padding: 16px 20px;
-        background: rgba(6, 0, 20, 0.82);
-        border-bottom: 1px solid rgba(116, 96, 207, 0.35);
-        z-index: 5;
-        backdrop-filter: blur(18px);
-      }
-
-      .mobile-play__logo {
-        font-weight: 700;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: #4ce9ff;
-        font-size: 0.95rem;
-        text-decoration: none;
-      }
-
-      .mobile-play__back {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 45, 210, 0.45);
-        color: #ff9f3d;
-        font-size: 0.9rem;
-        text-decoration: none;
-        background: rgba(18, 4, 42, 0.8);
-      }
-
-      .mobile-play__back:focus,
-      .mobile-play__back:hover {
-        background: rgba(255, 45, 210, 0.2);
-        color: #4ce9ff;
-      }
-
-      .mobile-play__content {
-        flex: 1;
-        position: relative;
-        display: flex;
-        flex-direction: column;
+        justify-content: center;
+        background: #000;
       }
 
       #unity-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
+        position: relative;
+        width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #0a0014;
+        background: #000;
         overflow: hidden;
       }
 
-      #unity-rotation-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
       #unity-canvas {
-        touch-action: none;
-        background: #0a0014;
+        background: #000;
         display: block;
+        touch-action: none;
       }
 
-      #unity-footer {
+      #unity-loading-bar {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      #unity-warning {
+        position: absolute;
+        left: 50%;
+        top: 10px;
+        transform: translateX(-50%);
+        color: #fff;
+        font-family: sans-serif;
+        font-size: 14px;
+        text-align: center;
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 6px;
         display: none;
-      }
-
-      #mobile-return-banner {
-        display: none;
-      }
-
-      #unity-debug-overlay {
-        position: fixed;
-        left: 12px;
-        bottom: 12px;
-        z-index: 9999;
-        background: rgba(6, 0, 20, 0.85);
-        border: 1px solid rgba(76, 233, 255, 0.35);
-        color: #f0f3ff;
-        font-size: 11px;
-        line-height: 1.4;
-        font-family: "Inter", sans-serif;
-        padding: 10px 12px;
-        border-radius: 10px;
-        max-width: 300px;
-        pointer-events: none;
-        backdrop-filter: blur(10px);
-        white-space: pre-wrap;
       }
     </style>
   </head>
-  <body class="mobile-play">
-    <header class="mobile-play__topbar">
-      <a class="mobile-play__logo" href="index.html">Mental Break</a>
-      <a class="mobile-play__back" href="index.html">
-        <span aria-hidden="true">⟵</span>
-        <span>Back to Site</span>
-      </a>
-    </header>
-
-      <main class="mobile-play__content">
-      <div id="unity-container" class="unity-mobile">
-        <div id="unity-rotation-wrapper">
-          <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+  <body>
+    <div id="unity-container">
+      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
         </div>
-        <div id="unity-loading-bar">
-          <div id="unity-logo"></div>
-          <div id="unity-progress-bar-empty">
-            <div id="unity-progress-bar-full"></div>
-          </div>
-        </div>
-        <div id="unity-warning"></div>
-        <div id="unity-footer"></div>
       </div>
-      <div id="mobile-return-banner">Tap the ⟵ button to exit</div>
-    </main>
+      <div id="unity-warning"></div>
+    </div>
 
     <script>
-      // Unity 6.2 mobile launcher: this standalone page keeps the player full viewport.
-      // See https://docs.unity3d.com/6000.0/Documentation/Manual/web-platform.html for current web guidance.
+      const UNITY_BASE_WIDTH = 960;
+      const UNITY_BASE_HEIGHT = 600;
+      const UNITY_ASPECT = UNITY_BASE_WIDTH / UNITY_BASE_HEIGHT;
+
       const canvas = document.querySelector("#unity-canvas");
       const unityContainer = document.querySelector("#unity-container");
-      const rotationWrapper = document.querySelector("#unity-rotation-wrapper");
-      const topBar = document.querySelector(".mobile-play__topbar");
-      const progressBarFull = document.querySelector("#unity-progress-bar-full");
       const loadingBar = document.querySelector("#unity-loading-bar");
+      const progressBarFull = document.querySelector("#unity-progress-bar-full");
 
-      let debugState = {};
-
-      const debugOverlay = (() => {
-        const panel = document.createElement("div");
-        panel.id = "unity-debug-overlay";
-        panel.textContent = "Unity metrics: initializing…";
-        document.body.appendChild(panel);
-        return panel;
-      })();
-
-      function updateDebugOverlay(update = {}) {
-        if (!debugOverlay) return;
-
-        debugState = { ...debugState, ...update };
-
-        const fmt = (value, fallback = "—") =>
-          value === undefined || value === null || Number.isNaN(value) ? fallback : value;
-
-        const lines = ["Unity metrics"];
-
-        if (debugState.viewport) {
-          lines.push(
-            `Viewport (css): ${fmt(Math.round(debugState.viewport.width))}×${fmt(
-              Math.round(debugState.viewport.height)
-            )}`
-          );
-        }
-        if (debugState.boxLandscape) {
-          lines.push(
-            `Build native (landscape): ${fmt(Math.round(debugState.boxLandscape.width))}×${fmt(
-              Math.round(debugState.boxLandscape.height)
-            )}`
-          );
-        }
-        if (debugState.unity) {
-          lines.push(
-            `Unity canvas (css): ${fmt(Math.round(debugState.unity.width))}×${fmt(
-              Math.round(debugState.unity.height)
-            )}`
-          );
-        }
-        if (debugState.canvasCss) {
-          lines.push(
-            `Canvas CSS: ${fmt(debugState.canvasCss.width)}×${fmt(debugState.canvasCss.height)}`
-          );
-        }
-        if (debugState.canvasPixels) {
-          lines.push(
-            `Canvas pixels: ${fmt(debugState.canvasPixels.width)}×${fmt(
-              debugState.canvasPixels.height
-            )}`
-          );
-        }
-        if (debugState.moduleCanvas) {
-          lines.push(
-            `Module canvas: ${fmt(debugState.moduleCanvas.width)}×${fmt(
-              debugState.moduleCanvas.height
-            )}`
-          );
-        }
-        if (debugState.drawingBuffer) {
-          lines.push(
-            `GL drawing buffer: ${fmt(debugState.drawingBuffer.width)}×${fmt(
-              debugState.drawingBuffer.height
-            )}`
-          );
-        }
-        if (debugState.devicePixelRatio !== undefined) {
-          lines.push(`devicePixelRatio: ${fmt(debugState.devicePixelRatio)}`);
-        }
-        if (debugState.rotation !== undefined) {
-          lines.push(`Canvas rotation: ${fmt(debugState.rotation)}°`);
-        }
-        if (debugState.scale !== undefined) {
-          const scaleDisplay =
-            typeof debugState.scale === "number" ? debugState.scale.toFixed(2) : fmt(debugState.scale);
-          lines.push(`Scale vs 600px width: ${scaleDisplay}`);
-        }
-        if (debugState.notes) {
-          lines.push(`Notes: ${debugState.notes}`);
-        }
-
-        debugOverlay.textContent = lines.join("\n");
-      }
-
-      updateDebugOverlay({ notes: "Waiting for viewport…" });
-
-      // Measure available viewport space below the top bar
-      // Uses visualViewport API when available (better for mobile browsers with UI chrome)
-      // Falls back to window.innerWidth/Height and getBoundingClientRect for top bar
-      function getAvailableViewport() {
-        // Use visualViewport API if available (better for mobile browsers)
-        const vp = window.visualViewport;
-        let viewportWidth, viewportHeight;
-        
-        if (vp) {
-          viewportWidth = vp.width;
-          viewportHeight = vp.height;
-        } else {
-          viewportWidth = window.innerWidth;
-          viewportHeight = window.innerHeight;
-        }
-
-        // Get top bar height using getBoundingClientRect for accurate measurement
-        // Use rect.bottom to get the exact pixel position where the bar ends
-        let topBarHeight = 0;
-        if (topBar) {
-          const rect = topBar.getBoundingClientRect();
-          // Use rect.bottom which gives the exact bottom edge position
-          // This ensures no extra padding between banner and Unity container
-          topBarHeight = Math.ceil(rect.bottom);
-        }
-
-        const availableWidth = viewportWidth;
-        const availableHeight = viewportHeight - topBarHeight;
-        
-        return { 
-          width: availableWidth, 
-          height: availableHeight, 
-          topBarHeight,
-          viewportWidth,
-          viewportHeight
-        };
-      }
-
-      const UNITY_LANDSCAPE_WIDTH = 960;
-      const UNITY_LANDSCAPE_HEIGHT = 600;
-      const PORTRAIT_BASE_WIDTH = UNITY_LANDSCAPE_HEIGHT; // 600
-      const PORTRAIT_BASE_HEIGHT = UNITY_LANDSCAPE_WIDTH; // 960
-
-      function resizeForMobileCanvas(unityInstance = null) {
-        const viewport = getAvailableViewport();
-        const devicePixelRatio = 1;
+      function resizeCanvas() {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
 
         if (unityContainer) {
-          unityContainer.style.top = `${viewport.topBarHeight}px`;
-          unityContainer.style.width = `${viewport.width}px`;
-          unityContainer.style.height = `${viewport.height}px`;
+          unityContainer.style.width = `${vw}px`;
+          unityContainer.style.height = `${vh}px`;
         }
 
-        const availableWidth = viewport.width;
-        const availableHeight = viewport.height;
+        let targetWidth = vw;
+        let targetHeight = targetWidth / UNITY_ASPECT;
 
-        const portraitAspect = PORTRAIT_BASE_WIDTH / PORTRAIT_BASE_HEIGHT; // ~0.625
-        let targetWidth = availableWidth;
-        let targetHeight = targetWidth / portraitAspect;
-
-        if (targetHeight > availableHeight) {
-          targetHeight = availableHeight;
-          targetWidth = targetHeight * portraitAspect;
-        }
-
-        // Make the canvas substantially taller (2.5×). Width stays the same; extra height overflows but container clips.
-        const heightMultiplier = 2.5;
-        targetHeight = targetHeight * heightMultiplier;
-
-        if (rotationWrapper) {
-          rotationWrapper.style.width = `${targetWidth}px`;
-          rotationWrapper.style.height = `${targetHeight}px`;
-          rotationWrapper.style.transform = "none";
+        if (targetHeight > vh) {
+          targetHeight = vh;
+          targetWidth = targetHeight * UNITY_ASPECT;
         }
 
         canvas.style.width = `${targetWidth}px`;
         canvas.style.height = `${targetHeight}px`;
 
-        const pixelWidth = Math.floor(targetWidth * devicePixelRatio);
-        const pixelHeight = Math.floor(targetHeight * devicePixelRatio);
-        canvas.width = Math.max(pixelWidth, 1);
-        canvas.height = Math.max(pixelHeight, 1);
+        const pixelRatio = window.devicePixelRatio || 1;
+        canvas.width = Math.max(1, Math.floor(targetWidth * pixelRatio));
+        canvas.height = Math.max(1, Math.floor(targetHeight * pixelRatio));
+      }
 
-        const moduleCanvas = unityInstance?.Module?.canvas;
-        const glContext = unityInstance?.Module?.GLctx || unityInstance?.Module?.ctx;
-        const drawingBuffer = glContext
-          ? {
-              width: glContext.drawingBufferWidth,
-              height: glContext.drawingBufferHeight
-            }
-          : null;
+      resizeCanvas();
 
-        updateDebugOverlay({
-          viewport,
-          boxLandscape: { width: UNITY_LANDSCAPE_WIDTH, height: UNITY_LANDSCAPE_HEIGHT },
-          unity: { width: targetWidth, height: targetHeight },
-          canvasCss: { width: canvas.style.width, height: canvas.style.height },
-          canvasPixels: { width: canvas.width, height: canvas.height },
-          moduleCanvas: moduleCanvas
-            ? { width: moduleCanvas.width, height: moduleCanvas.height }
-            : null,
-          drawingBuffer,
-          devicePixelRatio,
-          rotation: 0,
-          scale: targetHeight / availableHeight
-        });
+      window.addEventListener("resize", resizeCanvas);
+      window.addEventListener("orientationchange", resizeCanvas);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", resizeCanvas);
+        window.visualViewport.addEventListener("scroll", resizeCanvas);
       }
 
       function unityShowBanner(msg, type) {
         const warningBanner = document.querySelector("#unity-warning");
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
-        }
-        const div = document.createElement("div");
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
+        warningBanner.style.display = "block";
+        warningBanner.textContent = msg;
         if (type === "error") {
-          div.style = "background: #ff3366; color: #ffffff; padding: 10px; border-radius: 4px;";
+          warningBanner.style.background = "rgba(255, 51, 102, 0.85)";
         } else {
-          if (type === "warning") {
-            div.style = "background: #ffaa00; color: #000000; padding: 10px; border-radius: 4px;";
-          }
+          warningBanner.style.background = "rgba(255, 170, 0, 0.85)";
           setTimeout(() => {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
+            warningBanner.style.display = "none";
           }, 5000);
         }
-        updateBannerVisibility();
-      }
-
-      // Initial resize before Unity loads
-      resizeForMobileCanvas();
-
-      // Bind resize to window events
-      // Pass unityInstance if available for proper resize handling
-      window.addEventListener("resize", () => {
-        resizeForMobileCanvas(window.unityInstance);
-      });
-      window.addEventListener("orientationchange", () => {
-        // Delay to allow orientation change to complete
-        setTimeout(() => {
-          resizeForMobileCanvas(window.unityInstance);
-        }, 100);
-      });
-      
-      // Listen to visualViewport resize events (important for mobile browsers with UI chrome)
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener("resize", () => {
-          resizeForMobileCanvas(window.unityInstance);
-        });
-        window.visualViewport.addEventListener("scroll", () => {
-          resizeForMobileCanvas(window.unityInstance);
-        });
       }
 
       const buildUrl = "Build";
-      const loaderUrl = buildUrl + "/webgl-build.loader.js";
+      const loaderUrl = `${buildUrl}/webgl-build.loader.js`;
       const config = {
         arguments: [],
-        dataUrl: buildUrl + "/webgl-build.data.unityweb",
-        frameworkUrl: buildUrl + "/webgl-build.framework.js.unityweb",
-        codeUrl: buildUrl + "/webgl-build.wasm.unityweb",
+        dataUrl: `${buildUrl}/webgl-build.data.unityweb`,
+        frameworkUrl: `${buildUrl}/webgl-build.framework.js.unityweb`,
+        codeUrl: `${buildUrl}/webgl-build.wasm.unityweb`,
         streamingAssetsUrl: "StreamingAssets",
         companyName: "Keaton Media",
         productName: "Mental Break",
         productVersion: "3.1",
         showBanner: unityShowBanner,
-        // Use devicePixelRatio of 1 on mobile to ensure Unity renders at exact canvas size
-        // This prevents letterboxing and ensures matchWebGLToCanvasSize works correctly
         devicePixelRatio: 1,
-        matchWebGLToCanvasSize: true
+        matchWebGLToCanvasSize: true,
       };
 
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -430,7 +157,7 @@
           depth: true,
           stencil: false,
           alpha: false,
-          preserveDrawingBuffer: false
+          preserveDrawingBuffer: false,
         };
       }
 
@@ -443,59 +170,31 @@
         if (loadingBar) loadingBar.style.display = "none";
       }
 
-      if (loadingBar) {
-        loadingBar.style.display = "block";
-      }
-
-      document.body.addEventListener("touchmove", (event) => {
-        if (document.activeElement === document.body) {
-          event.preventDefault();
-        }
-      }, { passive: false });
-
-      let loaderInjected = false;
-      if (!loaderInjected) {
-        loaderInjected = true;
-        const script = document.createElement("script");
-        script.src = loaderUrl;
-        script.onload = () => {
-          // Ensure canvas dimensions are set BEFORE Unity instance creation
-          // This is critical for Unity to initialize with the correct resolution
-          resizeForMobileCanvas();
-          
-          createUnityInstance(canvas, config, showLoading)
-            .then((unityInstance) => {
-              hideLoading();
-              // Resize again after Unity instance is created, passing instance for potential resize trigger
-              resizeForMobileCanvas(unityInstance);
-              
-              // Store instance globally for resize events
-              window.unityInstance = unityInstance;
-
-              try {
-                const moduleKeys = Object.keys(unityInstance.Module || {});
-                const interesting = moduleKeys.filter((k) =>
-                  /canvas|resolution|size|screen|display/i.test(k)
-                );
-                updateDebugOverlay({
-                  notes: `Module keys: ${interesting.slice(0, 25).join(", ") || "(none)"}`
-                });
-              } catch (err) {
-                console.warn("Debug overlay module key scan failed", err);
-              }
-            })
-            .catch((message) => {
-              hideLoading();
-              console.error("[Unity Web] Failed to load game", message);
-              const reason = typeof message === "string" ? message : message?.message || "Unknown error";
-              unityShowBanner("Failed to load game: " + reason, "error");
-            });
-        };
-        script.onerror = () => {
-          unityShowBanner("Failed to load Unity loader script. Please check your connection and try again.", "error");
-        };
-        document.body.appendChild(script);
-      }
+      const script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        resizeCanvas();
+        createUnityInstance(canvas, config, showLoading)
+          .then((unityInstance) => {
+            hideLoading();
+            resizeCanvas();
+            window.unityInstance = unityInstance;
+          })
+          .catch((message) => {
+            hideLoading();
+            console.error("[Unity Web] Failed to load game", message);
+            const reason =
+              typeof message === "string" ? message : message?.message || "Unknown error";
+            unityShowBanner(`Failed to load game: ${reason}`, "error");
+          });
+      };
+      script.onerror = () => {
+        unityShowBanner(
+          "Failed to load Unity loader script. Please check your connection and try again.",
+          "error"
+        );
+      };
+      document.body.appendChild(script);
     </script>
   </body>
 </html>
