@@ -205,29 +205,33 @@
         
         // Unity should always render in landscape (width > height)
         // After CSS rotation, the visual result will be portrait on mobile
+        // We'll render at a fixed landscape target aspect to avoid in-engine letterboxing
+        // Desktop template uses 16:10; use that here as target landscape aspect
+        const TARGET_ASPECT = 16 / 10; // 1.6
+
+        // Compute the size of the landscape box we need to fill
+        const boxLandscapeWidth = isLandscape ? viewport.width : viewport.height;
+        const boxLandscapeHeight = isLandscape ? viewport.height : viewport.width;
+
+        // Cover-fit the target aspect into the box (no letterboxing):
+        // If the box is "taller" than target, expand width; else expand height
         let unityWidth, unityHeight;
-        let wrapperRotation = 0;
-        let wrapperWidth, wrapperHeight;
-        
-        if (isLandscape) {
-          // Device is already landscape - no rotation needed
-          unityWidth = viewport.width;
-          unityHeight = viewport.height;
-          wrapperRotation = 0;
-          wrapperWidth = viewport.width;
-          wrapperHeight = viewport.height;
+        const boxAspect = boxLandscapeWidth / boxLandscapeHeight;
+        if (boxAspect < TARGET_ASPECT) {
+          // Box is too tall for target aspect -> widen to cover
+          unityWidth = Math.ceil(boxLandscapeHeight * TARGET_ASPECT);
+          unityHeight = Math.ceil(boxLandscapeHeight);
         } else {
-          // Device is portrait - rotate -90deg to make it landscape visually
-          // Unity renders landscape (width > height), CSS rotates it to fill portrait viewport
-          unityWidth = viewport.height;  // Unity renders this as width (landscape)
-          unityHeight = viewport.width;  // Unity renders this as height
-          wrapperRotation = -90;
-          // When rotating -90deg, a HxW rectangle becomes WxH visually
-          // To fill a WxH container after rotation, set wrapper to HxW before rotation
-          wrapperWidth = viewport.height;  // Before rotation
-          wrapperHeight = viewport.width;  // Before rotation
+          // Box is too wide -> increase height to cover
+          unityWidth = Math.ceil(boxLandscapeWidth);
+          unityHeight = Math.ceil(boxLandscapeWidth / TARGET_ASPECT);
         }
 
+        // Rotation wrapper settings
+        let wrapperRotation = isLandscape ? 0 : -90;
+        let wrapperWidth = isLandscape ? viewport.width : viewport.height;   // before rotation
+        let wrapperHeight = isLandscape ? viewport.height : viewport.width;  // before rotation
+        
         // Set wrapper rotation and dimensions
         // Center the wrapper using translate(-50%, -50%) combined with rotation
         if (rotationWrapper) {
@@ -236,7 +240,7 @@
           rotationWrapper.style.height = `${wrapperHeight}px`;
         }
 
-        // Set canvas CSS dimensions FIRST (visual size after rotation)
+        // Set canvas CSS dimensions FIRST (landscape rendering size)
         canvas.style.width = `${unityWidth}px`;
         canvas.style.height = `${unityHeight}px`;
 
@@ -266,12 +270,14 @@
         // Debug logging (can be removed in production)
         console.log('[Unity Mobile] Viewport:', {
           available: `${viewport.width}x${viewport.height}`,
+          boxLandscape: `${boxLandscapeWidth}x${boxLandscapeHeight}`,
           unityResolution: `${canvas.width}x${canvas.height}`,
           cssSize: `${canvas.style.width}x${canvas.style.height}`,
           rotation: `${wrapperRotation}deg`,
           isLandscape,
           devicePixelRatio,
-          aspectRatio: (canvas.width / canvas.height).toFixed(2)
+          targetAspect: TARGET_ASPECT,
+          finalAspect: (canvas.width / canvas.height).toFixed(4)
         });
       }
 
