@@ -106,26 +106,7 @@
       }
 
       #mobile-return-banner {
-        position: absolute;
-        left: 50%;
-        bottom: 24px;
-        transform: translateX(-50%);
-        padding: 10px 16px;
-        font-size: 0.78rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        border-radius: 999px;
-        background: rgba(6, 0, 20, 0.72);
-        border: 1px solid rgba(255, 45, 210, 0.35);
-        color: #f0f3ff;
-        pointer-events: none;
-        opacity: 0.85;
-      }
-
-      @media (min-width: 769px) {
-        #mobile-return-banner {
-          display: none;
-        }
+        display: none;
       }
     </style>
   </head>
@@ -182,10 +163,13 @@
         }
 
         // Get top bar height using getBoundingClientRect for accurate measurement
+        // Use rect.bottom to get the exact pixel position where the bar ends
         let topBarHeight = 0;
         if (topBar) {
           const rect = topBar.getBoundingClientRect();
-          topBarHeight = rect.bottom;
+          // Use rect.bottom which gives the exact bottom edge position
+          // This ensures no extra padding between banner and Unity container
+          topBarHeight = Math.ceil(rect.bottom);
         }
 
         const availableWidth = viewportWidth;
@@ -203,9 +187,11 @@
       // Resize canvas for mobile rotation
       // Unity should always see landscape resolution (width > height)
       // CSS rotation handles the visual orientation
-      function resizeForMobileCanvas() {
+      function resizeForMobileCanvas(unityInstance = null) {
         const viewport = getAvailableViewport();
-        const devicePixelRatio = window.devicePixelRatio || 1;
+        // Use devicePixelRatio of 1 on mobile to avoid scaling issues
+        // Unity 6.2 with matchWebGLToCanvasSize should handle this correctly
+        const devicePixelRatio = 1;
         
         // Set container to fill available space below top bar
         if (unityContainer) {
@@ -250,22 +236,42 @@
           rotationWrapper.style.height = `${wrapperHeight}px`;
         }
 
-        // Set canvas CSS dimensions (visual size after rotation)
+        // Set canvas CSS dimensions FIRST (visual size after rotation)
         canvas.style.width = `${unityWidth}px`;
         canvas.style.height = `${unityHeight}px`;
 
-        // Set actual pixel dimensions for Unity (accounting for device pixel ratio)
+        // Set actual pixel dimensions for Unity - MUST match CSS dimensions exactly
         // Unity will render at these pixel dimensions - always landscape (width > height)
-        canvas.width = Math.floor(unityWidth * devicePixelRatio);
-        canvas.height = Math.floor(unityHeight * devicePixelRatio);
+        // Using devicePixelRatio of 1 ensures Unity renders at exact CSS size
+        canvas.width = unityWidth;
+        canvas.height = unityHeight;
+        
+        // If Unity instance exists, try to trigger a resize
+        // Unity 6.2 should automatically detect canvas size changes with matchWebGLToCanvasSize
+        if (unityInstance && typeof unityInstance.SendMessage === 'function') {
+          // Try to notify Unity about the resize (if Unity exposes this)
+          // Some Unity builds expose a resize handler via SendMessage
+          try {
+            // This is Unity-specific - may not work if Unity doesn't expose this
+            // But matchWebGLToCanvasSize should handle it automatically
+            if (unityInstance.Module && unityInstance.Module.resizeCanvas) {
+              unityInstance.Module.resizeCanvas(canvas.width, canvas.height);
+            }
+          } catch (e) {
+            // Ignore if Unity doesn't expose resize handler
+            console.log('[Unity Mobile] Resize handler not available, relying on matchWebGLToCanvasSize');
+          }
+        }
         
         // Debug logging (can be removed in production)
         console.log('[Unity Mobile] Viewport:', {
           available: `${viewport.width}x${viewport.height}`,
           unityResolution: `${canvas.width}x${canvas.height}`,
+          cssSize: `${canvas.style.width}x${canvas.style.height}`,
           rotation: `${wrapperRotation}deg`,
           isLandscape,
-          devicePixelRatio
+          devicePixelRatio,
+          aspectRatio: (canvas.width / canvas.height).toFixed(2)
         });
       }
 
@@ -295,16 +301,25 @@
       resizeForMobileCanvas();
 
       // Bind resize to window events
-      window.addEventListener("resize", resizeForMobileCanvas);
+      // Pass unityInstance if available for proper resize handling
+      window.addEventListener("resize", () => {
+        resizeForMobileCanvas(window.unityInstance);
+      });
       window.addEventListener("orientationchange", () => {
         // Delay to allow orientation change to complete
-        setTimeout(resizeForMobileCanvas, 100);
+        setTimeout(() => {
+          resizeForMobileCanvas(window.unityInstance);
+        }, 100);
       });
       
       // Listen to visualViewport resize events (important for mobile browsers with UI chrome)
       if (window.visualViewport) {
-        window.visualViewport.addEventListener("resize", resizeForMobileCanvas);
-        window.visualViewport.addEventListener("scroll", resizeForMobileCanvas);
+        window.visualViewport.addEventListener("resize", () => {
+          resizeForMobileCanvas(window.unityInstance);
+        });
+        window.visualViewport.addEventListener("scroll", () => {
+          resizeForMobileCanvas(window.unityInstance);
+        });
       }
 
       const buildUrl = "Build";
@@ -319,7 +334,9 @@
         productName: "Mental Break",
         productVersion: "3.1",
         showBanner: unityShowBanner,
-        devicePixelRatio: window.devicePixelRatio || 1,
+        // Use devicePixelRatio of 1 on mobile to ensure Unity renders at exact canvas size
+        // This prevents letterboxing and ensures matchWebGLToCanvasSize works correctly
+        devicePixelRatio: 1,
         matchWebGLToCanvasSize: true
       };
 
@@ -360,11 +377,18 @@
         const script = document.createElement("script");
         script.src = loaderUrl;
         script.onload = () => {
+          // Ensure canvas dimensions are set BEFORE Unity instance creation
+          // This is critical for Unity to initialize with the correct resolution
+          resizeForMobileCanvas();
+          
           createUnityInstance(canvas, config, showLoading)
             .then((unityInstance) => {
               hideLoading();
-              // Resize again after Unity instance is created to ensure proper sizing
-              resizeForMobileCanvas();
+              // Resize again after Unity instance is created, passing instance for potential resize trigger
+              resizeForMobileCanvas(unityInstance);
+              
+              // Store instance globally for resize events
+              window.unityInstance = unityInstance;
             })
             .catch((message) => {
               hideLoading();
