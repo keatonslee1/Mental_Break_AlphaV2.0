@@ -85,11 +85,20 @@
         overflow: hidden;
       }
 
+      #unity-rotation-wrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform-origin: center center;
+      }
+
       #unity-canvas {
         touch-action: none;
         background: #0a0014;
-        transform: rotate(-90deg);
-        transform-origin: center center;
+        display: block;
       }
 
       #unity-footer {
@@ -129,9 +138,11 @@
       </a>
     </header>
 
-    <main class="mobile-play__content">
+      <main class="mobile-play__content">
       <div id="unity-container" class="unity-mobile">
-        <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+        <div id="unity-rotation-wrapper">
+          <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+        </div>
         <div id="unity-loading-bar">
           <div id="unity-logo"></div>
           <div id="unity-progress-bar-empty">
@@ -149,19 +160,49 @@
       // See https://docs.unity3d.com/6000.0/Documentation/Manual/web-platform.html for current web guidance.
       const canvas = document.querySelector("#unity-canvas");
       const unityContainer = document.querySelector("#unity-container");
+      const rotationWrapper = document.querySelector("#unity-rotation-wrapper");
       const topBar = document.querySelector(".mobile-play__topbar");
       const progressBarFull = document.querySelector("#unity-progress-bar-full");
       const loadingBar = document.querySelector("#unity-loading-bar");
 
       // Measure available viewport space below the top bar
+      // Uses visualViewport API when available (better for mobile browsers with UI chrome)
+      // Falls back to window.innerWidth/Height and getBoundingClientRect for top bar
       function getAvailableViewport() {
-        const topBarHeight = topBar ? topBar.offsetHeight : 0;
-        const availableWidth = window.innerWidth;
-        const availableHeight = window.innerHeight - topBarHeight;
-        return { width: availableWidth, height: availableHeight, topBarHeight };
+        // Use visualViewport API if available (better for mobile browsers)
+        const vp = window.visualViewport;
+        let viewportWidth, viewportHeight;
+        
+        if (vp) {
+          viewportWidth = vp.width;
+          viewportHeight = vp.height;
+        } else {
+          viewportWidth = window.innerWidth;
+          viewportHeight = window.innerHeight;
+        }
+
+        // Get top bar height using getBoundingClientRect for accurate measurement
+        let topBarHeight = 0;
+        if (topBar) {
+          const rect = topBar.getBoundingClientRect();
+          topBarHeight = rect.bottom;
+        }
+
+        const availableWidth = viewportWidth;
+        const availableHeight = viewportHeight - topBarHeight;
+        
+        return { 
+          width: availableWidth, 
+          height: availableHeight, 
+          topBarHeight,
+          viewportWidth,
+          viewportHeight
+        };
       }
 
       // Resize canvas for mobile rotation
+      // Unity should always see landscape resolution (width > height)
+      // CSS rotation handles the visual orientation
       function resizeForMobileCanvas() {
         const viewport = getAvailableViewport();
         const devicePixelRatio = window.devicePixelRatio || 1;
@@ -173,19 +214,59 @@
           unityContainer.style.height = `${viewport.height}px`;
         }
 
-        // For rotated canvas: swap dimensions (width becomes height, height becomes width)
-        // After -90deg rotation, what was height becomes width and vice versa
-        const canvasCSSWidth = viewport.height;  // After rotation, this will be the visual width
-        const canvasCSSHeight = viewport.width;  // After rotation, this will be the visual height
+        // Determine if device is already in landscape orientation
+        const isLandscape = viewport.width > viewport.height;
+        
+        // Unity should always render in landscape (width > height)
+        // After CSS rotation, the visual result will be portrait on mobile
+        let unityWidth, unityHeight;
+        let wrapperRotation = 0;
+        let wrapperWidth, wrapperHeight;
+        
+        if (isLandscape) {
+          // Device is already landscape - no rotation needed
+          unityWidth = viewport.width;
+          unityHeight = viewport.height;
+          wrapperRotation = 0;
+          wrapperWidth = viewport.width;
+          wrapperHeight = viewport.height;
+        } else {
+          // Device is portrait - rotate -90deg to make it landscape visually
+          // Unity renders landscape (width > height), CSS rotates it to fill portrait viewport
+          unityWidth = viewport.height;  // Unity renders this as width (landscape)
+          unityHeight = viewport.width;  // Unity renders this as height
+          wrapperRotation = -90;
+          // When rotating -90deg, a HxW rectangle becomes WxH visually
+          // To fill a WxH container after rotation, set wrapper to HxW before rotation
+          wrapperWidth = viewport.height;  // Before rotation
+          wrapperHeight = viewport.width;  // Before rotation
+        }
 
-        // Set CSS dimensions (visual size)
-        canvas.style.width = `${canvasCSSWidth}px`;
-        canvas.style.height = `${canvasCSSHeight}px`;
+        // Set wrapper rotation and dimensions
+        // Center the wrapper using translate(-50%, -50%) combined with rotation
+        if (rotationWrapper) {
+          rotationWrapper.style.transform = `translate(-50%, -50%) rotate(${wrapperRotation}deg)`;
+          rotationWrapper.style.width = `${wrapperWidth}px`;
+          rotationWrapper.style.height = `${wrapperHeight}px`;
+        }
+
+        // Set canvas CSS dimensions (visual size after rotation)
+        canvas.style.width = `${unityWidth}px`;
+        canvas.style.height = `${unityHeight}px`;
 
         // Set actual pixel dimensions for Unity (accounting for device pixel ratio)
-        // Unity will render at these pixel dimensions
-        canvas.width = Math.floor(canvasCSSWidth * devicePixelRatio);
-        canvas.height = Math.floor(canvasCSSHeight * devicePixelRatio);
+        // Unity will render at these pixel dimensions - always landscape (width > height)
+        canvas.width = Math.floor(unityWidth * devicePixelRatio);
+        canvas.height = Math.floor(unityHeight * devicePixelRatio);
+        
+        // Debug logging (can be removed in production)
+        console.log('[Unity Mobile] Viewport:', {
+          available: `${viewport.width}x${viewport.height}`,
+          unityResolution: `${canvas.width}x${canvas.height}`,
+          rotation: `${wrapperRotation}deg`,
+          isLandscape,
+          devicePixelRatio
+        });
       }
 
       function unityShowBanner(msg, type) {
@@ -219,6 +300,12 @@
         // Delay to allow orientation change to complete
         setTimeout(resizeForMobileCanvas, 100);
       });
+      
+      // Listen to visualViewport resize events (important for mobile browsers with UI chrome)
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", resizeForMobileCanvas);
+        window.visualViewport.addEventListener("scroll", resizeForMobileCanvas);
+      }
 
       const buildUrl = "Build";
       const loaderUrl = buildUrl + "/webgl-build.loader.js";
