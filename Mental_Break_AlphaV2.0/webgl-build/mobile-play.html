@@ -108,6 +108,25 @@
       #mobile-return-banner {
         display: none;
       }
+
+      #unity-debug-overlay {
+        position: fixed;
+        left: 12px;
+        bottom: 12px;
+        z-index: 9999;
+        background: rgba(6, 0, 20, 0.85);
+        border: 1px solid rgba(76, 233, 255, 0.35);
+        color: #f0f3ff;
+        font-size: 11px;
+        line-height: 1.4;
+        font-family: "Inter", sans-serif;
+        padding: 10px 12px;
+        border-radius: 10px;
+        max-width: 300px;
+        pointer-events: none;
+        backdrop-filter: blur(10px);
+        white-space: pre-wrap;
+      }
     </style>
   </head>
   <body class="mobile-play">
@@ -145,6 +164,58 @@
       const topBar = document.querySelector(".mobile-play__topbar");
       const progressBarFull = document.querySelector("#unity-progress-bar-full");
       const loadingBar = document.querySelector("#unity-loading-bar");
+
+      const debugOverlay = (() => {
+        const panel = document.createElement("div");
+        panel.id = "unity-debug-overlay";
+        panel.textContent = "Unity metrics: initializing…";
+        document.body.appendChild(panel);
+        return panel;
+      })();
+
+      function updateDebugOverlay(info = {}) {
+        if (!debugOverlay) return;
+
+        const fmt = (value, fallback = "—") =>
+          value === undefined || value === null || Number.isNaN(value) ? fallback : value;
+
+        const lines = ["Unity metrics"];
+
+        if (info.viewport) {
+          lines.push(`Viewport (css): ${fmt(Math.round(info.viewport.width))}×${fmt(Math.round(info.viewport.height))}`);
+        }
+        if (info.boxLandscape) {
+          lines.push(`Landscape box: ${fmt(Math.round(info.boxLandscape.width))}×${fmt(Math.round(info.boxLandscape.height))}`);
+        }
+        if (info.unity) {
+          lines.push(`Unity target (landscape): ${fmt(Math.round(info.unity.width))}×${fmt(Math.round(info.unity.height))}`);
+        }
+        if (info.canvasCss) {
+          lines.push(`Canvas CSS: ${fmt(info.canvasCss.width)}×${fmt(info.canvasCss.height)}`);
+        }
+        if (info.canvasPixels) {
+          lines.push(`Canvas pixels: ${fmt(info.canvasPixels.width)}×${fmt(info.canvasPixels.height)}`);
+        }
+        if (info.moduleCanvas) {
+          lines.push(`Module canvas: ${fmt(info.moduleCanvas.width)}×${fmt(info.moduleCanvas.height)}`);
+        }
+        if (info.drawingBuffer) {
+          lines.push(`GL drawing buffer: ${fmt(info.drawingBuffer.width)}×${fmt(info.drawingBuffer.height)}`);
+        }
+        if (info.devicePixelRatio !== undefined) {
+          lines.push(`devicePixelRatio: ${fmt(info.devicePixelRatio)}`);
+        }
+        if (info.rotation !== undefined) {
+          lines.push(`Wrapper rotation: ${fmt(info.rotation)}°`);
+        }
+        if (info.notes) {
+          lines.push(`Notes: ${info.notes}`);
+        }
+
+        debugOverlay.textContent = lines.join("\n");
+      }
+
+      updateDebugOverlay({ notes: "Waiting for viewport…" });
 
       // Measure available viewport space below the top bar
       // Uses visualViewport API when available (better for mobile browsers with UI chrome)
@@ -267,17 +338,27 @@
           }
         }
         
-        // Debug logging (can be removed in production)
-        console.log('[Unity Mobile] Viewport:', {
-          available: `${viewport.width}x${viewport.height}`,
-          boxLandscape: `${boxLandscapeWidth}x${boxLandscapeHeight}`,
-          unityResolution: `${canvas.width}x${canvas.height}`,
-          cssSize: `${canvas.style.width}x${canvas.style.height}`,
-          rotation: `${wrapperRotation}deg`,
-          isLandscape,
+        const moduleCanvas = unityInstance?.Module?.canvas;
+        const glContext = unityInstance?.Module?.GLctx || unityInstance?.Module?.ctx;
+        const drawingBuffer = glContext
+          ? {
+              width: glContext.drawingBufferWidth,
+              height: glContext.drawingBufferHeight
+            }
+          : null;
+
+        updateDebugOverlay({
+          viewport,
+          boxLandscape: { width: boxLandscapeWidth, height: boxLandscapeHeight },
+          unity: { width: unityWidth, height: unityHeight },
+          canvasCss: { width: canvas.style.width, height: canvas.style.height },
+          canvasPixels: { width: canvas.width, height: canvas.height },
+          moduleCanvas: moduleCanvas
+            ? { width: moduleCanvas.width, height: moduleCanvas.height }
+            : null,
+          drawingBuffer,
           devicePixelRatio,
-          targetAspect: TARGET_ASPECT,
-          finalAspect: (canvas.width / canvas.height).toFixed(4)
+          rotation: wrapperRotation
         });
       }
 
