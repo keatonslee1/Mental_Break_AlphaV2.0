@@ -314,6 +314,10 @@
           targetWidth = targetHeight * portraitAspect;
         }
 
+        // Make the canvas substantially taller (2.5×). Width stays the same; extra height overflows but container clips.
+        const heightMultiplier = 2.5;
+        targetHeight = targetHeight * heightMultiplier;
+
         if (rotationWrapper) {
           rotationWrapper.style.width = `${targetWidth}px`;
           rotationWrapper.style.height = `${targetHeight}px`;
@@ -349,7 +353,7 @@
           drawingBuffer,
           devicePixelRatio,
           rotation: 0,
-          scale: targetWidth / PORTRAIT_BASE_WIDTH
+          scale: targetHeight / availableHeight
         });
       }
 
