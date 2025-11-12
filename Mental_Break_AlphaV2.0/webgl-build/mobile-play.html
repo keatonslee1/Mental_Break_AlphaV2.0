@@ -31,12 +31,13 @@
         align-items: center;
         justify-content: center;
         background: #000;
-        overflow: hidden;
       }
 
       #unity-canvas {
         background: #000;
         display: block;
+        width: 100%;
+        height: auto;
         touch-action: none;
       }
 
@@ -76,48 +77,10 @@
     </div>
 
     <script>
-      const UNITY_BASE_WIDTH = 960;
-      const UNITY_BASE_HEIGHT = 600;
-      const UNITY_ASPECT = UNITY_BASE_WIDTH / UNITY_BASE_HEIGHT;
-
       const canvas = document.querySelector("#unity-canvas");
       const unityContainer = document.querySelector("#unity-container");
       const loadingBar = document.querySelector("#unity-loading-bar");
       const progressBarFull = document.querySelector("#unity-progress-bar-full");
-
-      function resizeCanvas() {
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-
-        if (unityContainer) {
-          unityContainer.style.width = `${vw}px`;
-          unityContainer.style.height = `${vh}px`;
-        }
-
-        let targetWidth = vw;
-        let targetHeight = targetWidth / UNITY_ASPECT;
-
-        if (targetHeight > vh) {
-          targetHeight = vh;
-          targetWidth = targetHeight * UNITY_ASPECT;
-        }
-
-        canvas.style.width = `${targetWidth}px`;
-        canvas.style.height = `${targetHeight}px`;
-
-        const pixelRatio = window.devicePixelRatio || 1;
-        canvas.width = Math.max(1, Math.floor(targetWidth * pixelRatio));
-        canvas.height = Math.max(1, Math.floor(targetHeight * pixelRatio));
-      }
-
-      resizeCanvas();
-
-      window.addEventListener("resize", resizeCanvas);
-      window.addEventListener("orientationchange", resizeCanvas);
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener("resize", resizeCanvas);
-        window.visualViewport.addEventListener("scroll", resizeCanvas);
-      }
 
       function unityShowBanner(msg, type) {
         const warningBanner = document.querySelector("#unity-warning");
@@ -173,11 +136,9 @@
       const script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
-        resizeCanvas();
         createUnityInstance(canvas, config, showLoading)
           .then((unityInstance) => {
             hideLoading();
-            resizeCanvas();
             window.unityInstance = unityInstance;
           })
           .catch((message) => {
