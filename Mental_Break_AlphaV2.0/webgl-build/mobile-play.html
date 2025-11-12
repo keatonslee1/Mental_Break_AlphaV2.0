@@ -274,11 +274,9 @@
         // Determine if device is already in landscape orientation
         const isLandscape = viewport.width > viewport.height;
         
-        // Unity should always render in landscape (width > height)
-        // After CSS rotation, the visual result will be portrait on mobile
         // We'll render at a fixed landscape target aspect to avoid in-engine letterboxing
-        // Unity build content targets 16:9 (1920x1080), so we use that aspect ratio
-        const TARGET_ASPECT = 16 / 9; // ≈1.7778
+        // Unity Web builds default to 960×600 (16:10). Match that native aspect.
+        const TARGET_ASPECT = 960 / 600; // ≈1.6
 
         // Compute the size of the landscape box we need to fill
         const boxLandscapeWidth = isLandscape ? viewport.width : viewport.height;
