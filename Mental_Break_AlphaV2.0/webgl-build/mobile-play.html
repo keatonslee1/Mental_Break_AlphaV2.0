@@ -74,18 +74,18 @@
 
       #unity-container {
         position: fixed;
-        inset: 0;
+        top: 0;
+        left: 0;
         width: 100vw;
         height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         background: #0a0014;
+        overflow: hidden;
       }
 
       #unity-canvas {
-        width: 100vh;
-        height: 100vw;
         touch-action: none;
         background: #0a0014;
         transform: rotate(-90deg);
@@ -148,8 +148,45 @@
       // Unity 6.2 mobile launcher: this standalone page keeps the player full viewport.
       // See https://docs.unity3d.com/6000.0/Documentation/Manual/web-platform.html for current web guidance.
       const canvas = document.querySelector("#unity-canvas");
+      const unityContainer = document.querySelector("#unity-container");
+      const topBar = document.querySelector(".mobile-play__topbar");
       const progressBarFull = document.querySelector("#unity-progress-bar-full");
       const loadingBar = document.querySelector("#unity-loading-bar");
+
+      // Measure available viewport space below the top bar
+      function getAvailableViewport() {
+        const topBarHeight = topBar ? topBar.offsetHeight : 0;
+        const availableWidth = window.innerWidth;
+        const availableHeight = window.innerHeight - topBarHeight;
+        return { width: availableWidth, height: availableHeight, topBarHeight };
+      }
+
+      // Resize canvas for mobile rotation
+      function resizeForMobileCanvas() {
+        const viewport = getAvailableViewport();
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        
+        // Set container to fill available space below top bar
+        if (unityContainer) {
+          unityContainer.style.top = `${viewport.topBarHeight}px`;
+          unityContainer.style.width = `${viewport.width}px`;
+          unityContainer.style.height = `${viewport.height}px`;
+        }
+
+        // For rotated canvas: swap dimensions (width becomes height, height becomes width)
+        // After -90deg rotation, what was height becomes width and vice versa
+        const canvasCSSWidth = viewport.height;  // After rotation, this will be the visual width
+        const canvasCSSHeight = viewport.width;  // After rotation, this will be the visual height
+
+        // Set CSS dimensions (visual size)
+        canvas.style.width = `${canvasCSSWidth}px`;
+        canvas.style.height = `${canvasCSSHeight}px`;
+
+        // Set actual pixel dimensions for Unity (accounting for device pixel ratio)
+        // Unity will render at these pixel dimensions
+        canvas.width = Math.floor(canvasCSSWidth * devicePixelRatio);
+        canvas.height = Math.floor(canvasCSSHeight * devicePixelRatio);
+      }
 
       function unityShowBanner(msg, type) {
         const warningBanner = document.querySelector("#unity-warning");
@@ -173,6 +210,16 @@
         updateBannerVisibility();
       }
 
+      // Initial resize before Unity loads
+      resizeForMobileCanvas();
+
+      // Bind resize to window events
+      window.addEventListener("resize", resizeForMobileCanvas);
+      window.addEventListener("orientationchange", () => {
+        // Delay to allow orientation change to complete
+        setTimeout(resizeForMobileCanvas, 100);
+      });
+
       const buildUrl = "Build";
       const loaderUrl = buildUrl + "/webgl-build.loader.js";
       const config = {
@@ -185,7 +232,8 @@
         productName: "Mental Break",
         productVersion: "3.1",
         showBanner: unityShowBanner,
-        devicePixelRatio: 1
+        devicePixelRatio: window.devicePixelRatio || 1,
+        matchWebGLToCanvasSize: true
       };
 
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -226,8 +274,10 @@
         script.src = loaderUrl;
         script.onload = () => {
           createUnityInstance(canvas, config, showLoading)
-            .then(() => {
+            .then((unityInstance) => {
               hideLoading();
+              // Resize again after Unity instance is created to ensure proper sizing
+              resizeForMobileCanvas();
             })
             .catch((message) => {
               hideLoading();
