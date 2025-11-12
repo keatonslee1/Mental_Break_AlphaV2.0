@@ -316,7 +316,7 @@
 
         const scaleX = availableWidth / baseHeight; // after rotation, wrapper width becomes baseHeight
         const scaleY = availableHeight / baseWidth; // after rotation, wrapper height becomes baseWidth
-        const scale = Math.min(scaleX, scaleY);
+        const scale = Math.max(scaleX, scaleY);
 
         const wrapperRotation = -90;
         if (rotationWrapper) {
