@@ -181,6 +181,20 @@
       }
     },
     {
+      "src": "/mobile-play",
+      "dest": "/mobile-play.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
+      "src": "/mobile-play.html",
+      "dest": "/mobile-play.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html",
       "headers": {
