@@ -285,87 +285,44 @@
         };
       }
 
-      // Resize canvas for mobile rotation
-      // Unity should always see landscape resolution (width > height)
-      // CSS rotation handles the visual orientation
+      const UNITY_NATIVE_WIDTH = 960;
+      const UNITY_NATIVE_HEIGHT = 600;
+
       function resizeForMobileCanvas(unityInstance = null) {
         const viewport = getAvailableViewport();
-        // Use devicePixelRatio of 1 on mobile to avoid scaling issues
-        // Unity 6.2 with matchWebGLToCanvasSize should handle this correctly
         const devicePixelRatio = 1;
-        
-        // Set container to fill available space below top bar
+
         if (unityContainer) {
           unityContainer.style.top = `${viewport.topBarHeight}px`;
           unityContainer.style.width = `${viewport.width}px`;
           unityContainer.style.height = `${viewport.height}px`;
         }
 
-        // Determine if device is already in landscape orientation
-        const isLandscape = viewport.width > viewport.height;
-        
-        // We'll render at a fixed landscape target aspect to avoid in-engine letterboxing
-        // Unity Web builds default to 960×600 (16:10). Match that native aspect.
-        const TARGET_ASPECT = 960 / 600; // ≈1.6
+        const availableWidth = viewport.width;
+        const availableHeight = viewport.height;
 
-        // Compute the size of the landscape box we need to fill
-        const boxLandscapeWidth = isLandscape ? viewport.width : viewport.height;
-        const boxLandscapeHeight = isLandscape ? viewport.height : viewport.width;
+        const baseWidth = UNITY_NATIVE_WIDTH;
+        const baseHeight = UNITY_NATIVE_HEIGHT;
 
-        // Cover-fit the target aspect into the box (no letterboxing):
-        // If the box is "taller" than target, expand width; else expand height
-        let unityWidth, unityHeight;
-        const boxAspect = boxLandscapeWidth / boxLandscapeHeight;
-        if (boxAspect < TARGET_ASPECT) {
-          // Box is too tall for target aspect -> widen to cover
-          unityWidth = Math.ceil(boxLandscapeHeight * TARGET_ASPECT);
-          unityHeight = Math.ceil(boxLandscapeHeight);
-        } else {
-          // Box is too wide -> increase height to cover
-          unityWidth = Math.ceil(boxLandscapeWidth);
-          unityHeight = Math.ceil(boxLandscapeWidth / TARGET_ASPECT);
-        }
-
-        // Rotation wrapper settings
-        let wrapperRotation = isLandscape ? 0 : -90;
-        let wrapperWidth = unityWidth;
-        let wrapperHeight = unityHeight;
-        
-        // Set wrapper rotation and dimensions
-        // Center the wrapper using translate(-50%, -50%) combined with rotation
         if (rotationWrapper) {
-          rotationWrapper.style.transform = `translate(-50%, -50%) rotate(${wrapperRotation}deg)`;
-          rotationWrapper.style.width = `${wrapperWidth}px`;
-          rotationWrapper.style.height = `${wrapperHeight}px`;
+          rotationWrapper.style.width = `${baseWidth}px`;
+          rotationWrapper.style.height = `${baseHeight}px`;
         }
 
-        // Set canvas CSS dimensions FIRST (landscape rendering size)
-        canvas.style.width = `${unityWidth}px`;
-        canvas.style.height = `${unityHeight}px`;
+        canvas.style.width = `${baseWidth}px`;
+        canvas.style.height = `${baseHeight}px`;
+        canvas.width = Math.floor(baseWidth * devicePixelRatio);
+        canvas.height = Math.floor(baseHeight * devicePixelRatio);
 
-        // Set actual pixel dimensions for Unity - MUST match CSS dimensions exactly
-        // Unity will render at these pixel dimensions - always landscape (width > height)
-        // Using devicePixelRatio of 1 ensures Unity renders at exact CSS size
-        canvas.width = unityWidth;
-        canvas.height = unityHeight;
-        
-        // If Unity instance exists, try to trigger a resize
-        // Unity 6.2 should automatically detect canvas size changes with matchWebGLToCanvasSize
-        if (unityInstance && typeof unityInstance.SendMessage === 'function') {
-          // Try to notify Unity about the resize (if Unity exposes this)
-          // Some Unity builds expose a resize handler via SendMessage
-          try {
-            // This is Unity-specific - may not work if Unity doesn't expose this
-            // But matchWebGLToCanvasSize should handle it automatically
-            if (unityInstance.Module && unityInstance.Module.resizeCanvas) {
-              unityInstance.Module.resizeCanvas(canvas.width, canvas.height);
-            }
-          } catch (e) {
-            // Ignore if Unity doesn't expose resize handler
-            console.log('[Unity Mobile] Resize handler not available, relying on matchWebGLToCanvasSize');
-          }
+        const scaleX = availableWidth / baseHeight; // after rotation, wrapper width becomes baseHeight
+        const scaleY = availableHeight / baseWidth; // after rotation, wrapper height becomes baseWidth
+        const scale = Math.min(scaleX, scaleY);
+
+        const wrapperRotation = -90;
+        if (rotationWrapper) {
+          rotationWrapper.style.transform = `translate(-50%, -50%) rotate(${wrapperRotation}deg) scale(${scale})`;
         }
-        
+
         const moduleCanvas = unityInstance?.Module?.canvas;
         const glContext = unityInstance?.Module?.GLctx || unityInstance?.Module?.ctx;
         const drawingBuffer = glContext
@@ -377,8 +334,8 @@
 
         updateDebugOverlay({
           viewport,
-          boxLandscape: { width: boxLandscapeWidth, height: boxLandscapeHeight },
-          unity: { width: unityWidth, height: unityHeight },
+          boxLandscape: { width: baseWidth, height: baseHeight },
+          unity: { width: baseWidth, height: baseHeight },
           canvasCss: { width: canvas.style.width, height: canvas.style.height },
           canvasPixels: { width: canvas.width, height: canvas.height },
           moduleCanvas: moduleCanvas
@@ -386,7 +343,8 @@
             : null,
           drawingBuffer,
           devicePixelRatio,
-          rotation: wrapperRotation
+          rotation: wrapperRotation,
+          scale
         });
       }
 
